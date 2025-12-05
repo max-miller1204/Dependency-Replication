@@ -1,0 +1,18 @@
+GEO.id,Id
+GEO.id2,Id2
+GEO.display-label,Geography
+VD01,Total:
+VD02,Male:
+VD03,Male: - In labor force:
+VD04,Male: - In labor force: - In Armed Forces
+VD05,Male: - In labor force: - Civilian:
+VD06,Male: - In labor force: - Civilian: - Employed
+VD07,Male: - In labor force: - Civilian: - Unemployed
+VD08,Male: - Not in labor force
+VD09,Female:
+VD10,Female: - In labor force:
+VD11,Female: - In labor force: - In Armed Forces
+VD12,Female: - In labor force: - Civilian:
+VD13,Female: - In labor force: - Civilian: - Employed
+VD14,Female: - In labor force: - Civilian: - Unemployed
+VD15,Female: - Not in labor force

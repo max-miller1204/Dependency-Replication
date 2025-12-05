@@ -1,0 +1,18 @@
+GEO.id,Id
+GEO.id2,Id2
+GEO.display-label,Geography
+VD01,Total:
+VD02,Did not work at home:
+VD03,Did not work at home: - Less than 5 minutes
+VD04,Did not work at home: - 5 to 9 minutes
+VD05,Did not work at home: - 10 to 14 minutes
+VD06,Did not work at home: - 15 to 19 minutes
+VD07,Did not work at home: - 20 to 24 minutes
+VD08,Did not work at home: - 25 to 29 minutes
+VD09,Did not work at home: - 30 to 34 minutes
+VD10,Did not work at home: - 35 to 39 minutes
+VD11,Did not work at home: - 40 to 44 minutes
+VD12,Did not work at home: - 45 to 59 minutes
+VD13,Did not work at home: - 60 to 89 minutes
+VD14,Did not work at home: - 90 or more minutes
+VD15,Worked at home

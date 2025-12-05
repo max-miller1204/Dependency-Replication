@@ -1,0 +1,1 @@
+MATCH FILES /FILE=* /FILE='92FIN:92CensusCoAreaID.sav' /BY govcode.EXECUTE.SAVE OUTFILE='92CensusCoAreaFinal.sav' .

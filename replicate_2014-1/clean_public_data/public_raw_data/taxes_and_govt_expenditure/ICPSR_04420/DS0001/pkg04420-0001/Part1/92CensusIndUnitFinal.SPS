@@ -1,0 +1,1 @@
+MATCH FILES /FILE=* /FILE='Macintosh HD:1992 Census of Governments:92FIN:92censusindunitid.sav' /RENAME (adminwk ftpay otherwk ptpay teachwk wkhrs year = d0 d1 d2 d3 d4 d5  d6) /BY govcode /DROP= d0 d1 d2 d3 d4 d5 d6.EXECUTE.SAVE OUTFILE='Macintosh HD:1992 Census of Governments:92FIN:temp4.sav' .

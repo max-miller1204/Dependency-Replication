@@ -1,0 +1,2984 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN"
+                     "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML LANG="en">
+<! ********************************************************************************* -->
+<! Steve Poyta - Initially Developed from TXT 1997 Census Technical Doc - 04/12/02   -->
+<! ********************************************************************************* -->
+
+<HEAD>
+<title>1992 Census of Governments - Finances Technical Documentation</title>
+<LINK REL="stylesheet" HREF="/main/.in/style.css" TYPE="text/css">
+<LINK REL="stylesheet" HREF="../style/gov.css" TYPE="text/css">
+
+</HEAD>
+
+<BODY LINK="#0055BB">
+
+<table width="750" border="0" cellspacing="0" cellpadding="0">
+
+  <tr>
+	  <td>
+	      <a name="top"></a>
+		  <a href="/"><img src="/main/www/img/cb_head.gif" border="0"
+		                   alt="The U.S. Census Bureau">
+		  </a>
+	  </td>
+  </tr>
+  
+  <tr>
+      <td class="pagetitle" width="750">
+	      <br><font size="5">Federal, State, and Local Governments</font>
+		  <br><font size="4">
+		       1992 Census of Governments -  Finances<br>
+		       Technical Documentation</font>
+		  <br>&nbsp;
+      </td> 
+  </tr>
+  
+  <tr>
+  	  <td colspan="2" width="750">
+	      <img src="img/blue_pix2.gif" alt="__"  width="750" height="3"><br>
+	      
+		  <table border="0" cellpadding="0" cellspacing="0" align="center" width="750">
+		    <tr class="navbarrow">
+			  <td class="navbaractive" width="300">
+			      <font size="-1">
+				   &nbsp;<a class="navbarlink" href="index.html">Main</a>&nbsp;
+				  </font>
+			  </td>
+			  <td width="150">&nbsp;</td>
+			  <td class="navbaractive" width="300">
+			      <font size="-1">
+			       &nbsp;<a class="navbarlink" href="estimate.html">Back To State and Local Finances</a>&nbsp;
+				  </font>
+			  </td>
+			</tr>
+		  </table>
+		  
+		  <img src="img/blue_pix2.gif" alt="__"  width="750" height="3"><br>
+  </tr>
+  
+  <tr>
+      <td>
+	      <br><br>
+		  <h3>Contents</h3>
+      <UL>
+          <LI><A href="92censustechdoc.html#intro">Introduction</A><BR>
+        <OL>
+          <LI><A 
+          href="92censustechdoc.html#dollars">Current 
+          Dollars</A><BR>
+          <LI><A 
+          href="92censustechdoc.html#fiscalyr">Fiscal 
+          Years</A><BR>
+          <LI><A 
+          href="92censustechdoc.html#collection">Collection of 
+          Statistics on Governments</A><BR>
+          <LI><A 
+          href="92censustechdoc.html#limit">Limitations 
+          of Data</A><BR></LI>
+       </OL>
+        <P>
+          <LI><A href="92censustechdoc.html#descrip">File 
+        Descriptions and Record Layouts</A><BR>
+        <OL>
+          <LI><A 
+          href="92censustechdoc.html#view">Viewable Tables and Spreadsheet File</A> 
+          <LI><A 
+          href="92censustechdoc.html#indivunit">Individual Unit
+          - Public Use Format File</A> </LI>
+          <LI><A 
+          href="92censustechdoc.html#state-type-pus">State by Type-of-Government Summaries
+          - Public Use Format File</A> 
+          <LI><A 
+          href="92censustechdoc.html#countyarea-pus">County Area Item Code Summaries
+          - Public Use Format File</A> 
+          <LI><A 
+          href="92censustechdoc.html#state-type-c">State by Type-of-Government Summaries
+          - Comma-delimited Format File</A> 
+          <LI><A 
+          href="92censustechdoc.html#directory">Directory Information File for
+                the Individual Unit File </A> </LI>
+          <LI><A 
+          href="92censustechdoc.html#directory-ca">Directory Information File for
+                the County-Area file</A> </LI>
+
+        </ol>
+        <P>
+        <LI><A href="92censustechdoc.html#codedef">Code Definitions</A><BR></LI>
+        <LI><A href="92censustechdoc.html#sources">Sources and Contacts</A>
+     </UL><BR>
+          <br>
+
+		  <table width=750>
+		  	<tr class="topicrow" colspan=2>
+		    	<td class="topictext" colspan="2">
+        			<a name="intro"></a>&nbsp;<strong>Introduction</strong>
+				</td>
+  		  	</tr>
+		  </table>
+
+     <P>The United States Bureau of the Census conducts a census of governments at 5-year
+intervals as required by law under Title 13, United States Code, Section 161.  The 1992
+census, similar to those taken since 1957, covers the entire range of government financial
+activities (revenue, expenditure, debt, and assets).  The census survey results yield a series 
+of tables and files that provide users with comprehensive statistical information about state and
+local government economic activity.  In non-census years the <A href="financegen.html">Annual Survey of 
+Government Finance</A> is conducted covering equivalent data detail.
+</P> 
+
+<P>
+<a name="dollars">Current Dollars
+<P>  
+     The statistics in these tables and files are in terms of current dollar amounts.  They have
+not been adjusted for price level changes occurring through the years.
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<p>
+<A name="fiscalyr">Fiscal Years
+<P>
+     Data in these tables and files pertain to the governments' 12-month fiscal years.  The data
+for 1992 reflect individual government fiscal years that ended between July 1, 1991 and June 30,
+1992.
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<p>
+<A name="collection">Collection of Statistics on Governments
+<P>
+     The data collection phase for the annual survey made use of two methods to obtain data:
+mail canvass and central collection from State sources.  In 35 states,  all or part of the data
+for local governments was obtained from cooperative arrangements between the Census Bureau 
+and a state government agency.  These usually involved a data collection effort carried out to
+meet the needs of both agencies -- the state agency for purposes of audit, oversight, or
+information, and the Census Bureau for statistical purposes.
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P> 
+     Data for the balance of local governments in this survey were obtained via mail
+questionnaires sent directly to county, municipal, township, special district, and school district
+governments.
+<P> 
+     Data for state governments were compiled by analysts of the Bureau of the Census,
+usually with the cooperation and assistance of state officials.  The data were compiled from state
+government audits, budgets, and other financial reports, either in printed or electronic format. 
+The compilation generally involved recasting the state financial records into the classification
+categories used for reporting by the Census Bureau.  
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+<A name="limit">Limitations of Data
+<P>
+     Although the data in a census are not subject to sampling error, the data are subject to
+various nonsampling errors.  For this census, these errors may include response errors, errors
+caused by nonresponse, and processing errors.  Every effort is made to keep these errors at a
+minimum.
+<P> 
+     All schedules-mail canvass, those compiled by Census-trained enumerators from official
+sources, field enumerated, and centrally collected--were examined for evidence of completeness,
+internal consistency, and a reasonable relation to figures reported for earlier periods.  In addition
+to the manual review, a computerized edit checked for impossible or improbable entries and
+identified in detail the differences with prior data.
+<P>
+     These procedures applied to the 1992 Census of Governments were designed to achieve,
+for the data reported here, a high standard of completeness and accuracy.  Undoubtedly, however,
+some mistakes and inconsistencies of official reporting, or of Census Bureau handling of
+particular items, have escaped detection.  Please inform the Governments Division, U.S. Census
+Bureau, if the tables or data reveal potential problems.
+<P>
+     After using the extensive followup efforts detailed in the data collection section, only a
+minor percentage of the data file--representing primarily small county, municipal or township
+governments--remained incomplete and were then imputed for.<P>
+
+For counties, municipalities, and townships for which we had no data, we used the following imputation method:
+We searched through past data (the 1987 Census of Governments, and the 1989-1991 Annual Surveys of Local Governments)
+to find the most recent response from the nonresponding government.  The prior year response was updated 
+to 1992 using average 
+growth rates established from responding units that were from the same state, type of government, 
+and similar size stratum as the nonresponding government.  For governments for which we had no
+prior year data, we randomly selected a government of the same state, type, and size class 
+and multiplied its per capita
+data by the nonrespondent's population to get data for the nonrespondent.
+The response rate for counties was 80 percent; for municipalities and townships, 90 percent;
+for special districts, 80 percent; and for schools, 100 percent.<br>
+
+
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+<table width=750>
+		  	<tr class="topicrow" colspan=2>
+		    	<td class="topictext" colspan="2">
+        			<a name="descrip"></a>&nbsp;<strong>File Descriptions and Record Layouts</strong>
+				</td>
+  		  	</tr>
+		  </table>
+
+<P>
+A listing of Type/Level-of-Government codes and the item code detail is shown at the end 
+of this documentation.  It applies to multiple data files
+and can be loaded into a file for application. A listing of the state names, codes and 
+abbreviations is also located at the end of the documentation.
+<P>
+<A name="view">Viewable tables and Spreadsheet File
+<P>
+The layout of the viewable tables and the spreadsheet are the same.  Descriptive text for each row
+of data is self explanatory.  The viewable tables are in html format. The spreadsheet file is in
+Microsoft Excel format.
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+<A name="indivunit">Individual Unit File
+<P>
+Also known as the "Public Use"  35-character ASCII text file.  This file has a fixed record layout,
+but contains variable record counts per unit of government.  There are no records that contain
+"zero" dollars for any data item.  
+<P>
+Description:    1992 Census of Governments finance detail data (no summary amounts) 
+<P>
+File Type:     ASCII
+<P>
+Compressed filename and size:  92CENSUSINDUNIT.EXE (10.1MB)<BR>
+<P>
+Inflated Filenames and sizes: - 92CENSUSINDUNIT.TXT (76 MB)<br>
+
+<P>
+
+
+      <TABLE border=1 cellPadding=8>
+        <TBODY>
+        <TR>
+          <td colSpan=5 align="center"><b>INDIVIDUAL UNIT PUBLIC USE DATA FILE FORMAT</b></td>
+        <TR>
+          <TD align=middle>Field Name</TD>
+          <TD align=middle>Positions</TD>
+          <TD>Start Position</TD>
+          <TD>Length</TD>
+          <TD>Characteristic</TD></TR>
+        <TR>
+          <TD>Government Code<br>
+              &nbsp;&nbsp;01-02 State code <br>
+              &nbsp;&nbsp;03-03 Type code <br>
+              &nbsp;&nbsp;04-06 County code <br>
+              &nbsp;&nbsp;07-09 Unit code <br>
+              &nbsp;&nbsp;10-12 Sup code <br>
+              &nbsp;&nbsp;13-14 Sub code <br> 
+            <P>  
+              or for State by Type-of-Government Summary Files<br>
+              &nbsp;&nbsp;01-02 State code<br>
+              &nbsp;&nbsp;03-03 Type/Level code</TD>
+          <TD>01 - 14</TD>
+          <TD>01</TD>
+          <TD>14</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>Item Code</TD>
+          <TD>15 - 17</TD>
+          <TD>15</TD>
+          <TD>3</TD>
+          <TD>Alpha numeric</TD></TR>
+        <TR>
+          <TD>Amount (in $1000)</TD>
+          <TD>18 - 29</TD>
+          <TD>18</TD>
+          <TD>12</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Survey Year</TD>
+          <TD>30 - 31</TD>
+          <TD>30</TD>
+          <TD>2</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Year of Data</TD>
+          <TD>32 - 33</TD>
+          <TD>32</TD>
+          <TD>2</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Origin Code</TD>
+          <TD>34 - 35</TD>
+          <TD>34</TD>
+          <TD>2</TD>
+          <TD>Alpha numeric</TD></TR></TBODY></TABLE>	  			
+
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+
+<A name="state-type-pus">State by Type-of-Government Summary Detail File
+<P>
+This file contains the same record layout as the Individual Unit, described above.  It has a fixed
+record layout, but contains variable record counts per type of government.  There are no records
+that contain "zero" dollars for any data item.  This file is the individual unit file summed to state-
+area and type of government.  
+<P>
+File Type:      ASCII
+<P>
+Inflated Filenames and sizes:  92CensusStateTypepu.exe inflates into 92CensusStateTypepu.txt (2.9 meg)  
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>     
+<A Name="countyarea-pus">County-Area Item Code File
+<P>
+This file contains the same record layout as the Individual Unit, described above.  It has a fixed
+record layout, but contains variable record counts per type of government.  There are no records
+that contain "zero" dollars for any data item.  This file is the individual unit file summed to the
+3,136 county-areas.  
+<P>  
+File Type:     ASCII
+<P>
+Inflated Filename and size: 92CensusCountyArea.exe inflates into 92CensusCountyArea.txt (16.3 meg)
+<P>     
+     <TABLE border=1 cellPadding=8>
+        <TBODY>
+        <TR>
+          <td colSpan=5 align="center"><b>COUNTY-AREA PUBLIC USE DATA FILE FORMAT</b></td>
+        <TR>
+          <TH>Field Name</TH>
+          <TH>Positions</TH>
+          <TH>Start Position</TH>
+          <TH>Length</TH>
+          <TH>Characteristic</TH></TR>
+        <TR>
+          <TD>State code<br>
+          <TD>01 - 02</TD>
+          <TD>01</TD>
+          <TD>02</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>County code<br>
+          <TD>04 - 06</TD>
+          <TD>04</TD>
+          <TD>03</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>Item Code</TD>
+          <TD>15 - 17</TD>
+          <TD>15</TD>
+          <TD>3</TD>
+          <TD>Alpha numeric</TD></TR>
+        <TR>
+          <TD>Amount (in $1000)</TD>
+          <TD>18 - 29</TD>
+          <TD>18</TD>
+          <TD>12</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Survey Year</TD>
+          <TD>30 - 31</TD>
+          <TD>30</TD>
+          <TD>2</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Year of Data</TD>
+          <TD>32 - 33</TD>
+          <TD>32</TD>
+          <TD>2</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Origin Code</TD>
+          <TD>34 - 35</TD>
+          <TD>34</TD>
+          <TD>2</TD>
+          <TD>"CA"</TD></TR></TBODY></TABLE>	  			
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+<A Name="state-type-c">State by Type-of-Government Summaries (Comma Delimited File)
+<P>
+The record layout for this file:<br>
+&nbsp;&nbsp; (92CensusStateTypecd.exe inflates into 8 type-of-government files: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotCitiescd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotCountiescd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotLocalscd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotSchoolscd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotSpDistscd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotStateLocalcd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotStatescd.txt <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;92CensusTotTownshipscd.txt <br> 
+in a fixed length comma-delimited format.
+<P>
+
+	<table width="750" border="1" cellpadding="5">
+		<tr>
+			<th width="350">Field</th>
+			<th width="90" align="right">Length</th>
+			<th width="90" align="right">From</th>
+			<th width="90" align="right">To</th>
+			<th width="130" align="center">Delimiter Position</th>
+		</tr>
+		<tr>
+			<td width="350">Item Code</td>
+			<td width="90" align="right">3</td>
+			<td width="90" align="right">1</td>
+			<td width="90" align="right">3</td>
+			<td width="130" align="center">4</td>
+		</tr>
+		<tr>
+			<td width="350">United States</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">5</td>
+			<td width="90" align="right">14</td>
+			<td width="130" align="center">15</td>
+		</tr>
+		<tr>
+			<td width="350">Alabama</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">16</td>
+			<td width="90" align="right">25</td>
+			<td width="130" align="center">26</td>
+		</tr>
+		<tr>
+			<td width="350">Alaska</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">27</td>
+			<td width="90" align="right">36</td>
+			<td width="130" align="center">37</td>
+		</tr>
+		<tr>
+			<td width="350">Arizona</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">38</td>
+			<td width="90" align="right">47</td>
+			<td width="130" align="center">48</td>
+		</tr>
+		<tr>
+			<td width="350">Arkansas</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">49</td>
+			<td width="90" align="right">58</td>
+			<td width="130" align="center">59</td>
+		</tr>
+		<tr>
+			<td width="350">California</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">60</td>
+			<td width="90" align="right">69</td>
+			<td width="130" align="center">70</td>
+		</tr>
+		<tr>
+			<td width="350">Colorado</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">71</td>
+			<td width="90" align="right">80</td>
+			<td width="130" align="center">81</td>
+		</tr>
+		<tr>
+			<td width="350">Connecticut</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">82</td>
+			<td width="90" align="right">91</td>
+			<td width="130" align="center">92</td>
+		</tr>
+		<tr>
+			<td width="350">Delaware</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">93</td>
+			<td width="90" align="right">102</td>
+			<td width="130" align="center">103</td>
+		</tr>
+		<tr>
+			<td width="350">District of Columbia</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">104</td>
+			<td width="90" align="right">113</td>
+			<td width="130" align="center">114</td>
+		</tr>
+		<tr>
+			<td width="350">Florida</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">115</td>
+			<td width="90" align="right">124</td>
+			<td width="130" align="center">125</td>
+		</tr>
+		<tr>
+			<td width="350">Georgia</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">126</td>
+			<td width="90" align="right">135</td>
+			<td width="130" align="center">136</td>
+		</tr>
+		<tr>
+			<td width="350">Hawaii</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">137</td>
+			<td width="90" align="right">146</td>
+			<td width="130" align="center">147</td>
+		</tr>
+			<td width="350">Idaho</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">148</td>
+			<td width="90" align="right">157</td>
+			<td width="130" align="center">158</td>
+		</tr>
+		<tr>
+			<td width="350">Illinois</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">159</td>
+			<td width="90" align="right">168</td>
+			<td width="130" align="center">169</td>
+		</tr>
+		<tr>
+			<td width="350">Indiana</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">170</td>
+			<td width="90" align="right">179</td>
+			<td width="130" align="center">180</td>
+		</tr>
+		<tr>
+			<td width="350">Iowa</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">181</td>
+			<td width="90" align="right">190</td>
+			<td width="130" align="center">191</td>
+		</tr>
+		<tr>
+			<td width="350">Kansas</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">192</td>
+			<td width="90" align="right">201</td>
+			<td width="130" align="center">202</td>
+		</tr>
+		<tr>
+			<td width="350">Kentucky</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">203</td>
+			<td width="90" align="right">212</td>
+			<td width="130" align="center">213</td>
+		</tr>
+		<tr>
+			<td width="350">Louisiana</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">214</td>
+			<td width="90" align="right">223</td>
+			<td width="130" align="center">224</td>
+		</tr>
+		<tr>
+			<td width="350">Maine</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">225</td>
+			<td width="90" align="right">234</td>
+			<td width="130" align="center">235</td>
+		</tr>
+		<tr>
+			<td width="350">Maryland</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">236</td>
+			<td width="90" align="right">245</td>
+			<td width="130" align="center">246</td>
+		</tr>
+		<tr>
+			<td width="350">Massachusetts</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">247</td>
+			<td width="90" align="right">256</td>
+			<td width="130" align="center">257</td>
+		</tr>
+		<tr>
+			<td width="350">Michigan</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">258</td>
+			<td width="90" align="right">267</td>
+			<td width="130" align="center">268</td>
+		</tr>
+		<tr>
+			<td width="350">Minnesota</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">269</td>
+			<td width="90" align="right">278</td>
+			<td width="130" align="center">279</td>
+		</tr>
+		<tr>
+			<td width="350">Mississippi</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">280</td>
+			<td width="90" align="right">289</td>
+			<td width="130" align="center">290</td>
+		</tr>
+		<tr>
+			<td width="350">Missouri</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">291</td>
+			<td width="90" align="right">300</td>
+			<td width="130" align="center">301</td>
+		</tr>
+		<tr>
+			<td width="350">Montana</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">302</td>
+			<td width="90" align="right">311</td>
+			<td width="130" align="center">312</td>
+		</tr>
+		<tr>
+			<td width="350">Nebraska</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">313</td>
+			<td width="90" align="right">322</td>
+			<td width="130" align="center">323</td>
+		</tr>
+		<tr>
+			<td width="350">Nevada</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">324</td>
+			<td width="90" align="right">333</td>
+			<td width="130" align="center">334</td>
+		</tr>
+		<tr>
+			<td width="350">New Hampshire</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">335</td>
+			<td width="90" align="right">344</td>
+			<td width="130" align="center">345</td>
+		</tr>
+		<tr>
+			<td width="350">New Jersey</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">346</td>
+			<td width="90" align="right">355</td>
+			<td width="130" align="center">356</td>
+		</tr>
+		<tr>
+		<tr>
+			<td width="350">New Mexico</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">357</td>
+			<td width="90" align="right">366</td>
+			<td width="130" align="center">367</td>
+		</tr>
+		<tr>
+			<td width="350">New York</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">368</td>
+			<td width="90" align="right">377</td>
+			<td width="130" align="center">378</td>
+		</tr>
+		<tr>
+			<td width="350">North Carolina</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">379</td>
+			<td width="90" align="right">388</td>
+			<td width="130" align="center">389</td>
+		</tr>
+		<tr>
+			<td width="350">North Dakota</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">390</td>
+			<td width="90" align="right">399</td>
+			<td width="130" align="center">400</td>
+		</tr>
+		<tr>
+			<td width="350">Ohio</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">401</td>
+			<td width="90" align="right">410</td>
+			<td width="130" align="center">411</td>
+		</tr>
+		<tr>
+			<td width="350">Oklahoma</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">412</td>
+			<td width="90" align="right">421</td>
+			<td width="130" align="center">422</td>
+		</tr>
+		<tr>
+			<td width="350">Oregon</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">423</td>
+			<td width="90" align="right">432</td>
+			<td width="130" align="center">433</td>
+		</tr>
+		<tr>
+			<td width="350">Pennsylvania</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">434</td>
+			<td width="90" align="right">443</td>
+			<td width="130" align="center">444</td>
+		</tr>
+		<tr>
+			<td width="350">Rhode Island</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">445</td>
+			<td width="90" align="right">454</td>
+			<td width="130" align="center">455</td>
+		</tr>
+		<tr>
+			<td width="350">South Carolina</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">456</td>
+			<td width="90" align="right">465</td>
+			<td width="130" align="center">466</td>
+		</tr>
+		<tr>
+			<td width="350">South Dakota</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">467</td>
+			<td width="90" align="right">476</td>
+			<td width="130" align="center">477</td>
+		</tr>
+		<tr>
+			<td width="350">Tennessee</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">478</td>
+			<td width="90" align="right">487</td>
+			<td width="130" align="center">488</td>
+		</tr>
+		<tr>
+			<td width="350">Texas</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">489</td>
+			<td width="90" align="right">498</td>
+			<td width="130" align="center">499</td>
+		</tr>
+		<tr>
+			<td width="350">Utah</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">500</td>
+			<td width="90" align="right">509</td>
+			<td width="130" align="center">510</td>
+		</tr>
+		<tr>
+			<td width="350">Vermont</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">511</td>
+			<td width="90" align="right">520</td>
+			<td width="130" align="center">521</td>
+		</tr>
+		<tr>
+			<td width="350">Virginia</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">522</td>
+			<td width="90" align="right">531</td>
+			<td width="130" align="center">532</td>
+		</tr>
+		<tr>
+			<td width="350">Washington</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">533</td>
+			<td width="90" align="right">542</td>
+			<td width="130" align="center">543</td>
+		</tr>
+		<tr>
+			<td width="350">West Virginia</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">544</td>
+			<td width="90" align="right">553</td>
+			<td width="130" align="center">554</td>
+		</tr>
+		<tr>
+			<td width="350">Wisconsin</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">555</td>
+			<td width="90" align="right">564</td>
+			<td width="130" align="center">565</td>
+		</tr>
+		<tr>
+			<td width="350">Wyoming</td>
+			<td width="90" align="right">10</td>
+			<td width="90" align="right">566</td>
+			<td width="90" align="right">575</td>
+			<td width="130" align="center">&nbsp;</td>
+		</tr>
+	
+	</table>
+
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+
+<A name="directory">Directory File for the Individual Unit File
+<P>
+The record layout is below.  This file is an ASCII text, fixed length record format.  It contains
+basic identifier information for each unit of government canvassed in the 1992 Census of
+Governments. 
+
+<P>     
+     <TABLE border=1 cellPadding=8>
+        <TBODY>
+        <TR>
+          <td colSpan=5 align="center"><b>INDIVIDUAL UNIT - DIRECTORY FILE FORMAT</b></td>
+        <TR>
+          <TH>Field Name</TH>
+          <TH>Positions</TH>
+          <TH>Start Position</TH>
+          <TH>Length</TH>
+          <TH>Characteristic</TH></TR>
+        <TR>
+          <TD>State code</TD>
+          <TD>01 - 02</TD>
+          <TD>01</TD>
+          <TD>02</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+        <TR>
+          <TD>Type code</TD>
+          <TD>03 - 03</TD>
+          <TD>03</TD>
+          <TD>01</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>County code</TD>
+          <TD>04 - 06</TD>
+          <TD>04</TD>
+          <TD>03</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>Unit code</TD>
+          <TD>07 - 09</TD>
+          <TD>07</TD>
+          <TD>03</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>Supplement (SUP) code</TD>
+          <TD>10 - 12</TD>
+          <TD>10</TD>
+          <TD>03</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>Sub code</TD>
+          <TD>13 - 14</TD>
+          <TD>13</TD>
+          <TD>02</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>Government Name</TD>
+          <TD>15 - 78</TD>
+          <TD>15</TD>
+          <TD>64</TD>
+          <TD>Alpha-Numeric</TD></TR>
+        <TR>
+          <TD>Region Code</TD>
+          <TD>79 - 79</TD>
+          <TD>79</TD>
+          <TD>01</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>County Name</TD>
+          <TD>80 - 109</TD>
+          <TD>80</TD>
+          <TD>30</TD>
+          <TD>Alpha-Numeric</TD></TR>
+        <TR>
+          <TD>FIPS State code</TD>
+          <TD>110 - 111</TD>
+          <TD>110</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>FIPS County code</TD>
+          <TD>112 - 114</TD>
+          <TD>112</TD>
+          <TD>03</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>FIPS Place code</TD>
+          <TD>115 - 119</TD>
+          <TD>115</TD>
+          <TD>05</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>FIPS MSA code</TD>
+          <TD>120 - 123</TD>
+          <TD>120</TD>
+          <TD>04</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>FIPS CMSA code</TD>
+          <TD>124 - 125</TD>
+          <TD>124</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Population/Enrollment/Function Code</TD>
+          <TD>126 - 134</TD>
+          <TD>126</TD>
+          <TD>09</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Population/Enrollment Year</TD>
+          <TD>135 - 136</TD>
+          <TD>135</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>School Level code</TD>
+          <TD>137 - 1138</TD>
+          <TD>137</TD>
+          <TD>02</TD>
+          <TD>Alpha-Numeric</TD></TR>
+        <TR>
+          <TD>NCES code (Schools only)</TD>
+          <TD>139 - 145</TD>
+          <TD>139</TD>
+          <TD>07</TD>
+          <TD>Alpha-Numeric</TD></TR>   
+        <TR>
+          <TD>Weight (for sample years)</TD>
+          <TD>146 - 150</TD>
+          <TD>146</TD>
+          <TD>06</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Fiscal Year End</TD>
+          <TD>153 - 156</TD>
+          <TD>153</TD>
+          <TD>04</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Multi-County Code</TD>
+          <TD>157 - 186</TD>
+          <TD>157</TD>
+          <TD>30</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Reciprocal Weight</TD>
+          <TD>187 - 188</TD>
+          <TD>187</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Reciprocal Weight</TD>
+          <TD>187 - 188</TD>
+          <TD>187</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Weekly Hours Code (Employment)</TD>
+          <TD>189 - 189</TD>
+          <TD>189</TD>
+          <TD>01</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Full-Time Pay Code (Employment)</TD>
+          <TD>190 - 190</TD>
+          <TD>190</TD>
+          <TD>01</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Part-Time Pay Code (Employment)</TD>
+          <TD>191 - 191</TD>
+          <TD>191</TD>
+          <TD>01</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Number of Months Teachers Paid (Employment)</TD>
+          <TD>192 - 193</TD>
+          <TD>192</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Number of Months School Admin Paid (Employment)</TD>
+          <TD>194 - 195</TD>
+          <TD>194</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Number of Months School Other Paid (Employment)</TD>
+          <TD>196 - 197</TD>
+          <TD>196</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Year of Data (except dependent schools)</TD>
+          <TD>198 - 199</TD>
+          <TD>198</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Year of Dependent School Data</TD>
+          <TD>200 - 201</TD>
+          <TD>200</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>  
+        <TR>
+          <TD>Year of Retirement Data (Finance)</TD>
+          <TD>202 - 203</TD>
+          <TD>202</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>  
+        <TR>
+          <TD>Finance Survey Edit Flag</TD>
+          <TD>204 - 204</TD>
+          <TD>204</TD>
+          <TD>01</TD>
+          <TD>Numeric</TD></TR>            
+        <TR>
+          <TD>Survey Form Type</TD>
+          <TD>205 - 206</TD>
+          <TD>205</TD>
+          <TD>02</TD>
+          <TD>Alpha-Numeric</TD></TR>            
+      </table>
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+
+<A name="directory-ca">Directory File for County-Areas
+<P>
+The record layout is below.  This file is an ASCII text, fixed length record format.  It contains
+basic identifier information for each of the 3,136 county-areas identified in the 1992 Census of
+Governments. 
+<P> 
+File name and size: CensusCountyAreaDirectory.txt (179 KB)
+<P>           
+
+     <TABLE border=1 cellPadding=8>
+        <TBODY>
+        <TR>
+          <td colSpan=5 align="center"><b>COUNTY-AREA - DIRECTORY FILE FORMAT</b></td>
+        <TR>
+          <TH>Field Name</TH>
+          <TH>Positions</TH>
+          <TH>Start Position</TH>
+          <TH>Length</TH>
+          <TH>Characteristic</TH></TR>
+        <TR>
+          <TD>State code</TD>
+          <TD>01 - 02</TD>
+          <TD>01</TD>
+          <TD>02</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>County code</TD>
+          <TD>04 - 06</TD>
+          <TD>04</TD>
+          <TD>03</TD>
+          <TD>Numeric, zero filled</TD></TR>
+        <TR>
+          <TD>County Name</TD>
+          <TD>15 - 78</TD>
+          <TD>15</TD>
+          <TD>64</TD>
+          <TD>Alpha-Numeric</TD></TR>
+        <TR>
+          <TD>FIPS State code</TD>
+          <TD>110 - 111</TD>
+          <TD>110</TD>
+          <TD>02</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>FIPS County code</TD>
+          <TD>112 - 114</TD>
+          <TD>112</TD>
+          <TD>03</TD>
+          <TD>Numeric</TD></TR>
+        <TR>
+          <TD>Population</TD>
+          <TD>126 - 134</TD>
+          <TD>126</TD>
+          <TD>09</TD>
+          <TD>Numeric</TD></TR>
+   </TABLE>
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+<P>
+<table width=750>
+		  	<tr class="topicrow" colspan=2>
+		    	<td class="topictext" colspan="2">
+        			<a name="codedef"></a>&nbsp;<strong>Code Definitions</strong>
+				</td>
+  		  	</tr>
+		  </table>
+
+<p>	
+<TABLE border=1 cellPadding=8>
+        <TBODY>
+        <TR>
+          <td align="center" colspan="3" class="bold">State Abbreviations</Td>
+        </TR>
+         <TR> 
+          <Td align="center" class="bold">State Name</Td>
+          <Td align="center" class="bold">Abbreviation</Td>
+          <Td align="center" class="bold">State Code</Td>
+        <TR>
+          <TD>United States</TD>
+          <TD align=center>US</TD>
+          <TD align=center>00</TD>  
+         </TR>
+        <TR>
+          <TD>Alabama</TD>
+          <TD align=center>AL</TD>
+          <TD align=center>01</TD>  
+         </TR>
+        <TR>
+          <TD>Alaska</TD>
+          <TD align=center>AK</TD>
+          <TD align=center>02</TD>  
+         </TR>
+        <TR>
+          <TD>Arizona</TD>
+          <TD align=center>AZ</TD>
+          <TD align=center>03</TD>  
+         </TR>
+        <TR>
+          <TD>Arkansas</TD>
+          <TD align=center>AR</TD>
+          <TD align=center>04</TD>  
+         </TR>
+        <TR>
+          <TD>California</TD>
+          <TD align=center>CA</TD>
+          <TD align=center>05</TD>  
+         </TR>
+        <TR>
+          <TD>Colorado</TD>
+          <TD align=center>CO</TD>
+          <TD align=center>06</TD>  
+         </TR>
+        <TR>
+          <TD>Connecticut</TD>
+          <TD align=center>CT</TD>
+          <TD align=center>07</TD>  
+         </TR>
+        <TR>
+          <TD>Delaware</TD>
+          <TD align=center>DE</TD>
+          <TD align=center>08</TD>  
+         </TR>
+        <TR>
+          <TD>District of Columbia</TD>
+          <TD align=center>DC</TD>
+          <TD align=center>09</TD>  
+         </TR>
+        <TR>
+          <TD>Florida</TD>
+          <TD align=center>FL</TD>
+          <TD align=center>10</TD>  
+         </TR>
+        <TR>
+          <TD>Georgia</TD>
+          <TD align=center>GA</TD>
+          <TD align=center>11</TD>  
+         </TR>
+        <TR>
+          <TD>Hawaii</TD>
+          <TD align=center>HI</TD>
+          <TD align=center>12</TD>  
+         </TR>
+        <TR>
+          <TD>Idaho</TD>
+          <TD align=center>ID</TD>
+          <TD align=center>13</TD>  
+         </TR>
+        <TR>
+          <TD>Illinois</TD>
+          <TD align=center>IL</TD>
+          <TD align=center>14</TD>  
+         </TR>
+        <TR>
+          <TD>Indiana</TD>
+          <TD align=center>IN</TD>
+          <TD align=center>15</TD>  
+         </TR>
+        <TR>
+          <TD>Iowa</TD>
+          <TD align=center>IA</TD>
+          <TD align=center>16</TD>  
+         </TR>
+        <TR>
+          <TD>Kansas</TD>
+          <TD align=center>KS</TD>
+          <TD align=center>17</TD>  
+         </TR>
+        <TR>
+          <TD>Kentucky</TD>
+          <TD align=center>KY</TD>
+          <TD align=center>18</TD>  
+         </TR>
+        <TR>
+          <TD>Louisiana</TD>
+          <TD align=center>LA</TD>
+          <TD align=center>19</TD>  
+         </TR>
+        <TR>
+          <TD>Maine</TD>
+          <TD align=center>ME</TD>
+          <TD align=center>20</TD>  
+         </TR>
+        <TR>
+          <TD>Maryland</TD>
+          <TD align=center>MD</TD>
+          <TD align=center>21</TD>  
+         </TR>
+        <TR>
+          <TD>Massachusetts</TD>
+          <TD align=center>MA</TD>
+          <TD align=center>22</TD>  
+         </TR>
+        <TR>
+          <TD>Michigan</TD>
+          <TD align=center>MI</TD>
+          <TD align=center>23</TD>  
+         </TR>
+        <TR>
+          <TD>Minnesota</TD>
+          <TD align=center>MN</TD>
+          <TD align=center>24</TD>  
+         </TR>
+        <TR>
+          <TD>Mississippi</TD>
+          <TD align=center>MS</TD>
+          <TD align=center>25</TD>  
+         </TR>
+        <TR>
+          <TD>Missouri</TD>
+          <TD align=center>MO</TD>
+          <TD align=center>26</TD>  
+         </TR>
+        <TR>
+          <TD>Montana</TD>
+          <TD align=center>MT</TD>
+          <TD align=center>27</TD>  
+         </TR>
+        <TR>
+          <TD>Nebraska</TD>
+          <TD align=center>NE</TD>
+          <TD align=center>28</TD>  
+         </TR>
+        <TR>
+          <TD>Nevada</TD>
+          <TD align=center>NV</TD>
+          <TD align=center>29</TD>  
+         </TR>
+        <TR>
+          <TD>New Hampshire</TD>
+          <TD align=center>NH</TD>
+          <TD align=center>30</TD>  
+         </TR>
+        <TR>
+          <TD>New Jersey</TD>
+          <TD align=center>NJ</TD>
+          <TD align=center>31</TD>  
+         </TR>
+         <TR>
+          <TD>New Mexico</TD>
+          <TD align=center>NM</TD>
+          <TD align=center>32</TD>  
+         </TR>
+        <TR>
+          <TD>New York</TD>
+          <TD align=center>NY</TD>
+          <TD align=center>33</TD>  
+         </TR>
+        <TR>
+          <TD>North Carolina</TD>
+          <TD align=center>NC</TD>
+          <TD align=center>34</TD>  
+         </TR>
+        <TR>
+          <TD>North Dakota</TD>
+          <TD align=center>ND</TD>
+          <TD align=center>35</TD>  
+         </TR>
+        <TR>
+          <TD>Ohio</TD>
+          <TD align=center>OH</TD>
+          <TD align=center>36</TD>  
+         </TR>
+        <TR>
+          <TD>Oklahoma</TD>
+          <TD align=center>OK</TD>
+          <TD align=center>37</TD>  
+         </TR>
+        <TR>
+          <TD>Oregon</TD>
+          <TD align=center>OR</TD>
+          <TD align=center>38</TD>  
+         </TR>
+        <TR>
+          <TD>Pennsylvania</TD>
+          <TD align=center>PA</TD>
+          <TD align=center>39</TD>  
+         </TR>
+        <TR>
+          <TD>Rhode Island</TD>
+          <TD align=center>RI</TD>
+          <TD align=center>40</TD>  
+         </TR>
+         <TR>
+          <TD>South Carolina</TD>
+          <TD align=center>SC</TD>
+          <TD align=center>41</TD>  
+         </TR>
+          <TD>South Dakota</TD>
+          <TD align=center>SD</TD>
+          <TD align=center>42</TD>  
+         </TR>
+        <TR>
+          <TD>Tennessee</TD>
+          <TD align=center>TN</TD>
+          <TD align=center>43</TD>  
+         </TR>
+        <TR>
+          <TD>Texas</TD>
+          <TD align=center>TX</TD>
+          <TD align=center>44</TD>  
+         </TR>
+        <TR>
+          <TD>Utah</TD>
+          <TD align=center>UT</TD>
+          <TD align=center>45</TD>  
+         </TR>
+        <TR>
+          <TD>Vermont</TD>
+          <TD align=center>VT</TD>
+          <TD align=center>46</TD>  
+         </TR>
+        <TR>
+          <TD>Virginia</TD>
+          <TD align=center>VA</TD>
+          <TD align=center>47</TD>  
+         </TR>
+        <TR>
+          <TD>Washington</TD>
+          <TD align=center>WA</TD>
+          <TD align=center>48</TD>  
+         </TR>
+        <TR>
+          <TD>West Virginia</TD>
+          <TD align=center>WV</TD>
+          <TD align=center>49</TD>  
+         </TR>
+        <TR>
+          <TD>Wisconsin</TD>
+          <TD align=center>WI</TD>
+          <TD align=center>50</TD>  
+         </TR>
+        <TR>
+          <TD>Wyoming</TD>
+          <TD align=center>WY</TD>
+          <TD align=center>51</TD>  
+         </TR>
+     </tbody></table>	
+
+<P>
+      <TABLE border=1 cellPadding=8>
+        <TBODY>
+        <TR>
+          <td align="center" colSpan=2 class="bold">Estimates - Type/Level-of-Government Summary Codes</td>
+        </TR>
+         <TR> 
+            <td align="center" class="bold">Type-Codes</td>
+            <td align="center" class="bold">Description</td>
+         </TR>
+         <TR>
+          <TD align=center>0</td>
+          <TD>National Summary</TD>
+         </TR>
+         <TR>
+          <TD align=center>1</td>
+          <TD>State and Local Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>2</td>
+          <TD>State Government Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>3</td>
+          <TD>Local Government Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>4</td>
+          <TD>Federal and Indian Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>5</td>
+          <TD>County Government Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>6</td>
+          <TD>Municipal Government Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>7</td>
+          <TD>Township Government Total</TD>
+         </TR>
+         <TR>  
+          <TD align=center>8</td>
+          <TD>Special District Total</TD>
+         </TR>
+         <TR>
+          <TD align=center>9</td>
+          <TD>School District Total</TD>
+         </TR>
+      </tbody></table>
+<p><table border=1 width=600 cellpadding="8">
+<tr>
+ <td align="center" colSpan=2 class="bold">Origin Codes</td>
+</tr>
+<tr>
+ <td align="center" colSpan=2 class="bold">Origin Codes and Short Descriptions</td>
+</tr>
+  <td colspan=2>Not all of these codes are used every year. "Cut data" means that the data are in dollars, not thousands.
+	"Multiple entries" means that like codes must be summed.<br>&nbsp;</td>
+</tr>
+
+
+
+<tr>
+  <td align=center><b>Origin-Code</b></td>
+  <td align=center><b>Description</b></td>
+</tr>
+
+<tr>
+  <td align=center>11</td>
+  <td>Form F11</td>
+</tr>
+
+<tr>
+  <td align=center>12</td>
+  <td>Form F12</td>
+</tr>
+
+<tr>
+  <td align=center>21</td>
+  <td>Form F21</td>
+</tr>
+
+<tr>
+  <td align=center>22</td>
+  <td>Form F22</td>
+</tr>
+
+<tr>
+  <td align=center>23</td>
+  <td>Federal Data</td>
+</tr>
+
+<tr>
+  <td align=center>24</td>
+  <td>Jacket unit state</td>
+</tr>
+<tr>
+  <td align=center>25</td>
+  <td>Jacket unit city</td>
+</tr>
+
+<tr>
+  <td align=center>26</td>
+  <td>Jacket unit county</td>
+</tr>
+
+<tr>
+  <td align=center>28</td>
+  <td>Form F28</td>
+</tr>
+
+<tr>
+  <td align=center>29</td>
+  <td>Form F29</td>
+</tr>
+
+<tr>
+  <td align=center>32</td>
+  <td>Form F32</td>
+</tr>
+
+<tr>
+  <td align=center>33</td>
+  <td>Form F33</td>
+</tr>
+<tr>
+  <td align=center>42</td>
+  <td>Form F42</td>
+</tr>
+
+<tr>
+  <td align=center>62</td>
+  <td>Central Collection, cut data, multiple codes</td>
+</tr>
+
+<tr>
+  <td align=center>63</td>
+  <td>Central Collection, cut data</td>
+</tr>
+<tr>
+  <td align=center>66</td>
+  <td>IPED data, multiple entries, from NCES database</td>
+</tr>
+
+<tr>
+  <td align=center>67</td>
+  <td>IPED data from NCES database</td>
+</tr>
+
+<tr>
+  <td align=center>70</td>
+  <td>Central Collection, multiple codes</td>
+</tr>
+
+<tr>
+  <td align=center>71</td>
+  <td>Central Collection</td>
+</tr>
+<tr>
+  <td align=center>82</td>
+  <td>Central Collection Pennsylvania, cut data</td>
+</tr>
+<tr>
+  <td align=center>AD</td>
+  <td>Analyst Decision to change data</td>
+</tr>
+<tr>
+  <td align=center>BC</td>
+  <td>Batch Correction</td>
+</tr>
+<tr>
+  <td align=center>CC</td>
+  <td>Prior Census data with inflation factor applied</td>
+</tr>
+<tr>
+  <td align=center>CT</td>
+  <td>Calculated Total (used for schools and retirement only)</td>
+</tr>
+<tr>
+  <td align=center>DU</td>
+  <td>Dummy Unit</td>
+</tr>
+<tr>
+  <td align=center>GG</td>
+  <td>Government Organization</td>
+</tr>
+<tr>
+  <td align=center>MA</td>
+  <td>Missing on incoming data - Added</td>
+</tr>
+<tr>
+  <td align=center>MC</td>
+  <td>Missing on incoming data - Changed</td>
+</tr>
+<tr>
+  <td align=center>MI</td>
+  <td>Missing on incoming file, imputed later</td>
+</tr>
+<tr>
+  <td align=center>MR</td>
+  <td>Missing on incoming data</td>
+</tr>
+<tr>
+  <td align=center>NR</td>
+  <td>Non-respondant - Imputed</td>
+</tr>
+<tr>
+  <td align=center>OV</td>
+  <td>Overlay from school or retirement files</td>
+</tr>
+<tr>
+  <td align=center>PL</td>
+  <td>Prior year data</td>
+</tr>
+<tr>
+  <td align=center>PY</td>
+  <td>Prior year data with inflation factor applied</td>
+</tr>
+<tr>
+  <td align=center>TR</td>
+  <td>Total recalculated after batch correction</td>
+</tr>
+
+
+</table>
+<P><A class=top 
+      href="http://www.census.gov/govs/www/statetechdoc.html#top">&nbsp;top&nbsp;</A></P><BR>
+      <TABLE width=750>
+        <TBODY>
+        <TR class=topicrow colspan="2">
+          <TD class=topictext colSpan=2><A name=dict></A>&nbsp;Data Dictionary 
+          </TD></TR></TBODY></TABLE>
+
+
+
+	  
+<P>Below are item codes and their titles, as included in the annual state 
+      finance survey data files. Additional information about these codes, as 
+      well as descriptions and definitions, can be found in the <A 
+      href="http://www.census.gov/govs/www/class.html">Governments Finance and 
+      Employment Classification Manual</A>.</P>
+
+<P>Item Code Description:</P>
+
+<P> POP  Population (thousands)</P>
+
+<P> I99  State Personal Income</P>
+
+<P> A01  Charges - Air Transportation</P>
+
+<P> A03  Charges - Miscellaneous Commercial Activities</P>
+
+<P> A07  Charges - A10 Subcode-Tuition Fees</P>
+
+<P> A08  Charges - A10 Subcode-Transportation Fees</P>
+
+<P> A09  Charges - Elementary &amp; Secondary Education School Lunch</P>
+
+<P> A10  Charges - Elementary &amp; Secondary Education School Tuition</P>
+
+<P> A11  Charges - A12 Subcode-Textbook Sales/Returns</P>
+
+<P> A12  Charges - Elementary &amp; Secondary Education - Other</P>
+
+<P> A13  Charges - A12 Subcode-Student Activity</P>
+
+<P> A15  Charges - A10 Subcode-Undistributed-Student Fees</P>
+
+<P> A16  Charges - Higher Education Auxiliary Enterprises</P>
+
+<P> A18  Charges - Higher Education - Other</P>
+
+<P> A20  Charges - A12 Subcode-Other Sales/Services</P>
+
+<P> A21  Charges - Education - Other, NEC</P>
+
+<P> A36  Charges - Hospital Public</P>
+
+<P> A44  Charges - Regular Highways</P>
+
+<P> A45  Charges - Toll Highways</P>
+
+<P> A50  Charges - Housing &amp; Community Development</P>
+
+<P> A54  Charges - Natural Resources,  Agriculture</P>
+
+<P> A56  Charges - Natural Resources,  Forestry</P>
+
+<P> A59  Charges - Natural Resources - Other</P>
+
+<P> A60  Charges - Parking Facilities</P>
+
+<P> A61  Charges - Parks &amp; Recreation</P>
+
+<P> A80  Charges - Sewerage</P>
+
+<P> A81  Charges - Solid Waste Management</P>
+
+<P> A87  Charges - Water Transport &amp; Terminals</P>
+
+<P> A89  Charges - All Other</P>
+
+<P> A90  Revenue - Liquor Stores</P>
+
+<P> A91  Revenue - Water Utilities</P>
+
+<P> A92  Revenue - Electric Utilities</P>
+
+<P> A93  Revenue - Gas Utilities</P>
+
+<P> A94  Revenue - Transit Utilities</P>
+
+<P> B01  Federal Intergovernmental - Air Transportation</P>
+
+<P> B10  Federal Intergovernmental - B21 Subcode-Direct Federal</P>
+
+<P>      -ES-Impact</P>
+
+<P> B11  Federal Intergovernmental - B21 Subcode-Direct Federal</P>
+
+<P>      -ES-Billing</P>
+
+<P> B12  Federal Intergovernmental - B21 Subcode-Direct Federal</P>
+
+<P>      -ES-Indian</P>
+
+<P> B13  Federal Intergovernmental - B21 Subcode-Direct Federal</P>
+
+<P>      -ES-Other</P>
+
+<P> B21  Federal Intergovernmental - Education</P>
+
+<P> B22  Federal Intergovernmental - Employment Security</P>
+
+<P>      Administration</P>
+
+<P> B23  Federal Intergovernmental - B21 Subcode-Revenue on Behalf</P>
+
+<P>      of School</P>
+
+<P> B25  Federal Intergovernmental - B21 Subcode-Direct Federal</P>
+
+<P>      -High Ed</P>
+
+<P> B30  Federal Intergovernmental - General Support</P>
+
+<P> B42  Federal Intergovernmental - Health &amp; Hospitals</P>
+
+<P> B46  Federal Intergovernmental - Highways</P>
+
+<P> B50  Federal Intergovernmental - Housing &amp; Community  Development</P>
+
+<P> B54  Federal Intergovernmental - Natural Resources, Agriculture</P>
+
+<P> B59  Federal Intergovernmental - Other Natural Resources</P>
+
+<P> B79  Federal Intergovernmental - Public Welfare</P>
+
+<P> B80  Federal Intergovernmental - Sewerage</P>
+
+<P> B89  Federal Intergovernmental - All Other</P>
+
+<P> B91  Federal Intergovernmental - Water Utilities</P>
+
+<P> B92  Federal Intergovernmental - Electric Utilities</P>
+
+<P> B93  Federal Intergovernmental - Gas Utilities</P>
+
+<P> B94  Federal Intergovernmental - Transit Utilities</P>
+
+<P> C01  State Intergovernmental - C21 Subcode-State IG-General</P>
+
+<P>      Formula</P>
+
+<P> C04  State Intergovernmental - C21 Subcode-State IG-Staff</P>
+
+<P>      Improvements</P>
+
+<P> C05  State Intergovernmental - C21 Subcode-State IG-Staff Impr</P>
+
+<P> C06  State Intergovernmental - C21 Subcode-State IG-Comp/Basic</P>
+
+<P> C07  State Intergovernmental - C21 Subcode-State IG-Billing</P>
+
+<P>      Education</P>
+
+<P> C08  State Intergovernmental - C21 Subcode-State IG-Gifted/</P>
+
+<P>      Talented</P>
+
+<P> C09  State Intergovernmental - C21 Subcode-State IG-Vocational</P>
+
+<P>      Education</P>
+
+<P> C10  State Intergovernmental - C21 Subcode-School Lunch</P>
+
+<P> C11  State Intergovernmental - C21 Subcode-Capital Outlay/Debt</P>
+
+<P> C12  State Intergovernmental - C21 Subcode-Transportation</P>
+
+<P> C13  State Intergovernmental - C21 Subcode-Other</P>
+
+<P> C14  State Intergovernmental - C21 Subcode-Federal-Chapter 1</P>
+
+<P> C15  State Intergovernmental - C21 Subcode-Federal-Disable Child</P>
+
+<P> C16  State Intergovernmental - C21 Subcode-Federal- Math &amp; Science</P>
+
+<P> C17  State Intergovernmental - C21 Subcode-Federal-Drug Free</P>
+
+<P>      Schools</P>
+
+<P> C18  State Intergovernmental - C21 Subcode-Federal-Chapter 2</P>
+
+<P>      Block</P>
+
+<P> C19  State Intergovernmental - C21 Subcode-Federal-Vocational</P>
+
+<P>      Education</P>
+
+<P> C20  State Intergovernmental - C21 Subcode-Federal-Other</P>
+
+<P> C21  State Intergovernmental - Education</P>
+
+<P> C22  State Intergovernmental - C21 Subcode-State IG-Higher</P>
+
+<P>      Education</P>
+
+<P> C24  State Intergovernmental - Census State Revenue, NCES</P>
+
+<P>      Local Revenue</P>
+
+<P> C25  State Intergovernmental - C21 Subcode-Federal School Lunch</P>
+
+<P> C30  State Intergovernmental - General Local Support</P>
+
+<P> C35  State Intergovernmental - C21 Subcode-Undistributed-State IG</P>
+
+<P> C36  State Intergovernmental - C21 Subcode-Undistributed-Federal</P>
+
+<P> C38  State Intergovernmental - State Revenue on Behalf--Emp</P>
+
+<P>      Benefit</P>
+
+<P> C39  State Intergovernmental - State Revenue on Behalf--Other</P>
+
+<P> C42  State Intergovernmental - Health and Hospitals</P>
+
+<P> C46  State Intergovernmental - Highways</P>
+
+<P> C50  State Intergovernmental - Housing and Community Development</P>
+
+<P> C79  State Intergovernmental - Public Welfare</P>
+
+<P> C80  State Intergovernmental - Sewerage</P>
+
+<P> C89  State Intergovernmental - All Other</P>
+
+<P> C91  State Intergovernmental - Water Utilities</P>
+
+<P> C92  State Intergovernmental - Electric Utilities</P>
+
+<P> C93  State Intergovernmental - Gas Utilities</P>
+
+<P> C94  State Intergovernmental - Transit Utilities</P>
+
+<P> D11  Local Intergovernmental - Interschool Transfer</P>
+
+<P> D21  Local Intergovernmental -  Education</P>
+
+<P> D22  Local Intergovernmental - D21 Subcode-Higher Education</P>
+
+<P> D23  Local Intergovernmental - D21 Subcode-Elementary/Secondary</P>
+
+<P>      Education</P>
+
+<P> D30  Local Intergovernmental -  General Support</P>
+
+<P> D42  Local Intergovernmental -  Health &amp; Hospitals</P>
+
+<P> D46  Local Intergovernmental -  Highways</P>
+
+<P> D50  Local Intergovernmental -  Housing and Community Development</P>
+
+<P> D79  Local Intergovernmental -  Public Welfare</P>
+
+<P> D80  Local Intergovernmental -  Sewerage</P>
+
+<P> D89  Local Intergovernmental - All Other</P>
+
+<P> D91  Local Intergovernmental - Water Utilities</P>
+
+<P> D92  Local Intergovernmental - Electric Utilities</P>
+
+<P> D93  Local Intergovernmental - Gas Utilities</P>
+
+<P> D94  Local Intergovernmental - Transit Utilities</P>
+
+<P> E01  Current Operations - Air Transportation</P>
+
+<P> E03  Current Operations - Miscellaneous Commercial Activities, NEC</P>
+
+<P> E04  Current Operations - Correctional Institutions</P>
+
+<P> E05  Current Operations - Corrections - Other</P>
+
+<P> E07  Current Operations - Instructional Staff Services Exp</P>
+
+<P> E08  Current Operations - General Administration Exp</P>
+
+<P> E09  Current Operations - School Administration Exp</P>
+
+<P> E11  Current Operations - E12 Subcode-Food Services</P>
+
+<P> E12  Current Operations - Elementary &amp; Secondary Education</P>
+
+<P> E16  Current Operations - Higher Education Auxiliary Enterprises</P>
+
+<P> E18  Current Operations - Other Higher Education</P>
+
+<P> E19  Current Operations - Educational Scholarships, Assistance,</P>
+
+<P>      &amp; Subsidies</P>
+
+<P> E21  Current Operations - Other  Education</P>
+
+<P> E22  Current Operations - Social Insurance Administration</P>
+
+<P> E23  Current Operations - Financial Administration</P>
+
+<P> E24  Current Operations - Fire Protection</P>
+
+<P> E25  Current Operations - Judicial and Legal Services</P>
+
+<P> E26  Current Operations - Legislative Services</P>
+
+<P> E29  Current Operations - Central Staff Services</P>
+
+<P> E31  Current Operations - General Public Buildings</P>
+
+<P> E32  Current Operations - Health Services - Other</P>
+
+<P> E36  Current Operations - Own Hospitals</P>
+
+<P> E38  Current Operations - Other Hospitals</P>
+
+<P> E44  Current Operations - Regular Highways</P>
+
+<P> E45  Current Operations - Toll Highways</P>
+
+<P> E47  Current Operations - Private Transit Subsidies</P>
+
+<P> E50  Current Operations - Housing &amp; Community  Development</P>
+
+<P> E52  Current Operations - Libraries</P>
+
+<P> E54  Current Operations - Natural Resources, Agriculture-Other</P>
+
+<P> E55  Current Operations - Natural Resources, Fish &amp; Game</P>
+
+<P> E56  Current Operations - Natural Resources, Forestry</P>
+
+<P> E59  Current Operations - Natural Resources - Other</P>
+
+<P> E60  Current Operations - Parking Facilities</P>
+
+<P> E61  Current Operations - Parks &amp; Recreation</P>
+
+<P> E62  Current Operations - Police Protection</P>
+
+<P> E66  Current Operations - Protective Inspection and Regulation,</P>
+
+<P>      NEC</P>
+
+<P> E67  Current Operations - Welfare, Federal Categorical Assistance</P>
+
+<P>      Programs</P>
+
+<P> E68  Current Operations - Welfare, Cash Assistance - Other</P>
+
+<P> E74  Current Operations - Welfare, Vendor Payments for Medical</P>
+
+<P>      Care</P>
+
+<P> E75  Current Operations - Welfare, Vendor Payments for Other</P>
+
+<P>      Purposes</P>
+
+<P> E77  Current Operations - Welfare Institutions</P>
+
+<P> E79  Current Operations - Welfare - Other</P>
+
+<P> E80  Current Operations - Sewerage</P>
+
+<P> E81  Current Operations-  Solid Waste Management</P>
+
+<P> E84  Current Operations - Veterans' Bonuses</P>
+
+<P> E85  Current Operations - Other Veterans Services</P>
+
+<P> E87  Current Operations - Water Transport and Terminals</P>
+
+<P> E89  Current Operations - General - Other</P>
+
+<P> E90  Current Operations - Liquor Stores</P>
+
+<P> E91  Current Operations - Water Utilities</P>
+
+<P> E92  Current Operations - Electric Utilities</P>
+
+<P> E93  Current Operations - Gas Utilities</P>
+
+<P> E94  Current Operations - Transit Utilities</P>
+
+<P> F01  Construction - Air Transportation</P>
+
+<P> F03  Construction - Miscellaneous Commercial Activities, NEC</P>
+
+<P> F04  Construction - Correctional Institutions</P>
+
+<P> F05  Construction - Corrections - Other</P>
+
+<P> F12  Construction - Elementary &amp; Secondary  Education</P>
+
+<P> F16  Construction - Higher Education - Auxiliary Enterprises</P>
+
+<P> F18  Construction - Higher Education - Other</P>
+
+<P> F21  Construction - Education - Other</P>
+
+<P> F22  Construction - Social Insurance Administration</P>
+
+<P> F23  Construction - Financial Administration</P>
+
+<P> F24  Construction - Fire Protection</P>
+
+<P> F25  Construction - Judicial &amp; Legal</P>
+
+<P> F26  Construction - Legislative</P>
+
+<P> F29  Construction - Central Staff Services</P>
+
+<P> F31  Construction - General Public Buildings</P>
+
+<P> F32  Construction - Health - Other</P>
+
+<P> F36  Construction - Own Hospitals</P>
+
+<P> F38  Construction - Hospitals - Other</P>
+
+<P> F44  Construction - Regular Highways</P>
+
+<P> F45  Construction - Toll Highways</P>
+
+<P> F50  Construction - Housing &amp; Community Development</P>
+
+<P> F52  Construction - Libraries</P>
+
+<P> F54  Construction - Agriculture - Other</P>
+
+<P> F55  Construction - Fish &amp; Game</P>
+
+<P> F56  Construction - Forestry</P>
+
+<P> F59  Construction - Natural Resources - Other</P>
+
+<P> F60  Construction - Parking Facilities</P>
+
+<P> F61  Construction - Parks &amp; Recreation</P>
+
+<P> F62  Construction - Police Protection</P>
+
+<P> F66  Construction - Protective Inspection &amp; Regulation, NEC</P>
+
+<P> F77  Construction - Welfare Institutions</P>
+
+<P> F79  Construction - Welfare - Other</P>
+
+<P> F80  Construction - Sewerage</P>
+
+<P> F81  Construction - Solid Waste Management</P>
+
+<P> F85  Construction - Other Veterans Services</P>
+
+<P> F87  Construction - Water Transport &amp; Terminals</P>
+
+<P> F89  Construction - General</P>
+
+<P> F90  Construction - Liquor Stores</P>
+
+<P> F91  Construction - Water Utilities</P>
+
+<P> F92  Construction - Electric Utilities</P>
+
+<P> F93  Construction - Gas Utilities</P>
+
+<P> F94  Construction - Transit Utilities</P>
+
+<P> G01  Other Capital  Outlay - Air Transportation</P>
+
+<P> G03  Other Capital Outlay - Miscellaneous Commercial Activities,</P>
+
+<P>      NEC</P>
+
+<P> G04  Other Capital Outlay - Correctional Institutions</P>
+
+<P> G05  Other Capital Outlay - Corrections - Other</P>
+
+<P> G12  Other Capital Outlay  -  Elementary and Secondary Education</P>
+
+<P> G15  Other Capital Outlay - G12 Subcode-Land</P>
+
+<P> G16  Other Capital Outlay - Higher Education - Auxiliary</P>
+
+<P>      Enterprises</P>
+
+<P> G18  Other Capital Outlay - Other Higher Education</P>
+
+<P> G21  Other Capital Outlay - Education - Other</P>
+
+<P> G22  Other Capital Outlay - Social Insurance Administration</P>
+
+<P> G23  Other Capital Outlay - Financial Administration</P>
+
+<P> G24  Other Capital Outlay - Fire Protection</P>
+
+<P> G25  Other Capital Outlay - Judicial</P>
+
+<P> G26  Other Capital Outlay - Legislative</P>
+
+<P> G29  Other Capital Outlay - Central Staff</P>
+
+<P> G31  Other Capital Outlay - General Public Building</P>
+
+<P> G32  Other Capital Outlay - Health - Other</P>
+
+<P> G36  Other Capital Outlay - Own Hospitals</P>
+
+<P> G38  Other Capital Outlay - Hospitals - Other</P>
+
+<P> G44  Other Capital Outlay - Regular Highways</P>
+
+<P> G45  Other Capital Outlay - Toll Highways</P>
+
+<P> G50  Other Capital Outlay - Housing &amp; Community Development</P>
+
+<P> G52  Other Capital Outlay - Libraries</P>
+
+<P> G54  Other Capital Outlay - Agriculture - Other</P>
+
+<P> G55  Other Capital Outlay - Fish &amp; Game</P>
+
+<P> G56  Other Capital Outlay - Forestry</P>
+
+<P> G59  Other Capital Outlay - Natural Resource - Other</P>
+
+<P> G60  Other Capital Outlay - Parking Facilities</P>
+
+<P> G61  Other Capital Outlay - Parks &amp; Recreation</P>
+
+<P> G62  Other Capital Outlay - Police Protection</P>
+
+<P> G66  Other Capital Outlay - Protective Inspection &amp; Regulation.</P>
+
+<P>      NEC</P>
+
+<P> G77  Other Capital Outlay - Welfare Institutions</P>
+
+<P> G79  Other Capital Outlay - Welfare - Other</P>
+
+<P> G80  Other Capital Outlay - Sewerage</P>
+
+<P> G81  Other Capital Outlay - Solid Waste Management</P>
+
+<P> G85  Other Capital Outlay - Other Veterans Services</P>
+
+<P> G87  Other Capital Outlay - Water Transport and Terminals</P>
+
+<P> G89  Other Capital Outlay - General - Other</P>
+
+<P> G90  Other Capital Outlay - Liquor Stores</P>
+
+<P> G91  Other Capital Outlay - Water Utilities</P>
+
+<P> G92  Other Capital Outlay - Electric Utilities</P>
+
+<P> G93  Other Capital Outlay - Gas Utilities</P>
+
+<P> G94  Other Capital Outlay - Transit Utilities</P>
+
+<P> I86  Interest - I89 Subcode-Interest on debt-Elementary/Secondary</P>
+
+<P> I88  Interest - I89 Subcode-Interest on debt-Higher Education</P>
+
+<P> I89  General Interest on Debt</P>
+
+<P> I91  Water Utilities - Interest on Debt</P>
+
+<P> I92  Electric Utilities - Interest on Debt</P>
+
+<P> I93  Gas Utilities - Interest on Debt</P>
+
+<P> I94  Transit Utilities - Interest on Debt</P>
+
+<P> J10  Elementary/Secondary Exp on Behalf-Other</P>
+
+<P> J11  School Retirement Fund Transfer-Suport Service</P>
+
+<P> J12  School Retirement Fund Transfer</P>
+
+<P> J13  Elementary/Secondary Exp on Behalf-Instructional</P>
+
+<P> J15  Elementary/Secondary on Behalf-Support Service</P>
+
+<P> K01  Equipment  Only - Air Transportation</P>
+
+<P> K03  Equipment Only - Miscellaneous Commercial Activities, NEC</P>
+
+<P> K04  Equipment Only - Correctional  Institutions</P>
+
+<P> K05  Equipment Only - Correction - Other</P>
+
+<P> K09  Equipment Only - G12 Subcode-Instructional</P>
+
+<P> K10  Equipment Only - G12 Subcode-Other</P>
+
+<P> K11  Equipment Only - G12 Subcode-Undistributed</P>
+
+<P> K12  Equipment Only - G12 Subcode</P>
+
+<P> K16  Equipment Only - Higher Education - Auxiliary Enterprises</P>
+
+<P> K18  Equipment Only - Higher Education - Other</P>
+
+<P> K21  Equipment Only - Education - Other</P>
+
+<P> K22  Equipment Only - Social Insurance Administration</P>
+
+<P> K23  Equipment Only - Financial Administration</P>
+
+<P> K24  Equipment Only - Fire Protection</P>
+
+<P> K25  Equipment Only - Judicial and Legal</P>
+
+<P> K26  Equipment Only - Legislative</P>
+
+<P> K29  Equipment Only - Central Staff Services</P>
+
+<P> K31  Equipment Only - General Public Building</P>
+
+<P> K32  Equipment Only - Health - Other</P>
+
+<P> K36  Equipment Only - Own Hospitals</P>
+
+<P> K38  Equipment Only - Hospitals - Other</P>
+
+<P> K44  Equipment Only - Regular Highways</P>
+
+<P> K45  Equipment Only - Toll Highways</P>
+
+<P> K50  Equipment Only - Housing &amp; Community Development</P>
+
+<P> K52  Equipment Only - Libraries</P>
+
+<P> K54  Equipment Only - Agriculture - Other</P>
+
+<P> K55  Equipment Only - Fish &amp; Game</P>
+
+<P> K56  Equipment Only - Forestry</P>
+
+<P> K59  Equipment Only - Natural Resources - Other</P>
+
+<P> K60  Equipment Only - Parking Facilities</P>
+
+<P> K61  Equipment Only - Parks &amp; Recreation</P>
+
+<P> K62  Equipment Only - Police Protection</P>
+
+<P> K66  Equipment Only - Protective Inspection and Regulation, NEC</P>
+
+<P> K77  Equipment Only - Welfare Institutions</P>
+
+<P> K79  Equipment Only - Welfare - Other</P>
+
+<P> K80  Equipment Only - Sewerage</P>
+
+<P> K81  Equipment Only - Solid Waste Management</P>
+
+<P> K85  Equipment Only - Other Veterans Services</P>
+
+<P> K87  Equipment Only - Water Transport &amp; Terminals</P>
+
+<P> K89  Equipment Only - General - Other</P>
+
+<P> K90  Equipment Only - Liquor Stores</P>
+
+<P> K91  Equipment Only - Water Utilities</P>
+
+<P> K92  Equipment Only - Electric Utilities</P>
+
+<P> K93  Equipment Only - Gas Utilities</P>
+
+<P> K94  Equipment Only - Transit Utilities</P>
+
+<P> L01  Intergovernmental to State - Air Transportation</P>
+
+<P> L05  Intergovernmental to State - Other Corrections</P>
+
+<P> L12  Intergovernmental to State - Elementary &amp; Secondary Education</P>
+
+<P> L18  Intergovernmental to State - Other Higher Education</P>
+
+<P> L23  Intergovernmental to State - Financial Administration</P>
+
+<P> L24  Intergovernmental to State - Fire Protection</P>
+
+<P> L25  Intergovernmental to State - Judicial and Legal</P>
+
+<P> L29  Intergovernmental to State - Central Staff Services</P>
+
+<P> L32  Intergovernmental to State - Other Health</P>
+
+<P> L38  Intergovernmental to State - Other Hospitals</P>
+
+<P> L44  Intergovernmental to State - Regular Highways</P>
+
+<P> L50  Intergovernmental to State - Housing &amp; Community Development</P>
+
+<P> L52  Intergovernmental to State - Libraries</P>
+
+<P> L59  Intergovernmental to State - Other Natural Resources</P>
+
+<P> L60  Intergovernmental to State - Parking Facilities</P>
+
+<P> L61  Intergovernmental to State - Parks and Recreation</P>
+
+<P> L62  Intergovernmental to State - Police Protection</P>
+
+<P> L66  Intergovernmental to State - Protective Inspection &amp;</P>
+
+<P>      Regulation</P>
+
+<P> L67  Intergovernmental to State - Federal Categorical Assistance</P>
+
+<P>      Programs</P>
+
+<P> L79  Intergovernmental to State - Public Welfare</P>
+
+<P> L80  Intergovernmental to State - Sewerage</P>
+
+<P> L81  Intergovernmental to State - Solid Waste Management</P>
+
+<P> L87  Intergovernmental to State - Water Transport &amp; Terminals</P>
+
+<P> L89  Intergovernmental to State - Other and Unallocable</P>
+
+<P> L91  Intergovernmental to State - Water Utilities</P>
+
+<P> L92  Intergovernmental to State - Electrical Utilities</P>
+
+<P> L93  Intergovernmental to State - Gas Utilities</P>
+
+<P> L94  Intergovernmental to State - Transit Utilities</P>
+
+<P> M01  Intergovernmental to Local NEC - Air Transportation</P>
+
+<P> M05  Intergovernmental to Local NEC - Corrections</P>
+
+<P> M12  Intergovernmental to Local NEC - Elementary and Secondary</P>
+
+<P>      Education</P>
+
+<P> M18  Intergovernmental to Local NEC - Higher  Education</P>
+
+<P> M21  Intergovernmental to Local NEC - Education</P>
+
+<P> M23  Intergovernmental to Local NEC - Financial Administration</P>
+
+<P> M24  Intergovernmental to Local NEC - Fire Protection</P>
+
+<P> M25  Intergovernmental to Local NEC - Judicial and Legal</P>
+
+<P> M29  Intergovernmental to Local NEC - Central Staff Services</P>
+
+<P> M30  Intergovernmental to Local NEC - General Support</P>
+
+<P> M32  Intergovernmental to Local NEC - Health</P>
+
+<P> M38  Intergovernmental to Local NEC - Hospitals</P>
+
+<P> M44  Intergovernmental to Local NEC - Regular Highways</P>
+
+<P> M50  Intergovernmental to Local NEC - Housing &amp; Community</P>
+
+<P>      Development</P>
+
+<P> M52  Intergovernmental to Local NEC - Libraries</P>
+
+<P> M54  Intergovernmental to Local NEC - Agriculture</P>
+
+<P> M55  Intergovernmental to Local NEC - Fish &amp; Game</P>
+
+<P> M56  Intergovernmental to Local NEC - Forestry</P>
+
+<P> M59  Intergovernmental to Local NEC - Natural Resources</P>
+
+<P> M60  Intergovernmental to Local NEC - Parking Facilities</P>
+
+<P> M61  Intergovernmental to Local NEC - Parks &amp; Recreation</P>
+
+<P> M62  Intergovernmental to Local NEC - Police Protection</P>
+
+<P> M66  Intergovernmental to Local NEC - Protective Inspection &amp;</P>
+
+<P>      Regulations</P>
+
+<P> M67  Intergovernmental to Local NEC - Welfare - Categorical</P>
+
+<P>      Assistance Programs</P>
+
+<P> M68  Intergovernmental to Local NEC - Welfare - Cash Assistance</P>
+
+<P>      Programs</P>
+
+<P> M79  Intergovernmental to Local NEC - Welfare</P>
+
+<P> M80  Intergovernmental to Local NEC - Sewerage</P>
+
+<P> M81  Intergovernmental to Local NEC - Solid Waste Management</P>
+
+<P> M87  Intergovernmental to Local NEC - Water Transport &amp; Terminals</P>
+
+<P> M89  Intergovernmental to Local NEC - General</P>
+
+<P> M91  Intergovernmental to Local NEC - Water Utilities</P>
+
+<P> M92  Intergovernmental to Local NEC - Electric Utilities</P>
+
+<P> M93  Intergovernmental to Local NEC - Gas Utilities</P>
+
+<P> M94  Intergovernmental to Local NEC - Transit Utilities</P>
+
+<P> N01  Intergovernmental to General  Purpose - Air Transportation</P>
+
+<P> N05  Intergovernmental to General  Purpose - Corrections</P>
+
+<P> N12  Intergovernmental to General Purpose  - Elementary and</P>
+
+<P>      Secondary Education</P>
+
+<P> N18  Intergovernmental to General Purpose  - Higher  Education</P>
+
+<P> N21  Intergovernmental to General Purpose  - Education - Other</P>
+
+<P> N23  Intergovernmental to General Purpose  - Financial</P>
+
+<P>      Administration</P>
+
+<P> N25  Intergovernmental to General Purpose  - Judicial and Legal</P>
+
+<P> N29  Intergovernmental to General Purpose  - Central Staff</P>
+
+<P>      Services</P>
+
+<P> N30  Intergovernmental to General Purpose  - General Support</P>
+
+<P> N32  Intergovernmental to General Purpose  - Health - Other</P>
+
+<P> N38  Intergovernmental to General Purpose  - Hospitals - Other</P>
+
+<P> N44  Intergovernmental to General Purpose  - Regular Highways</P>
+
+<P> N50  Intergovernmental to General Purpose  - Housing &amp; Community</P>
+
+<P>      Development</P>
+
+<P> N52  Intergovernmental to General Purpose  - Libraries</P>
+
+<P> N54  Intergovernmental to General Purpose  - Agriculture - Other</P>
+
+<P> N55  Intergovernmental to General Purpose  - Fish &amp; Game</P>
+
+<P> N56  Intergovernmental to General Purpose  - Forestry</P>
+
+<P> N59  Intergovernmental to General Purpose  - Natural Resources</P>
+
+<P>      - Other</P>
+
+<P> N61  Intergovernmental to General Purpose  - Parks &amp; Recreation</P>
+
+<P> N62  Intergovernmental to General Purpose  - Police Protection</P>
+
+<P> N66  Intergovernmental to General Purpose  - Protective Inspection and Regulation, N</P>
+
+<P> N67  Intergovernmental to General Purpose  - Welfare - Categorical Assistance Progra</P>
+
+<P> N68  Intergovernmental to General Purpose  - Welfare - Cash</P>
+
+<P>      Assistance Programs</P>
+
+<P> N79  Intergovernmental to General Purpose  - Welfare - Other</P>
+
+<P> N80  Intergovernmental to General Purpose  - Sewerage</P>
+
+<P> N81  Intergovernmental to General Purpose  - Solid Waste</P>
+
+<P>      Management</P>
+
+<P> N87  Intergovernmental to General Purpose  - Water Transport &amp;</P>
+
+<P>      Terminals</P>
+
+<P> N89  Intergovernmental to General Purpose  - General - Other</P>
+
+<P> N91  Intergovernmental to General Purpose  - Water Utilities</P>
+
+<P> N92  Intergovernmental to General Purpose  - Electric Utilities</P>
+
+<P> N93  Intergovernmental to General Purpose  - Gas Utilities</P>
+
+<P> N94  Intergovernmental to General Purpose  - Transit Utilities</P>
+
+<P> O12  Intergovernmental to Cities-Elementary/Secondary Education</P>
+
+<P> O18  Intergovernmental to Cities-Higher Education</P>
+
+<P> P12  Intergovernmental to Towns-Elementary/Secondary Education</P>
+
+<P> P18  Intergovernmental to Towns-Higher Education</P>
+
+<P> Q11  Intergovernmental to School-Interschool Transfer</P>
+
+<P> Q12  Intergovernmental to School  District  - Elementary and</P>
+
+<P>      Secondary Education</P>
+
+<P> Q18  Intergovernmental to School  District - Higher Education - Other</P>
+
+<P> R01  Intergovernmental to Special  District - Air Transportation</P>
+
+<P> R12  Intergovernmental to Special District - Elementary and</P>
+
+<P>      Secondary Education</P>
+
+<P> R18  Intergovernmental to Special District - Higher Education</P>
+
+<P>      - Other</P>
+
+<P> R30  Intergovernmental to Special District - General Support</P>
+
+<P> R32  Intergovernmental to Special District - Health - Other</P>
+
+<P> R38  Intergovernmental to Special District - Hospitals - Other</P>
+
+<P> R44  Intergovernmental to Special District - Regular Highways</P>
+
+<P> R50  Intergovernmental to Special District - Housing &amp; Community</P>
+
+<P>       Development</P>
+
+<P> R52  Intergovernmental to Special District - Libraries</P>
+
+<P> R54  Intergovernmental to Special District - Agriculture - Other</P>
+
+<P> R55  Intergovernmental to Special District - Fish &amp; Game</P>
+
+<P> R56  Intergovernmental to Special District - Forestry</P>
+
+<P> R59  Intergovernmental to Special District - Natural Resources</P>
+
+<P>      - Other</P>
+
+<P> R61  Intergovernmental to Special District - Parks &amp; Recreation</P>
+
+<P> R62  Intergovernmental to Special District - Police Protection</P>
+
+<P> R66  Intergovernmental to Special District - Protective Inspection and Regulation, N</P>
+
+<P> R79  Intergovernmental to Special District - Welfare - Other</P>
+
+<P> R80  Intergovernmental to Special District - Sewerage </P>
+
+<P> R81  Intergovernmental to Special District - Solid Waste</P>
+
+<P>      Management </P>
+
+<P> R87  Intergovernmental to Special District - Water Transport and</P>
+
+<P>      Terminals</P>
+
+<P> R89  Intergovernmental to Special District - General - Other</P>
+
+<P> R91  Intergovernmental to Special District - Water Utilities</P>
+
+<P> R92  Intergovernmental to Special District - Electric Utilities</P>
+
+<P> R93  Intergovernmental to Special District - Gas Utilities</P>
+
+<P> R94  Intergovernmental to Special District - Transit Utilities</P>
+
+<P> S67  Intergovernmental to Federal - Welfare - Categorical</P>
+
+<P>      Assistance Programs</P>
+
+<P> S89  Intergovernmental to Federal - General - Other</P>
+
+<P> T01  Tax - Property</P>
+
+<P> T02  Taxes - Parent Government Contribution-Elementary Secondary</P>
+
+<P> T04  Taxes - T01 Subcode-Property Tax-Higher Education</P>
+
+<P> T05  Taxes - Parent Government Contribution-Higher Education</P>
+
+<P> T06  Taxes - T01 Subcode-Property Tax-Elementary/Secondary</P>
+
+<P> T07  Taxes - Census Local Revenue, NCES State Revenue</P>
+
+<P> T09  Tax - Total General Sales</P>
+
+<P> T10  Tax - Alcoholic Beverage Sales</P>
+
+<P> T11  Tax - Amusement</P>
+
+<P> T12  Tax - Insurance Premiums</P>
+
+<P> T13  Tax - Motor Fuels Sales</P>
+
+<P> T14  Tax - Pari-mutuels</P>
+
+<P> T15  Tax - Public Utilities</P>
+
+<P> T16  Tax - Tobacco Sales</P>
+
+<P> T19  Tax - Other Selective Sales</P>
+
+<P> T20  Tax - Alcoholic Beverage License</P>
+
+<P> T21  Tax - Amusement License</P>
+
+<P> T22  Tax - Corporation License</P>
+
+<P> T23  Tax - Hunting &amp; Fishing License</P>
+
+<P> T24  Tax - Motor Vehicle License</P>
+
+<P> T25  Tax - Motor Vehicle Operators License</P>
+
+<P> T27  Tax - Public Utility License</P>
+
+<P> T28  Tax - Occupation  &amp; Business License, NEC</P>
+
+<P> T29  Tax - Other License</P>
+
+<P> T40  Tax - Individual  Income</P>
+
+<P> T41  Tax - Corporation Net Income</P>
+
+<P> T50  Tax - Death &amp; Gift</P>
+
+<P> T51  Tax - Documentary &amp; Stock Transfer</P>
+
+<P> T53  Tax - Severance</P>
+
+<P> T99  Tax - NEC</P>
+
+<P> U01  Miscellaneous - Special Assessments</P>
+
+<P> U10  Miscellaneous - Housing and Community Development Sale</P>
+
+<P> U11  Miscellaneous - Property Sale Other</P>
+
+<P> U20  Miscellaneous - Interest Earnings</P>
+
+<P> U21  Miscellaneous - U20 Subcode-Interest Earnings-Higher</P>
+
+<P>      Education</P>
+
+<P> U22  Miscellaneous - U20 Subcode-Interest Earnings-Elementary/</P>
+
+<P>       Secondary</P>
+
+<P> U30  Miscellaneous - Fines &amp; Forfeits</P>
+
+<P> U40  Miscellaneous - Rents</P>
+
+<P> U41  Miscellaneous - Royalties</P>
+
+<P> U50  Miscellaneous - Donations From Private Sources</P>
+
+<P> U95  Miscellaneous - Net Lottery Revenue</P>
+
+<P> U97  Miscellaneous - U99 Subcode-Miscellaneous Rev-</P>
+
+<P>      Elementary/Secondary</P>
+
+<P> U98  Miscellaneous - U99 Subcode-Miscellaneous Rev</P>
+
+<P>      -Higher Education</P>
+
+<P> U99  Miscellaneous - General Revenue, NEC</P>
+
+<P> V10  Elementary/Secondary Inst-Employee Benefits</P>
+
+<P> V11  Elementary/Secondary Support Service Pupil-Salaries</P>
+
+<P> V12  Elementary/Secondary Support Service Pupil-Employee Benefits</P>
+
+<P> V13  Elementary/Secondary Support Service Instructional Staff</P>
+
+<P>      -Salaries</P>
+
+<P> V14  Elementary/Secondary Support Service Instructional Staff-Emp. Benefi</P>
+
+<P> V15  Elementary/Secondary Support Service General Admin-Salaries</P>
+
+<P> V16  Elementary/Secondary Support Service General Admin-Emp.</P>
+
+<P>      Benefits</P>
+
+<P> V17  Elementary/Secondary Support Service School Admin-Salaries</P>
+
+<P> V18  Elementary/Secondary Support Service School Admin-Emp.</P>
+
+<P>      Benefits</P>
+
+<P> V19  Elementary/Secondary Support Service Business-Salaries</P>
+
+<P> V20  Elementary/Secondary Support Service Business-Emp. Benefits</P>
+
+<P> V21  Elementary/Secondary Support Service Plant Operations</P>
+
+<P>      &amp; Maintenance-Salaries</P>
+
+<P> V22  Elementary/Secondary Support Service Plant Operations</P>
+
+<P>      &amp; Maintenance-Emp. Benefits</P>
+
+<P> V23  Elementary/Secondary Support Service Student Trans-Salaries</P>
+
+<P> V24  Elementary/Secondary Support Service Student Trans</P>
+
+<P>      -Emp Benefits</P>
+
+<P> V25  Elementary/Secondary Support Service Central-Salaries</P>
+
+<P> V26  Elementary/Secondary Support Service Central-Emp Benefits</P>
+
+<P> V27  Elementary/Secondary Support Service Other-Salaries</P>
+
+<P> V28  Elementary/Secondary Support Service Central-Emp Benefits</P>
+
+<P> V29  Elementary/Secondary Food Service-Salaries</P>
+
+<P> V30  Elementary/Secondary Food Service-Emp Benefits</P>
+
+<P> V32  Elementary/Secondary Enterprise Operations-Salaries</P>
+
+<P> V33  Enrollment - Elementary/Secondary Education</P>
+
+<P> V34  Enrollment - Higher Education</P>
+
+<P> V35  Education - E12 Subcode-Support Service Business</P>
+
+<P> V40  Education - E12 Subcode-Support Service Operations</P>
+
+<P>      &amp; Maintenance</P>
+
+<P> V45  Education - E12 Subcode-Support Service Trans</P>
+
+<P> V50  Education - E12 Subcode-Support Service Central</P>
+
+<P> V55  Education - E12 Subcode-Support Service Other</P>
+
+<P> V60  Education - E12 Subcode-Enterprise Operations</P>
+
+<P> V65  Education - E12 Subcode-Other Non-instructional</P>
+
+<P> V70  Education - E12 Subcode-Community Service</P>
+
+<P> V75  Education - E12 Subcode-Adult Education</P>
+
+<P> V80  Education - E12 Subcode-Other</P>
+
+<P> V85  Education - E12 Subcode-Undistributed-Support Service</P>
+
+<P> V98  Total Computed Capital Outlay</P>
+
+<P> W01  Sinking Fund - Cash &amp; Deposits</P>
+
+<P> W31  Bond Fund - Cash &amp; Deposits</P>
+
+<P> W61  Other Funds - Cash &amp; Deposits</P>
+
+<P> X01  Employee Retirement - Local  Employee Contribution</P>
+
+<P> X02  Employee Retirement - State Employee Contribution</P>
+
+<P> X04  Employee Retirement - From Local Government</P>
+
+<P> X05  Employee Retirement - From Other Government</P>
+
+<P> X06  Employee Retirement - State to State System</P>
+
+<P> X08  Employee Retirement - Interest Revenue</P>
+
+<P> X09  Employee Retirement - Other Investment</P>
+
+<P> X11  Employee Retirement - Benefit Payments</P>
+
+<P> X12  Employee Retirement - Withdrawals</P>
+
+<P> X14  Employee Retirement - Other Payments</P>
+
+<P> X21  Employee Retirement -Total Cash &amp; Deposits</P>
+
+<P> X30  Employee Retirement -Total Federal Securities</P>
+
+<P> X40  Employee Retirement - Securities - Corporate Bonds</P>
+
+<P> X41  Employee Retirement - Securities - Corporate Stocks</P>
+
+<P> X42  Employee Retirement - Securities - Mortgages</P>
+
+<P> X44  Employee Retirement - Total Other Securities</P>
+
+<P> X47  Employee Retirement - Other Investments - Other</P>
+
+<P> Y01  Unemployment Compensation - Contribution</P>
+
+<P> Y02  Unemployment Compensation - Interest Revenue</P>
+
+<P> Y04  Unemployment Compensation - Federal Advances</P>
+
+<P> Y05  Unemployment Compensation - Benefit Payments</P>
+
+<P> Y06  Unemployment Compensation - Extended  &amp; Special Payments</P>
+
+<P> Y07  Unemployment Compensation - Balance  In US Treasury</P>
+
+<P> Y08  Unemployment Compensation - Other Balance (+ or-)</P>
+
+<P> Y10  Workers Compensation - Own Contribution</P>
+
+<P> Y11  Workers Compensation - Other Contributions</P>
+
+<P> Y12  Workers Compensation - Interest Earnings</P>
+
+<P> Y13  Workers Compensation - Other Investment Earnings</P>
+
+<P> Y14  Workers Compensation - Benefit Payments</P>
+
+<P> Y15  Workers Compensation - Other Payments</P>
+
+<P> Y21  Workers Compensation - Cash &amp; Assets</P>
+
+<P> Y50  Other In Trust - Own Contributions</P>
+
+<P> Y51  Other In Trust - Other Contributions</P>
+
+<P> Y52  Other In Trust - Interest Revenue</P>
+
+<P> Y53  Other In Trust - Benefit Payment</P>
+
+<P> Y54  Other In Trust - Other Payments</P>
+
+<P> Y55  Other In Trust - Other Investments</P>
+
+<P> Y61  Other In Trust - Cash &amp; Deposits</P>
+
+<P> Z00  Total Salaries &amp; Wages</P>
+
+<P> Z18  Higher Education Salaries</P>
+
+<P> Z32  Elementary/Secondary Salaries-Total Subcode Z00</P>
+
+<P> Z33  Elementary/Secondary Salaries-Instructional Subcode Z00</P>
+
+<P> Z34  Elementary/Secondary Total Employee Benefits</P>
+
+<P> Z41  Liquor Stores - Net Sales</P>
+
+<P> Z42  Liquor Stores - Cost of Goods</P>
+
+<P> Z43  Liquor Stores - Operating Expenditures</P>
+
+<P> Z44  Liquor Stores - Other Income</P>
+
+<P> Z45  Liquor Stores - Nonoperating Expenditures</P>
+
+<P> Z46  Liquor Stores - Transfer to General  Funds</P>
+
+
+<P>
+The Internet site for the Census Bureau's Governments Division contains other information that
+could be useful for interpreting and analyzing these data (tables and files), such as the<A Href="estimate.html">
+ Annual Survey of State and Local Government Finances</A>.  
+ An important information source for detailed definitions, classification issues, etc. is
+the <A href="class.html" >Government Finance and 
+     Employment Classification Manual</A>
+<P>
+For information about the tables, data files, or the state and local government finance survey
+program, users can contact any of the following staff at the Census Bureau:
+<P>
+Donna Hirsch   <A Href="mailto:DHirsch@census.gov">DHirsch@census.gov</A>
+<P>    
+William Kehm   <A Href="mailto:William.N.Kehm@.census.gov">William.N.Kehm@.census.gov</A>
+<P>    
+John Kennedy        <A Href="mailto:JKennedy@census.gov">JKennedy@census.gov</A>
+<P>
+The telephone number is 301-457-1502.  The address is:
+<P>
+   &nbsp;&nbsp;Finance Branch<br>
+   &nbsp;&nbsp;Governments Division<br>
+   &nbsp;&nbsp;Bureau of the Census<br>
+<P>
+  &nbsp;&nbsp;Washington, DC  20233
+<P>
+<a class="top" href="92censustechdoc.html#top">&nbsp;top&nbsp;</a>
+	  
+  <tr>
+      <td>
+	    <br>
+	    <img src="img/blue_pix2.gif" alt="__"  width="750" height="3"><br> 
+	  </td>
+  </tr>
+  
+  <tr>		
+	  <td class="footer">
+	 
+<!-- bureau's template - end of page -->
+        <font face="Helvetica" size="1">
+        <em>Source: U.S. Census Bureau, Governments Division</em><br>
+
+        Created: February 16, 2001<br>
+  
+        
+        Last revised:  November 12 2002
+		
+        <p>
+        <style type="text/css">
+<!--
+div#cb_footer {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-style: normal;
+        font-weight: bold;
+        color: #000000;
+        text-decoration: none;
+        text-align: center;
+        border-top: 1px solid #0055BB;
+        padding-top: 6px;
+        padding-bottom: 20px;
+        /*margin-left: 15px;
+        margin-right: 15px;*/
+        }
+
+div#cb_footer img{
+        margin-top: -6px;
+        }
+
+div#cb_footer a:link{
+        font-family: Arial, Helvetica, sans-serif;
+        font-style: normal;
+        font-size: 11px;
+        font-weight: normal;
+        color: #0055BB;
+        text-decoration: none;
+        }
+
+div#cb_footer a:visited{
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-style: normal;
+        font-weight: normal;
+        color: #990099;
+        text-decoration: none;
+        }
+
+div#cb_footer a:hover{
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        font-weight: normal;
+        font-style: normal;
+        color: #990000;
+        text-decoration: underline;
+        background-color: #FFFFCC;
+        }
+
+
+-->
+</style>
+
+<a href="#SKIP" title="Skip Navigation"><img alt="Skip this main site navigation menu"
+src="http://www.census.gov/main/www/img/1pixel.gif" border="0" width="4" height="4" /></a> <br />
+<div id="cb_footer"> Census Bureau Links: &nbsp; <a href="http://www.census.gov/index.html" target="_top">Home</a>
+&#183; <a href="http://www.census.gov/main/www/srchtool.html" target="_top">Search</a>
+&#183; <a href="http://www.census.gov/main/www/subjects.html" target="_top">Subjects A-Z</a>
+&#183; <a href="http://ask.census.gov">FAQs</a>
+&#183; <a href="http://www.census.gov/main/www/access.html" target="_top">Data Tools</a>
+&#183; <a href="https://censuscatalog.mso.census.gov/esales/" target="_top">Catalog</a>
+&#183; <a href="http://www.census.gov/main/www/cen2000.html">Census 2000</a>
+&#183; <a href="http://www.census.gov/qdocs/www/">Quality</a>
+&#183; <a href="http://www.census.gov/privacy/" target="_top">Privacy Policy</a>
+&#183; <a href="http://www.census.gov/main/www/contacts.html" target="_top">Contact Us</a>
+  <br />
+  <br />
+  <img src="http://www.census.gov/main/www/img/wordmarktl.gif"  width="217" height="35"
+        alt="U.S. Census Bureau: Helping You Make Informed Decisions" /> </div>
+<a name="SKIP"> </a>
+
+
+		</font>
+      </td>
+  </tr>
+
+ 
+</table>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
