@@ -149,10 +149,11 @@ cat(sprintf("Loaded Table 8: %d rows\n", nrow(table8)))
 names(table5) <- gsub("^X\\.", "", names(table5))
 names(table8) <- gsub("^X\\.", "", names(table8))
 
-# DEBUG: Show actual column names after R processing
-for(i in 1:min(20, length(names(table8)))) {
-  cat(sprintf("%2d: %s\n", i, substr(names(table8)[i], 1, 40)))
-}
+# DEBUG: Show ALL actual column names after R processing
+# cat(sprintf("Table 8 has %d columns:\n\n", length(names(table8))))
+#for(i in 1:length(names(table8))) {
+#  cat(sprintf("%2d: %s\n", i, names(table8)[i]))
+#}
 
 # Rename key columns
 colnames(table5)[1] <- "CZ"
@@ -174,8 +175,9 @@ data <- table5 %>%
   select(CZ, RM, AM, n_children) %>%
   inner_join(table8, by = "CZ")
 
-# Convert to numeric
-numeric_cols <- c("RM", "AM", "n_children", names(table8)[4:41])
+# Convert to numeric (all covariate columns from Table 8)
+# Columns 4-41 contain all the covariates
+numeric_cols <- c("RM", "AM", "n_children", names(table8)[4:ncol(table8)])
 for(col in numeric_cols) {
   if(col %in% names(data)) {
     data[[col]] <- as.numeric(data[[col]])
@@ -256,41 +258,90 @@ cat("\n")
 # Part 3: Define Covariates to Test
 
 ```{r covariates}
-# Key covariates from the paper (15 total across 5 categories)
+# FULL TABLE VIII: All 35 covariates from Online Appendix Table VIII
 # NOTE: Column names match how R processes the CSV headers
 # Spaces -> dots, special chars (< > % ( )) -> dots
 covariates_to_test <- list(
+
+  # RACE (1 variable)
+  Race = c(
+    "Frac..Black"                        # Fraction Black Residents
+  ),
+
+  # SEGREGATION (5 variables)
   Segregation = c(
-    "Racial.Segregation",
-    "Income.Segregation",
-    "Segregation.of.Poverty...p25.",   # "(<p25)" -> "...p25."
-    "Segregation.of.Affluence...p75."  # "(>p75)" -> "...p75."
+    "Racial.Segregation",                # Racial Segregation Theil Index
+    "Income.Segregation",                # Income Segregation Theil Index
+    "Segregation.of.Poverty...p25.",     # Segregation of Poverty (<p25)
+    "Segregation.of.Affluence...p75.",   # Segregation of Affluence (>p75)
+    "Frac..with.Commute...15.Mins"       # Share with Commute < 15 Mins
   ),
-  Inequality = c(
-    "Gini",
-    "Top.1..Income.Share",              # "1%" -> "1.."
-    "Gini.Bottom.99.",                  # "99%" -> "99."
-    "Frac..Between.p25.and.p75"
+
+  # INCOME DISTRIBUTION (5 variables)
+  Income_Distribution = c(
+    "Household.Income.per.capita",       # Household Income per Capita
+    "Gini",                              # Gini coefficient for Parent Income
+    "Top.1..Income.Share",               # Top 1% Income Share for Parents
+    "Gini.Bottom.99.",                   # Gini Bottom 99%
+    "Frac..Between.p25.and.p75"          # Fraction Middle Class
   ),
-  Education = c(
-    "School.Expenditure.per.Student",
-    "Test.Score.Percentile..Income.Adjusted",  # Missing ) in CSV!
-    "High.School.Dropout.Rate..Income.Adjusted."
+
+  # K-12 EDUCATION (4 variables)
+  K12_Education = c(
+    "School.Expenditure.per.Student",    # School Expenditure per Student
+    "Teacher.Student.Ratio",             # Teacher-Student Ratio
+    "Test.Score.Percentile..Income.Adjusted",   # Test Score Percentile (Income Adjusted)
+    "High.School.Dropout.Rate..Income.Adjusted." # High School Dropout Rate (Income Adjusted)
   ),
-  Family = c(
-    "Fraction.of.Children.with.Single.Mothers",
-    "Fraction.of.Adults.Divorced",
-    "Fraction.of.Adults.Married"
+
+  # SOCIAL CAPITAL (3 variables)
+  Social_Capital = c(
+    "Social.Capital.Index",              # Social Capital Index
+    "Fraction.Religious",                # Fraction Religious
+    "Violent.Crime.Rate"                 # Violent Crime Rate
   ),
-  Social = c(
-    "Social.Capital.Index",
-    "Fraction.Religious",
-    "Violent.Crime.Rate"
+
+  # FAMILY STRUCTURE (3 variables)
+  Family_Structure = c(
+    "Fraction.of.Children.with.Single.Mothers",  # Fraction Single Mothers
+    "Fraction.of.Adults.Divorced",               # Fraction Divorced
+    "Fraction.of.Adults.Married"                 # Fraction Married
+  ),
+
+  # TAX (4 variables)
+  Tax = c(
+    "Local.Tax.Rate",                    # Local Tax Rate
+    "Local.Government.Expenditures.Per.Capita",  # Local Gov Expenditures per Capita
+    "State.EITC.Exposure",               # State EITC Exposure
+    "State.Income.Tax.Progressivity"     # State Income Tax Progressivity
+  ),
+
+  # COLLEGE (3 variables)
+  College = c(
+    "Number.of.Colleges.per.Capita",     # Number of Colleges per Capita
+    "College.Tuition",                   # Mean College Tuition
+    "College.Graduation.Rate..Income.Adjusted."  # College Graduation Rate (Income Adjusted)
+  ),
+
+  # LOCAL LABOR MARKET (4 variables)
+  Local_Labor_Market = c(
+    "Labor.Force.Participation.Rate",    # Labor Force Participation Rate
+    "Manufacturing.Employment.Share",    # Fraction Working in Manufacturing
+    "Growth.in.Chinese.Imports.1990.2000", # Growth in Chinese Imports 1990-2000
+    "Teenage.Labor.Force.Participation.Rate"  # Teenage (14-16) Labor Force Participation
+  ),
+
+  # MIGRATION (3 variables)
+  Migration = c(
+    "Migration.Inflow.Rate",             # Migration Inflow Rate
+    "Migration.Outlflow.Rate",           # Migration Outflow Rate (note: typo in CSV "Outlflow")
+    "Frac..Foreign.Born"                 # Fraction of Foreign Born Residents
   )
 )
 
 all_covariates <- unlist(covariates_to_test, use.names = FALSE)
-cat(sprintf(" Testing %d covariates across 5 categories\n\n", length(all_covariates)))
+cat(sprintf(" Testing %d covariates across %d categories\n\n",
+            length(all_covariates), length(covariates_to_test)))
 ```
 
 # Phase 1: Replicate Classical Results (OLS)
@@ -627,32 +678,60 @@ if(!dir.exists("output")) {
 # Clean up covariate names for better readability
 phase2_results_clean <- phase2_results %>%
   mutate(covariate = case_when(
+    # Race
+    covariate == "Frac..Black" ~ "Fraction Black Residents",
+
     # Segregation
     covariate == "Racial.Segregation" ~ "Racial Segregation",
     covariate == "Income.Segregation" ~ "Income Segregation",
     covariate == "Segregation.of.Poverty...p25." ~ "Segregation of Poverty (<p25)",
     covariate == "Segregation.of.Affluence...p75." ~ "Segregation of Affluence (>p75)",
+    covariate == "Frac..with.Commute...15.Mins" ~ "Share with Commute < 15 Mins",
 
-    # Inequality
+    # Income Distribution
+    covariate == "Household.Income.per.capita" ~ "Household Income per Capita",
     covariate == "Gini" ~ "Gini Coefficient",
     covariate == "Top.1..Income.Share" ~ "Top 1% Income Share",
     covariate == "Gini.Bottom.99." ~ "Gini Bottom 99%",
-    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Between p25 and p75",
+    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Middle Class (p25-p75)",
 
-    # Education
+    # K-12 Education
     covariate == "School.Expenditure.per.Student" ~ "School Expenditure per Student",
+    covariate == "Teacher.Student.Ratio" ~ "Teacher-Student Ratio",
     covariate == "Test.Score.Percentile..Income.Adjusted" ~ "Test Score Percentile (Income Adjusted)",
     covariate == "High.School.Dropout.Rate..Income.Adjusted." ~ "High School Dropout Rate (Income Adjusted)",
 
-    # Family
+    # Social Capital
+    covariate == "Social.Capital.Index" ~ "Social Capital Index",
+    covariate == "Fraction.Religious" ~ "Fraction Religious",
+    covariate == "Violent.Crime.Rate" ~ "Violent Crime Rate",
+
+    # Family Structure
     covariate == "Fraction.of.Children.with.Single.Mothers" ~ "Fraction of Children with Single Mothers",
     covariate == "Fraction.of.Adults.Divorced" ~ "Fraction of Adults Divorced",
     covariate == "Fraction.of.Adults.Married" ~ "Fraction of Adults Married",
 
-    # Social
-    covariate == "Social.Capital.Index" ~ "Social Capital Index",
-    covariate == "Fraction.Religious" ~ "Fraction Religious",
-    covariate == "Violent.Crime.Rate" ~ "Violent Crime Rate",
+    # Tax
+    covariate == "Local.Tax.Rate" ~ "Local Tax Rate",
+    covariate == "Local.Government.Expenditures.Per.Capita" ~ "Local Government Expenditures per Capita",
+    covariate == "State.EITC.Exposure" ~ "State EITC Exposure",
+    covariate == "State.Income.Tax.Progressivity" ~ "State Income Tax Progressivity",
+
+    # College
+    covariate == "Number.of.Colleges.per.Capita" ~ "Number of Colleges per Capita",
+    covariate == "College.Tuition" ~ "Mean College Tuition",
+    covariate == "College.Graduation.Rate..Income.Adjusted." ~ "College Graduation Rate (Income Adjusted)",
+
+    # Local Labor Market
+    covariate == "Labor.Force.Participation.Rate" ~ "Labor Force Participation Rate",
+    covariate == "Manufacturing.Employment.Share" ~ "Manufacturing Employment Share",
+    covariate == "Growth.in.Chinese.Imports.1990.2000" ~ "Growth in Chinese Imports 1990-2000",
+    covariate == "Teenage.Labor.Force.Participation.Rate" ~ "Teenage Labor Force Participation Rate",
+
+    # Migration
+    covariate == "Migration.Inflow.Rate" ~ "Migration Inflow Rate",
+    covariate == "Migration.Outlflow.Rate" ~ "Migration Outflow Rate",
+    covariate == "Frac..Foreign.Born" ~ "Fraction Foreign Born",
 
     # Default (shouldn't happen, but just in case)
     TRUE ~ gsub("\\.", " ", covariate)
@@ -721,7 +800,7 @@ cat("Saved: output/coefficient_plot.png\n")
 # Analysis Complete
 
 ```{r conclusion}
-cat(sprintf("  - Tested %d covariates across 5 categories\n", nrow(phase2_results)))
+cat(sprintf("  - Tested %d covariates across %d categories\n", nrow(phase2_results), length(covariates_to_test)))
 cat(sprintf("  - Classical significance: %d/%d (%.1f%%)\n",
             sum(phase2_results$classical_sig),
             nrow(phase2_results),
