@@ -113,28 +113,30 @@ has_permcor <- require(PermCor, quietly = TRUE)
 # Load Online Data Table 5 (Mobility Estimates)
 # Row 50 contains column headers, so skip first 49 rows
 table5 <- read.csv("Online_Data_Table_5.csv",
-                   skip = 49,
-                   header = TRUE,
-                   stringsAsFactors = FALSE)
+  skip = 49,
+  header = TRUE,
+  stringsAsFactors = FALSE
+)
 
 # Remove rows with column numbers "(1)", "(2)", etc. and empty rows
 # These appear right after the header
-table5 <- table5[!grepl("^\\(\\d+\\)$", table5[,1]) & table5[,1] != "", ]
+table5 <- table5[!grepl("^\\(\\d+\\)$", table5[, 1]) & table5[, 1] != "", ]
 rownames(table5) <- NULL
 
 # Load Online Data Table 8 (CZ Characteristics)
 # Row 7 contains column headers, so skip first 6 rows
 table8 <- read.csv("Online_Data_Table_8.csv",
-                   skip = 6,
-                   header = TRUE,
-                   stringsAsFactors = FALSE)
+  skip = 6,
+  header = TRUE,
+  stringsAsFactors = FALSE
+)
 
 # Remove rows with column numbers and reset row names
 # Row 8 has "-1" in first column (negative numbers are not valid CZ codes)
-table8 <- table8[as.numeric(table8[,1]) > 0 & !is.na(table8[,1]), ]
+table8 <- table8[as.numeric(table8[, 1]) > 0 & !is.na(table8[, 1]), ]
 rownames(table8) <- NULL
 
-if(nrow(table8) == 0) {
+if (nrow(table8) == 0) {
   stop("ERROR: Online_Data_Table_8.csv loaded 0 rows! Check file location.")
 }
 
@@ -151,14 +153,14 @@ names(table8) <- gsub("^X\\.", "", names(table8))
 
 # DEBUG: Show ALL actual column names after R processing
 # cat(sprintf("Table 8 has %d columns:\n\n", length(names(table8))))
-#for(i in 1:length(names(table8))) {
+# for(i in 1:length(names(table8))) {
 #  cat(sprintf("%2d: %s\n", i, names(table8)[i]))
-#}
+# }
 
 # Rename key columns
 colnames(table5)[1] <- "CZ"
-colnames(table5)[5] <- "AM"  # Absolute Mobility
-colnames(table5)[6] <- "RM"  # Relative Mobility
+colnames(table5)[5] <- "AM" # Absolute Mobility
+colnames(table5)[6] <- "RM" # Relative Mobility
 colnames(table5)[4] <- "n_children"
 
 colnames(table8)[1] <- "CZ"
@@ -178,8 +180,8 @@ data <- table5 %>%
 # Convert to numeric (all covariate columns from Table 8)
 # Columns 4-41 contain all the covariates
 numeric_cols <- c("RM", "AM", "n_children", names(table8)[4:ncol(table8)])
-for(col in numeric_cols) {
-  if(col %in% names(data)) {
+for (col in numeric_cols) {
+  if (col %in% names(data)) {
     data[[col]] <- as.numeric(data[[col]])
   }
 }
@@ -192,8 +194,10 @@ df <- data %>%
   filter(n250 == 1) %>%
   filter(!is.na(RM))
 
-cat(sprintf("Sample: %d CZs with n>=250 (out of %d total CZs)\n\n",
-            nrow(df), nrow(data)))
+cat(sprintf(
+  "Sample: %d CZs with n>=250 (out of %d total CZs)\n\n",
+  nrow(df), nrow(data)
+))
 ```
 
 # Part 2: Permutation Test Functions
@@ -240,13 +244,13 @@ perm_test_regression <- function(X, Y, B = 10000, seed = NULL) {
   list(S_obs = S_obs, S_perm = S_perm, p_value = pval, B = B)
 }
 
-if(has_perk) {
+if (has_perk) {
   cat("perk package loaded (correlation permutation tests)\n")
 } else {
   cat("perk package not available (install with devtools::install_github('hyu-ub/perk/perk'))\n")
 }
 
-if(has_permcor) {
+if (has_permcor) {
   cat("PermCor package loaded (correlation permutation tests)\n")
 } else {
   cat("PermCor package not available (install with install.packages('PermCor'))\n")
@@ -262,86 +266,87 @@ cat("\n")
 # NOTE: Column names match how R processes the CSV headers
 # Spaces -> dots, special chars (< > % ( )) -> dots
 covariates_to_test <- list(
-
   # RACE (1 variable)
   Race = c(
-    "Frac..Black"                        # Fraction Black Residents
+    "Frac..Black" # Fraction Black Residents
   ),
 
   # SEGREGATION (5 variables)
   Segregation = c(
-    "Racial.Segregation",                # Racial Segregation Theil Index
-    "Income.Segregation",                # Income Segregation Theil Index
-    "Segregation.of.Poverty...p25.",     # Segregation of Poverty (<p25)
-    "Segregation.of.Affluence...p75.",   # Segregation of Affluence (>p75)
-    "Frac..with.Commute...15.Mins"       # Share with Commute < 15 Mins
+    "Racial.Segregation", # Racial Segregation Theil Index
+    "Income.Segregation", # Income Segregation Theil Index
+    "Segregation.of.Poverty...p25.", # Segregation of Poverty (<p25)
+    "Segregation.of.Affluence...p75.", # Segregation of Affluence (>p75)
+    "Frac..with.Commute...15.Mins" # Share with Commute < 15 Mins
   ),
 
   # INCOME DISTRIBUTION (5 variables)
   Income_Distribution = c(
-    "Household.Income.per.capita",       # Household Income per Capita
-    "Gini",                              # Gini coefficient for Parent Income
-    "Top.1..Income.Share",               # Top 1% Income Share for Parents
-    "Gini.Bottom.99.",                   # Gini Bottom 99%
-    "Frac..Between.p25.and.p75"          # Fraction Middle Class
+    "Household.Income.per.capita", # Household Income per Capita
+    "Gini", # Gini coefficient for Parent Income
+    "Top.1..Income.Share", # Top 1% Income Share for Parents
+    "Gini.Bottom.99.", # Gini Bottom 99%
+    "Frac..Between.p25.and.p75" # Fraction Middle Class
   ),
 
   # K-12 EDUCATION (4 variables)
   K12_Education = c(
-    "School.Expenditure.per.Student",    # School Expenditure per Student
-    "Teacher.Student.Ratio",             # Teacher-Student Ratio
-    "Test.Score.Percentile..Income.Adjusted",   # Test Score Percentile (Income Adjusted)
+    "School.Expenditure.per.Student", # School Expenditure per Student
+    "Teacher.Student.Ratio", # Teacher-Student Ratio
+    "Test.Score.Percentile..Income.Adjusted", # Test Score Percentile (Income Adjusted)
     "High.School.Dropout.Rate..Income.Adjusted." # High School Dropout Rate (Income Adjusted)
   ),
 
   # SOCIAL CAPITAL (3 variables)
   Social_Capital = c(
-    "Social.Capital.Index",              # Social Capital Index
-    "Fraction.Religious",                # Fraction Religious
-    "Violent.Crime.Rate"                 # Violent Crime Rate
+    "Social.Capital.Index", # Social Capital Index
+    "Fraction.Religious", # Fraction Religious
+    "Violent.Crime.Rate" # Violent Crime Rate
   ),
 
   # FAMILY STRUCTURE (3 variables)
   Family_Structure = c(
-    "Fraction.of.Children.with.Single.Mothers",  # Fraction Single Mothers
-    "Fraction.of.Adults.Divorced",               # Fraction Divorced
-    "Fraction.of.Adults.Married"                 # Fraction Married
+    "Fraction.of.Children.with.Single.Mothers", # Fraction Single Mothers
+    "Fraction.of.Adults.Divorced", # Fraction Divorced
+    "Fraction.of.Adults.Married" # Fraction Married
   ),
 
   # TAX (4 variables)
   Tax = c(
-    "Local.Tax.Rate",                    # Local Tax Rate
-    "Local.Government.Expenditures.Per.Capita",  # Local Gov Expenditures per Capita
-    "State.EITC.Exposure",               # State EITC Exposure
-    "State.Income.Tax.Progressivity"     # State Income Tax Progressivity
+    "Local.Tax.Rate", # Local Tax Rate
+    "Local.Government.Expenditures.Per.Capita", # Local Gov Expenditures per Capita
+    "State.EITC.Exposure", # State EITC Exposure
+    "State.Income.Tax.Progressivity" # State Income Tax Progressivity
   ),
 
   # COLLEGE (3 variables)
   College = c(
-    "Number.of.Colleges.per.Capita",     # Number of Colleges per Capita
-    "College.Tuition",                   # Mean College Tuition
-    "College.Graduation.Rate..Income.Adjusted."  # College Graduation Rate (Income Adjusted)
+    "Number.of.Colleges.per.Capita", # Number of Colleges per Capita
+    "College.Tuition", # Mean College Tuition
+    "College.Graduation.Rate..Income.Adjusted." # College Graduation Rate (Income Adjusted)
   ),
 
   # LOCAL LABOR MARKET (4 variables)
   Local_Labor_Market = c(
-    "Labor.Force.Participation.Rate",    # Labor Force Participation Rate
-    "Manufacturing.Employment.Share",    # Fraction Working in Manufacturing
+    "Labor.Force.Participation.Rate", # Labor Force Participation Rate
+    "Manufacturing.Employment.Share", # Fraction Working in Manufacturing
     "Growth.in.Chinese.Imports.1990.2000", # Growth in Chinese Imports 1990-2000
-    "Teenage.Labor.Force.Participation.Rate"  # Teenage (14-16) Labor Force Participation
+    "Teenage.Labor.Force.Participation.Rate" # Teenage (14-16) Labor Force Participation
   ),
 
   # MIGRATION (3 variables)
   Migration = c(
-    "Migration.Inflow.Rate",             # Migration Inflow Rate
-    "Migration.Outlflow.Rate",           # Migration Outflow Rate (note: typo in CSV "Outlflow")
-    "Frac..Foreign.Born"                 # Fraction of Foreign Born Residents
+    "Migration.Inflow.Rate", # Migration Inflow Rate
+    "Migration.Outlflow.Rate", # Migration Outflow Rate (note: typo in CSV "Outlflow")
+    "Frac..Foreign.Born" # Fraction of Foreign Born Residents
   )
 )
 
 all_covariates <- unlist(covariates_to_test, use.names = FALSE)
-cat(sprintf(" Testing %d covariates across %d categories\n\n",
-            length(all_covariates), length(covariates_to_test)))
+cat(sprintf(
+  " Testing %d covariates across %d categories\n\n",
+  length(all_covariates), length(covariates_to_test)
+))
 ```
 
 # Phase 1: Replicate Classical Results (OLS)
@@ -368,20 +373,17 @@ phase1_results <- data.frame(
 
   # Agreement check
   methods_agree = logical(),
-
   stringsAsFactors = FALSE
 )
 
 # Loop through covariates
-for(category_name in names(covariates_to_test)) {
-
+for (category_name in names(covariates_to_test)) {
   cat(sprintf("\n%s:\n", toupper(category_name)))
   cat("-", rep("-", 78), "\n", sep = "")
 
-  for(covariate_name in covariates_to_test[[category_name]]) {
-
+  for (covariate_name in covariates_to_test[[category_name]]) {
     # Check if covariate exists
-    if(!(covariate_name %in% names(df))) {
+    if (!(covariate_name %in% names(df))) {
       cat(sprintf("   %s: NOT FOUND\n", covariate_name))
       next
     }
@@ -391,7 +393,7 @@ for(category_name in names(covariates_to_test)) {
       select(RM, all_of(covariate_name)) %>%
       drop_na()
 
-    if(nrow(temp_data) < 50) {
+    if (nrow(temp_data) < 50) {
       cat(sprintf("   %s: Insufficient data (n=%d)\n", covariate_name, nrow(temp_data)))
       next
     }
@@ -449,23 +451,29 @@ for(category_name in names(covariates_to_test)) {
     agreement_icon <- ifelse(methods_agree, "[OK]", "[X]")
     sig_icon <- ifelse(reg_p < 0.05, "*", " ")
 
-    cat(sprintf("  %s %-30s n=%3d b=%5.3f p=%5.3f%s\n",
-                agreement_icon,
-                substr(covariate_name, 1, 30),
-                n_obs,
-                reg_coef,
-                reg_p,
-                sig_icon))
+    cat(sprintf(
+      "  %s %-30s n=%3d b=%5.3f p=%5.3f%s\n",
+      agreement_icon,
+      substr(covariate_name, 1, 30),
+      n_obs,
+      reg_coef,
+      reg_p,
+      sig_icon
+    ))
   }
 }
 cat(sprintf("  Total tests: %d\n", nrow(phase1_results)))
-cat(sprintf("  Significant at alpha=0.05: %d (%.1f%%)\n",
-            sum(phase1_results$reg_pval < 0.05),
-            100 * mean(phase1_results$reg_pval < 0.05)))
-cat(sprintf("  Correlation approx Regression: %d/%d (%.1f%% agreement)\n",
-            sum(phase1_results$methods_agree),
-            nrow(phase1_results),
-            100 * mean(phase1_results$methods_agree)))
+cat(sprintf(
+  "  Significant at alpha=0.05: %d (%.1f%%)\n",
+  sum(phase1_results$reg_pval < 0.05),
+  100 * mean(phase1_results$reg_pval < 0.05)
+))
+cat(sprintf(
+  "  Correlation approx Regression: %d/%d (%.1f%% agreement)\n",
+  sum(phase1_results$methods_agree),
+  nrow(phase1_results),
+  100 * mean(phase1_results$methods_agree)
+))
 ```
 
 # Phase 2: Add Permutation Tests
@@ -474,7 +482,7 @@ This phase adds permutation tests and compares them to classical results. We run
 
 ```{r phase2}
 # Check if Phase 1 had any results
-if(nrow(phase1_results) == 0) {
+if (nrow(phase1_results) == 0) {
   cat("ERROR: Phase 1 produced 0 results!\n")
   cat("This means no covariates were found in the data.\n")
   cat("Check the DEBUG output above to see actual column names.\n\n")
@@ -487,7 +495,7 @@ if(nrow(phase1_results) == 0) {
 }
 
 # Initialize results
-phase2_results <- phase1_results  # Start with Phase 1 results
+phase2_results <- phase1_results # Start with Phase 1 results
 
 # Add permutation columns
 phase2_results$perm_cor_pval <- NA
@@ -498,12 +506,11 @@ phase2_results$perm_reg_sig <- NA
 phase2_results$all_agree <- NA
 
 # Loop through covariates
-for(i in 1:nrow(phase2_results)) {
-
+for (i in 1:nrow(phase2_results)) {
   covariate_name <- phase2_results$covariate[i]
   category_name <- phase2_results$category[i]
 
-  if(i == 1 || phase2_results$category[i] != phase2_results$category[i-1]) {
+  if (i == 1 || phase2_results$category[i] != phase2_results$category[i - 1]) {
     cat(sprintf("\n%s:\n", toupper(category_name)))
     cat("-", rep("-", 78), "\n", sep = "")
   }
@@ -528,28 +535,36 @@ for(i in 1:nrow(phase2_results)) {
   # -------------------------------------------------------------------------
   perm_cor_p <- NA
 
-  if(has_perk) {
-    tryCatch({
-      perm_cor_result <- perk_test(x_std, y_std,
-                                    method = "pearson",
-                                    alternative = "two.sided")
-      perm_cor_p <- perm_cor_result$p.value
-    }, error = function(e) {
-      perm_cor_p <- NA
-    })
-  } else if(has_permcor) {
-    tryCatch({
-      perm_cor_result <- perm_test(x_std, y_std,
-                                    method = "Pearson",
-                                    alternative = "two.sided")
-      perm_cor_p <- perm_cor_result$p.value
-    }, error = function(e) {
-      perm_cor_p <- NA
-    })
+  if (has_perk) {
+    tryCatch(
+      {
+        perm_cor_result <- perk_test(x_std, y_std,
+          method = "pearson",
+          alternative = "two.sided"
+        )
+        perm_cor_p <- perm_cor_result$p.value
+      },
+      error = function(e) {
+        perm_cor_p <- NA
+      }
+    )
+  } else if (has_permcor) {
+    tryCatch(
+      {
+        perm_cor_result <- perm_test(x_std, y_std,
+          method = "Pearson",
+          alternative = "two.sided"
+        )
+        perm_cor_p <- perm_cor_result$p.value
+      },
+      error = function(e) {
+        perm_cor_p <- NA
+      }
+    )
   }
 
   phase2_results$perm_cor_pval[i] <- perm_cor_p
-  phase2_results$perm_cor_sig[i] <- if(!is.na(perm_cor_p)) perm_cor_p < 0.05 else NA
+  phase2_results$perm_cor_sig[i] <- if (!is.na(perm_cor_p)) perm_cor_p < 0.05 else NA
 
   # -------------------------------------------------------------------------
   # METHOD 4: PERMUTATION REGRESSION TEST
@@ -558,7 +573,7 @@ for(i in 1:nrow(phase2_results)) {
     X = x_m0,
     Y = y_m0,
     B = 10000,
-    seed = 42 + i  # Different seed for each test
+    seed = 42 + i # Different seed for each test
   )
 
   perm_reg_p <- perm_reg_result$p_value
@@ -570,7 +585,7 @@ for(i in 1:nrow(phase2_results)) {
   perm_reg_sig <- phase2_results$perm_reg_sig[i]
   perm_cor_sig <- phase2_results$perm_cor_sig[i]
 
-  if(!is.na(perm_cor_sig)) {
+  if (!is.na(perm_cor_sig)) {
     all_agree <- (classical_sig == perm_reg_sig) & (classical_sig == perm_cor_sig)
   } else {
     all_agree <- (classical_sig == perm_reg_sig)
@@ -582,23 +597,27 @@ for(i in 1:nrow(phase2_results)) {
   agreement_icon <- ifelse(all_agree, "[OK]", "[X]")
   sig_icon <- ifelse(classical_sig, "*", " ")
 
-  if(!is.na(perm_cor_p)) {
-    cat(sprintf("  %s %-25s b=%5.3f p_c=%5.3f p_pc=%5.3f p_pr=%5.3f%s\n",
-                agreement_icon,
-                substr(covariate_name, 1, 25),
-                phase2_results$reg_coefficient[i],
-                phase2_results$reg_pval[i],
-                perm_cor_p,
-                perm_reg_p,
-                sig_icon))
+  if (!is.na(perm_cor_p)) {
+    cat(sprintf(
+      "  %s %-25s b=%5.3f p_c=%5.3f p_pc=%5.3f p_pr=%5.3f%s\n",
+      agreement_icon,
+      substr(covariate_name, 1, 25),
+      phase2_results$reg_coefficient[i],
+      phase2_results$reg_pval[i],
+      perm_cor_p,
+      perm_reg_p,
+      sig_icon
+    ))
   } else {
-    cat(sprintf("  %s %-25s b=%5.3f p_c=%5.3f p_pr=%5.3f%s\n",
-                agreement_icon,
-                substr(covariate_name, 1, 25),
-                phase2_results$reg_coefficient[i],
-                phase2_results$reg_pval[i],
-                perm_reg_p,
-                sig_icon))
+    cat(sprintf(
+      "  %s %-25s b=%5.3f p_c=%5.3f p_pr=%5.3f%s\n",
+      agreement_icon,
+      substr(covariate_name, 1, 25),
+      phase2_results$reg_coefficient[i],
+      phase2_results$reg_pval[i],
+      perm_reg_p,
+      sig_icon
+    ))
   }
 }
 ```
@@ -608,46 +627,62 @@ for(i in 1:nrow(phase2_results)) {
 ```{r final-summary}
 cat("1. PHASE 1: Classical Results\n")
 cat(sprintf("   - Total tests: %d\n", nrow(phase2_results)))
-cat(sprintf("   - Significant (classical): %d (%.1f%%)\n",
-            sum(phase2_results$classical_sig),
-            100 * mean(phase2_results$classical_sig)))
-cat(sprintf("   - Correlation approx Regression: %.1f%% agreement\n",
-            100 * mean(phase2_results$methods_agree)))
+cat(sprintf(
+  "   - Significant (classical): %d (%.1f%%)\n",
+  sum(phase2_results$classical_sig),
+  100 * mean(phase2_results$classical_sig)
+))
+cat(sprintf(
+  "   - Correlation approx Regression: %.1f%% agreement\n",
+  100 * mean(phase2_results$methods_agree)
+))
 
 cat("2. PHASE 2: Permutation Results\n")
-cat(sprintf("   - Significant (perm regression): %d (%.1f%%)\n",
-            sum(phase2_results$perm_reg_sig),
-            100 * mean(phase2_results$perm_reg_sig)))
+cat(sprintf(
+  "   - Significant (perm regression): %d (%.1f%%)\n",
+  sum(phase2_results$perm_reg_sig),
+  100 * mean(phase2_results$perm_reg_sig)
+))
 
-if(any(!is.na(phase2_results$perm_cor_sig))) {
-  cat(sprintf("   - Significant (perm correlation): %d (%.1f%%)\n",
-              sum(phase2_results$perm_cor_sig, na.rm = TRUE),
-              100 * mean(phase2_results$perm_cor_sig, na.rm = TRUE)))
+if (any(!is.na(phase2_results$perm_cor_sig))) {
+  cat(sprintf(
+    "   - Significant (perm correlation): %d (%.1f%%)\n",
+    sum(phase2_results$perm_cor_sig, na.rm = TRUE),
+    100 * mean(phase2_results$perm_cor_sig, na.rm = TRUE)
+  ))
 }
 
 cat("3. AGREEMENT ANALYSIS\n")
-cat(sprintf("   - All methods agree: %d/%d (%.1f%%)\n",
-            sum(phase2_results$all_agree, na.rm = TRUE),
-            nrow(phase2_results),
-            100 * mean(phase2_results$all_agree, na.rm = TRUE)))
+cat(sprintf(
+  "   - All methods agree: %d/%d (%.1f%%)\n",
+  sum(phase2_results$all_agree, na.rm = TRUE),
+  nrow(phase2_results),
+  100 * mean(phase2_results$all_agree, na.rm = TRUE)
+))
 
 # Find disagreements
 disagreements <- phase2_results %>%
   filter(!all_agree)
 
-if(nrow(disagreements) > 0) {
+if (nrow(disagreements) > 0) {
   cat(sprintf("   - Disagreements: %d\n\n", nrow(disagreements)))
   cat("   Details:\n")
-  for(i in 1:nrow(disagreements)) {
-    row <- disagreements[i,]
+  for (i in 1:nrow(disagreements)) {
+    row <- disagreements[i, ]
     cat(sprintf("     - %s (%s)\n", row$covariate, row$category))
-    cat(sprintf("       Classical: p=%.5f %s\n", row$reg_pval,
-                ifelse(row$classical_sig, "[SIG]", "[NOT SIG]")))
-    cat(sprintf("       Perm (reg): p=%.5f %s\n", row$perm_reg_pval,
-                ifelse(row$perm_reg_sig, "[SIG]", "[NOT SIG]")))
-    if(!is.na(row$perm_cor_pval)) {
-      cat(sprintf("       Perm (cor): p=%.5f %s\n", row$perm_cor_pval,
-                  ifelse(row$perm_cor_sig, "[SIG]", "[NOT SIG]")))
+    cat(sprintf(
+      "       Classical: p=%.5f %s\n", row$reg_pval,
+      ifelse(row$classical_sig, "[SIG]", "[NOT SIG]")
+    ))
+    cat(sprintf(
+      "       Perm (reg): p=%.5f %s\n", row$perm_reg_pval,
+      ifelse(row$perm_reg_sig, "[SIG]", "[NOT SIG]")
+    ))
+    if (!is.na(row$perm_cor_pval)) {
+      cat(sprintf(
+        "       Perm (cor): p=%.5f %s\n", row$perm_cor_pval,
+        ifelse(row$perm_cor_sig, "[SIG]", "[NOT SIG]")
+      ))
     }
   }
 } else {
@@ -656,14 +691,20 @@ if(nrow(disagreements) > 0) {
 
 # P-value correlations
 cat("4. P-VALUE CORRELATIONS\n")
-cat(sprintf("   - Classical vs Perm Regression: r=%.3f\n",
-            cor(phase2_results$reg_pval, phase2_results$perm_reg_pval)))
+cat(sprintf(
+  "   - Classical vs Perm Regression: r=%.3f\n",
+  cor(phase2_results$reg_pval, phase2_results$perm_reg_pval)
+))
 
-if(any(!is.na(phase2_results$perm_cor_pval))) {
-  cat(sprintf("   - Classical vs Perm Correlation: r=%.3f\n",
-              cor(phase2_results$reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")))
-  cat(sprintf("   - Perm Regression vs Perm Correlation: r=%.3f\n",
-              cor(phase2_results$perm_reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")))
+if (any(!is.na(phase2_results$perm_cor_pval))) {
+  cat(sprintf(
+    "   - Classical vs Perm Correlation: r=%.3f\n",
+    cor(phase2_results$reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")
+  ))
+  cat(sprintf(
+    "   - Perm Regression vs Perm Correlation: r=%.3f\n",
+    cor(phase2_results$perm_reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")
+  ))
 }
 ```
 
@@ -671,7 +712,7 @@ if(any(!is.na(phase2_results$perm_cor_pval))) {
 
 ```{r save-results}
 # Create output directory if needed
-if(!dir.exists("output")) {
+if (!dir.exists("output")) {
   dir.create("output", recursive = TRUE)
 }
 
@@ -739,13 +780,15 @@ phase2_results_clean <- phase2_results %>%
 
 # Save detailed results
 write.csv(phase2_results_clean,
-          "output/mobility_test_results.csv",
-          row.names = FALSE)
+  "output/mobility_test_results.csv",
+  row.names = FALSE
+)
 cat("Saved: output/mobility_test_results.csv\n")
 
 # Save workspace
 save(phase1_results, phase2_results, df, covariates_to_test,
-     file = "output/mobility_analysis_workspace.RData")
+  file = "output/mobility_analysis_workspace.RData"
+)
 cat("Saved: output/mobility_analysis_workspace.RData\n")
 ```
 
@@ -755,7 +798,7 @@ cat("Saved: output/mobility_analysis_workspace.RData\n")
 # Coefficient plot (use cleaned names)
 phase2_results_plot <- phase2_results_clean %>%
   mutate(
-    covariate_short = substr(covariate, 1, 50),  # Use full cleaned name, truncate if needed
+    covariate_short = substr(covariate, 1, 50), # Use full cleaned name, truncate if needed
     sig_status = case_when(
       classical_sig & perm_reg_sig ~ "Both significant",
       !classical_sig & !perm_reg_sig ~ "Neither significant",
@@ -771,14 +814,20 @@ phase2_results_plot$covariate_short <- factor(
 
 p2 <- ggplot(phase2_results_plot, aes(x = reg_coefficient, y = covariate_short)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
-  geom_errorbar(aes(xmin = reg_coefficient - 1.96 * reg_se,
-                    xmax = reg_coefficient + 1.96 * reg_se,
-                    color = sig_status),
-                height = 0.3, alpha = 0.7, orientation = "y") +
+  geom_errorbar(
+    aes(
+      xmin = reg_coefficient - 1.96 * reg_se,
+      xmax = reg_coefficient + 1.96 * reg_se,
+      color = sig_status
+    ),
+    height = 0.3, alpha = 0.7, orientation = "y"
+  ) +
   geom_point(aes(color = sig_status), size = 3) +
-  scale_color_manual(values = c("Both significant" = "#00BA38",
-                                 "Neither significant" = "gray60",
-                                 "Disagreement" = "#F8766D")) +
+  scale_color_manual(values = c(
+    "Both significant" = "#00BA38",
+    "Neither significant" = "gray60",
+    "Disagreement" = "#F8766D"
+  )) +
   labs(
     title = "Standardized Coefficients: Predictors of Relative Mobility",
     subtitle = "Error bars show 95% confidence intervals",
@@ -787,13 +836,16 @@ p2 <- ggplot(phase2_results_plot, aes(x = reg_coefficient, y = covariate_short))
     color = "Significance"
   ) +
   theme_minimal() +
-  theme(legend.position = "bottom",
-        axis.text.y = element_text(size = 9))
+  theme(
+    legend.position = "bottom",
+    axis.text.y = element_text(size = 9)
+  )
 
 print(p2)
 
 ggsave("output/coefficient_plot.png", p2,
-       width = 10, height = 8, dpi = 300)
+  width = 10, height = 8, dpi = 300
+)
 cat("Saved: output/coefficient_plot.png\n")
 ```
 
@@ -801,14 +853,20 @@ cat("Saved: output/coefficient_plot.png\n")
 
 ```{r conclusion}
 cat(sprintf("  - Tested %d covariates across %d categories\n", nrow(phase2_results), length(covariates_to_test)))
-cat(sprintf("  - Classical significance: %d/%d (%.1f%%)\n",
-            sum(phase2_results$classical_sig),
-            nrow(phase2_results),
-            100 * mean(phase2_results$classical_sig)))
-cat(sprintf("  - Permutation significance: %d/%d (%.1f%%)\n",
-            sum(phase2_results$perm_reg_sig),
-            nrow(phase2_results),
-            100 * mean(phase2_results$perm_reg_sig)))
-cat(sprintf("  - Overall agreement: %.1f%%\n",
-            100 * mean(phase2_results$all_agree, na.rm = TRUE)))
+cat(sprintf(
+  "  - Classical significance: %d/%d (%.1f%%)\n",
+  sum(phase2_results$classical_sig),
+  nrow(phase2_results),
+  100 * mean(phase2_results$classical_sig)
+))
+cat(sprintf(
+  "  - Permutation significance: %d/%d (%.1f%%)\n",
+  sum(phase2_results$perm_reg_sig),
+  nrow(phase2_results),
+  100 * mean(phase2_results$perm_reg_sig)
+))
+cat(sprintf(
+  "  - Overall agreement: %.1f%%\n",
+  100 * mean(phase2_results$all_agree, na.rm = TRUE)
+))
 ```

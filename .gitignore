@@ -1,2 +1,3 @@
 *.txt
-*.md
+.zed/settings.json
+.Rhistory
