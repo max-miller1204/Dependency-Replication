@@ -118,9 +118,19 @@ where both the outcome and covariate are standardized (mean 0, SD 1). The standa
 
 Statistical significance is assessed using the classical t-test, which assumes $\epsilon_i \sim N(0, \sigma^2)$.
 
-### Method 2: Permutation Regression Test (DiCiccio & Romano, 2017)
+### Method 2: Permutation Correlation Test (perk package)
 
-The permutation test assesses significance by:
+The `perk` package implements permutation tests for Pearson correlation. For each covariate, we:
+
+1. Compute the observed Pearson correlation $r$ between the covariate and relative mobility
+2. Permute the outcome variable $Y$ many times (B = 10,000) to generate a null distribution
+3. Compute the p-value as the proportion of permuted correlations with $|r^*| \geq |r_{obs}|$
+
+This tests $H_0: \rho = 0$ (no correlation) without assuming bivariate normality.
+
+### Method 3: Permutation Regression Test (DiCiccio & Romano, 2017)
+
+The permutation regression test assesses significance by:
 
 1. Computing a heteroskedasticity-robust Wald statistic $S_n$ from the observed data
 2. Permuting the outcome variable $Y$ many times (B = 10,000) to generate a null distribution
@@ -138,21 +148,31 @@ where $\hat{\Omega}$ is the heteroskedasticity-robust covariance estimator. This
 - Robust to heteroskedasticity
 - Exact Type I error control under the null hypothesis
 
+### Why Both Permutation Tests?
+
+We include both `perk` (permutation correlation) and the DiCiccio & Romano regression test to compare:
+
+1. **perk**: Uses the raw correlation coefficient as the test statistic
+2. **DiCiccio & Romano**: Uses a heteroskedasticity-robust Wald statistic
+
+For standardized data, both test the same null hypothesis ($\beta = 0$), but they may yield different p-values due to different test statistics. Comparing them helps assess sensitivity to the choice of permutation method.
+
 ## Console Output Format
 
 Results are printed in the following format:
 
 ```
-[OK] Racial.Segregation  b=0.406 p_classical=0.000 p_perm=0.000*
+[OK] Racial.Segregation  b=0.406 p_class=0.000 p_perk=0.000 p_reg=0.000*
 ```
 
 | Symbol | Description |
 |--------|-------------|
-| `[OK]` | Classical and permutation methods agree on significance |
-| `[X]` | Methods disagree on significance |
+| `[OK]` | All three methods agree on significance |
+| `[X]` | At least one method disagrees |
 | `b` | Standardized regression coefficient (= Pearson r) |
-| `p_classical` | p-value from classical OLS t-test |
-| `p_perm` | p-value from permutation regression test |
+| `p_class` | p-value from classical OLS t-test |
+| `p_perk` | p-value from perk permutation correlation test |
+| `p_reg` | p-value from DiCiccio & Romano permutation regression test |
 | `*` | Statistically significant at $\alpha = 0.05$ |
 
 # Part 1: Data Loading and Preparation
@@ -162,6 +182,7 @@ Results are printed in the following format:
 ```{r libraries, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(broom)
+library(perk)  # For permutation correlation tests
 ```
 
 ## Load the Chetty et al. Data
@@ -501,14 +522,16 @@ cat(sprintf("Significant at alpha=0.05: %d (%.1f%%)\n",
 
 ## Comparing Classical and Permutation Inference
 
-Now we run the permutation regression test for each covariate and compare to the classical results. This tests whether the significance conclusions are robust to the choice of inference method.
+Now we run both permutation tests (perk correlation and DiCiccio & Romano regression) for each covariate and compare to the classical results. This tests whether the significance conclusions are robust to the choice of inference method.
 
 ```{r phase2}
 # Add permutation results columns
-results$p_perm <- NA
+results$p_perk <- NA           # perk permutation correlation p-value
+results$p_perm_reg <- NA       # DiCiccio & Romano permutation regression p-value
 results$classical_sig <- results$p_classical < 0.05
-results$perm_sig <- NA
-results$agree <- NA
+results$perk_sig <- NA
+results$perm_reg_sig <- NA
+results$all_agree <- NA        # TRUE if all three methods agree
 
 # Loop through covariates
 for (i in 1:nrow(results)) {
@@ -534,29 +557,39 @@ for (i in 1:nrow(results)) {
   x_m0 <- x_std - mean(x_std)
   y_m0 <- y_std - mean(y_std)
 
-  # Run permutation regression test
-  perm_result <- perm_test_regression(
+  # --- Method 2: perk permutation correlation test ---
+  set.seed(42 + i)
+  perk_result <- perk::perk(x_std, y_std, method = "pearson", num_permutations = 10000)
+  p_perk <- perk_result$p_value
+  results$p_perk[i] <- p_perk
+  results$perk_sig[i] <- p_perk < 0.05
+
+  # --- Method 3: DiCiccio & Romano permutation regression test ---
+  perm_reg_result <- perm_test_regression(
     X = x_m0,
     Y = y_m0,
     B = 10000,
-    seed = 42 + i  # Different seed for each test, but reproducible
+    seed = 42 + i
   )
+  p_perm_reg <- perm_reg_result$p_value
+  results$p_perm_reg[i] <- p_perm_reg
+  results$perm_reg_sig[i] <- p_perm_reg < 0.05
 
-  p_perm <- perm_result$p_value
-  results$p_perm[i] <- p_perm
-  results$perm_sig[i] <- p_perm < 0.05
-  results$agree[i] <- results$classical_sig[i] == results$perm_sig[i]
+  # Check if all three methods agree
+  results$all_agree[i] <- (results$classical_sig[i] == results$perk_sig[i]) &
+                          (results$classical_sig[i] == results$perm_reg_sig[i])
 
   # Print result
-  agree_icon <- ifelse(results$agree[i], "[OK]", "[X]")
+  agree_icon <- ifelse(results$all_agree[i], "[OK]", "[X]")
   sig_icon <- ifelse(results$classical_sig[i], "*", " ")
 
-  cat(sprintf("  %s %-30s b=%6.3f  p_class=%5.3f  p_perm=%5.3f%s\n",
+  cat(sprintf("  %s %-25s b=%6.3f  p_class=%5.3f  p_perk=%5.3f  p_reg=%5.3f%s\n",
     agree_icon,
-    substr(covariate_name, 1, 30),
+    substr(covariate_name, 1, 25),
     results$beta[i],
     results$p_classical[i],
-    p_perm,
+    p_perk,
+    p_perm_reg,
     sig_icon))
 }
 ```
@@ -577,55 +610,65 @@ cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
   sum(results$classical_sig),
   100 * mean(results$classical_sig)))
 
-cat("\n2. PERMUTATION REGRESSION (DiCiccio & Romano 2017)\n")
+cat("\n2. PERK PERMUTATION CORRELATION\n")
 cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
-  sum(results$perm_sig),
-  100 * mean(results$perm_sig)))
+  sum(results$perk_sig),
+  100 * mean(results$perk_sig)))
 
-cat("\n3. AGREEMENT ANALYSIS\n")
-cat(sprintf("   - Methods agree: %d/%d (%.1f%%)\n",
-  sum(results$agree),
+cat("\n3. PERMUTATION REGRESSION (DiCiccio & Romano 2017)\n")
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(results$perm_reg_sig),
+  100 * mean(results$perm_reg_sig)))
+
+cat("\n4. AGREEMENT ANALYSIS\n")
+cat(sprintf("   - All three methods agree: %d/%d (%.1f%%)\n",
+  sum(results$all_agree),
   nrow(results),
-  100 * mean(results$agree)))
+  100 * mean(results$all_agree)))
 
 # Show any disagreements
-disagreements <- results %>% filter(!agree)
+disagreements <- results %>% filter(!all_agree)
 
 if (nrow(disagreements) > 0) {
   cat(sprintf("\n   DISAGREEMENTS (%d):\n", nrow(disagreements)))
   for (j in 1:nrow(disagreements)) {
     row <- disagreements[j, ]
-    cat(sprintf("   - %s: Classical p=%.3f (%s), Perm p=%.3f (%s)\n",
-      row$covariate,
-      row$p_classical,
-      ifelse(row$classical_sig, "SIG", "NOT SIG"),
-      row$p_perm,
-      ifelse(row$perm_sig, "SIG", "NOT SIG")))
+    cat(sprintf("   - %s:\n", row$covariate))
+    cat(sprintf("       Classical p=%.3f (%s)\n",
+      row$p_classical, ifelse(row$classical_sig, "SIG", "NOT SIG")))
+    cat(sprintf("       Perk p=%.3f (%s)\n",
+      row$p_perk, ifelse(row$perk_sig, "SIG", "NOT SIG")))
+    cat(sprintf("       Perm Reg p=%.3f (%s)\n",
+      row$p_perm_reg, ifelse(row$perm_reg_sig, "SIG", "NOT SIG")))
   }
 } else {
   cat("\n   No disagreements - all methods agree on significance!\n")
 }
 
-cat("\n4. P-VALUE CORRELATION\n")
-cat(sprintf("   - Correlation between classical and permutation p-values: r = %.3f\n",
-  cor(results$p_classical, results$p_perm)))
+cat("\n5. P-VALUE CORRELATIONS\n")
+cat(sprintf("   - Classical vs Perk: r = %.3f\n",
+  cor(results$p_classical, results$p_perk)))
+cat(sprintf("   - Classical vs Perm Reg: r = %.3f\n",
+  cor(results$p_classical, results$p_perm_reg)))
+cat(sprintf("   - Perk vs Perm Reg: r = %.3f\n",
+  cor(results$p_perk, results$p_perm_reg)))
 ```
 
 ## Non-Significant Covariates
 
-These covariates were NOT significantly associated with relative mobility under either method:
+These covariates were NOT significantly associated with relative mobility under any method:
 
 ```{r nonsig}
 nonsig <- results %>%
-  filter(!classical_sig & !perm_sig) %>%
-  select(category, covariate, beta, p_classical, p_perm)
+  filter(!classical_sig & !perk_sig & !perm_reg_sig) %>%
+  select(category, covariate, beta, p_classical, p_perk, p_perm_reg)
 
 if (nrow(nonsig) > 0) {
-  cat("\nCovariates NOT significant under both methods:\n\n")
+  cat("\nCovariates NOT significant under ALL three methods:\n\n")
   for (j in 1:nrow(nonsig)) {
-    cat(sprintf("  - %s (b=%.3f, p_class=%.3f, p_perm=%.3f)\n",
-      nonsig$covariate[j], nonsig$beta[j],
-      nonsig$p_classical[j], nonsig$p_perm[j]))
+    cat(sprintf("  - %s (b=%.3f)\n", nonsig$covariate[j], nonsig$beta[j]))
+    cat(sprintf("      p_classical=%.3f, p_perk=%.3f, p_perm_reg=%.3f\n",
+      nonsig$p_classical[j], nonsig$p_perk[j], nonsig$p_perm_reg[j]))
   }
 } else {
   cat("\nAll covariates were significant under at least one method.\n")
@@ -697,15 +740,15 @@ cat("Saved: output/mobility_analysis_workspace.RData\n")
 
 ## Coefficient Plot
 
-This plot shows the standardized regression coefficients for all 35 covariates, with colors indicating whether both methods agree on significance.
+This plot shows the standardized regression coefficients for all 35 covariates, with colors indicating whether all three methods agree on significance.
 
 ```{r visualization, fig.width=10, fig.height=9, message=FALSE}
 # Prepare data for plotting
 plot_data <- results_clean %>%
   mutate(
     sig_status = case_when(
-      classical_sig & perm_sig ~ "Both significant",
-      !classical_sig & !perm_sig ~ "Neither significant",
+      classical_sig & perk_sig & perm_reg_sig ~ "All significant",
+      !classical_sig & !perk_sig & !perm_reg_sig ~ "None significant",
       TRUE ~ "Disagreement"
     )
   ) %>%
@@ -725,13 +768,13 @@ p <- ggplot(plot_data, aes(x = beta, y = covariate_clean)) +
   ) +
   geom_point(aes(color = sig_status), size = 3) +
   scale_color_manual(values = c(
-    "Both significant" = "#2E8B57",
-    "Neither significant" = "gray60",
+    "All significant" = "#2E8B57",
+    "None significant" = "gray60",
     "Disagreement" = "#DC143C"
   )) +
   labs(
     title = "Predictors of Relative Mobility: Classical vs Permutation Inference",
-    subtitle = "Replication of Chetty et al. (2014) Table VIII with robustness check",
+    subtitle = "Replication of Chetty et al. (2014) Table VIII with robustness check (3 methods)",
     x = "Standardized Coefficient (95% CI)",
     y = "",
     color = "Significance Agreement"
@@ -757,17 +800,19 @@ cat(paste(rep("=", 70), collapse = ""), "\n")
 cat("CONCLUSION\n")
 cat(paste(rep("=", 70), collapse = ""), "\n\n")
 
-agreement_pct <- 100 * mean(results$agree)
+agreement_pct <- 100 * mean(results$all_agree)
 
 if (agreement_pct == 100) {
-  cat("All 35 covariates show IDENTICAL significance conclusions under both\n")
-  cat("classical OLS and permutation regression inference.\n\n")
+  cat("All 35 covariates show IDENTICAL significance conclusions under all\n")
+  cat("three methods: classical OLS, perk permutation correlation, and\n")
+  cat("DiCiccio & Romano permutation regression.\n\n")
   cat("This demonstrates that Chetty et al.'s findings are ROBUST to the\n")
   cat("choice of inference method and do not depend on asymptotic normality\n")
   cat("assumptions.\n")
 } else {
-  cat(sprintf("%.1f%% of covariates show identical significance conclusions.\n", agreement_pct))
-  cat(sprintf("%d covariates show disagreement between methods.\n", sum(!results$agree)))
+  cat(sprintf("%.1f%% of covariates show identical significance conclusions across\n", agreement_pct))
+  cat("all three methods.\n\n")
+  cat(sprintf("%d covariates show disagreement between at least two methods.\n", sum(!results$all_agree)))
 }
 
 cat(sprintf("\n\nKey Statistics:\n"))
@@ -775,9 +820,14 @@ cat(sprintf("  - Sample size: %d Commuting Zones\n", nrow(df)))
 cat(sprintf("  - Covariates tested: %d\n", nrow(results)))
 cat(sprintf("  - Classically significant: %d (%.1f%%)\n",
     sum(results$classical_sig), 100*mean(results$classical_sig)))
-cat(sprintf("  - Permutation significant: %d (%.1f%%)\n",
-    sum(results$perm_sig), 100*mean(results$perm_sig)))
-cat(sprintf("  - P-value correlation: r = %.3f\n", cor(results$p_classical, results$p_perm)))
+cat(sprintf("  - Perk significant: %d (%.1f%%)\n",
+    sum(results$perk_sig), 100*mean(results$perk_sig)))
+cat(sprintf("  - Perm Regression significant: %d (%.1f%%)\n",
+    sum(results$perm_reg_sig), 100*mean(results$perm_reg_sig)))
+cat(sprintf("  - P-value correlation (Classical vs Perk): r = %.3f\n",
+    cor(results$p_classical, results$p_perk)))
+cat(sprintf("  - P-value correlation (Classical vs Perm Reg): r = %.3f\n",
+    cor(results$p_classical, results$p_perm_reg)))
 ```
 
 # References
@@ -787,3 +837,5 @@ cat(sprintf("  - P-value correlation: r = %.3f\n", cor(results$p_classical, resu
 - DiCiccio, C. J., & Romano, J. P. (2017). Robust permutation tests for correlation and regression coefficients. *Journal of the American Statistical Association*, 112(519), 1211-1220.
 
 - Jaimes, A. (2025). Where is the Land of Opportunity Replication. [Implementation of DiCiccio & Romano permutation tests]
+
+- `perk` R package: Permutation tests for correlation coefficients. Available on CRAN.
