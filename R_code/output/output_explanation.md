@@ -1,27 +1,64 @@
-| Column          | Description                                                                                                  |
-  |-----------------|--------------------------------------------------------------------------------------------------------------|
-  | category        | The thematic grouping of the covariate (Segregation, Inequality, Education, Family, or Social)               |
-  | covariate       | The predictor variable name (e.g., "Racial Segregation", "Gini Coefficient")                                 |
-  | n_obs           | Number of observations (CZs) used in the analysis after removing missing values                              |
-  | cor_coefficient | Pearson correlation coefficient from cor.test() — Method 1                                                   |
-  | cor_t_stat      | t-statistic from the correlation test                                                                        |
-  | cor_pval        | p-value from the correlation test                                                                            |
-  | reg_coefficient | Regression slope (β) from lm() — Method 2. Identical to cor_coefficient when both X and Y are standardized   |
-  | reg_se          | Standard error of the regression coefficient                                                                 |
-  | reg_t_stat      | t-statistic from regression (should equal cor_t_stat)                                                        |
-  | reg_pval        | p-value from regression (should equal cor_pval)                                                              |
-  | methods_agree   | TRUE if correlation and regression give the same results (coefficient diff < 0.001 and p-value diff < 0.001) |
-  | perm_cor_pval   | p-value from permutation correlation test using perk or PermCor — Method 3                                   |
-  | perm_reg_pval   | p-value from permutation regression test (DiCiccio & Romano Theorem 3.2) — Method 4                          |
-  | classical_sig   | TRUE if classically significant (reg_pval < 0.05)                                                            |
-  | perm_cor_sig    | TRUE if permutation correlation significant (perm_cor_pval < 0.05)                                           |
-  | perm_reg_sig    | TRUE if permutation regression significant (perm_reg_pval < 0.05)                                            |
-  | all_agree       | TRUE if all methods agree on significance (all significant or all not significant)                           |
+# Output Explanation: mobility_test_results.csv
 
-  ---
-  Key observations from the data:
+## Column Descriptions
 
-  - All 17 covariates show methods_agree = TRUE — confirming correlation ≈ regression for standardized variables
-  - All 17 covariates show all_agree = TRUE — classical and permutation tests reach the same conclusions
-  - 16 of 17 covariates are significant; only "Top 1% Income Share" is not significant (p ≈ 0.62)
-  - The strongest predictor is "Fraction of Children with Single Mothers" (r = 0.64, p ≈ 10⁻⁸³)
+| Column | Description |
+|--------|-------------|
+| category | Thematic grouping (Race, Segregation, Income Distribution, K-12 Education, Social Capital, Family Structure, Tax, College, Local Labor Market, Migration) |
+| covariate | Predictor variable name (e.g., "Racial Segregation", "Gini Coefficient") |
+| n_obs | Number of CZs used after removing missing values |
+| beta | Standardized regression coefficient (= Pearson r when both X and Y are standardized) |
+| se | Standard error of the regression coefficient |
+| t_stat | t-statistic from regression (β/SE) |
+| p_classical | p-value from classical OLS t-test |
+| classical_sig | TRUE if classically significant (p_classical < 0.05) |
+| p_perm | p-value from permutation regression test (DiCiccio & Romano 2017) |
+| perm_sig | TRUE if permutation significant (p_perm < 0.05) |
+| agree | TRUE if classical and permutation tests reach the same significance conclusion |
+
+---
+
+## Methods Compared
+
+| Method | Test Statistic | Source |
+|--------|----------------|--------|
+| **Classical OLS** | t = β̂/SE(β̂) | Standard regression inference |
+| **Permutation Regression** | Wald statistic Sn (heteroskedasticity-robust) | DiCiccio & Romano (2017) Theorem 3.2 |
+
+---
+
+## Interpreting Results
+
+### Significance
+- **p < 0.05**: Statistically significant association with mobility
+- **p ≥ 0.05**: No significant association detected
+
+### Coefficient Direction
+- **Positive β**: Higher values of covariate → lower mobility (worse for children)
+- **Negative β**: Higher values of covariate → higher mobility (better for children)
+
+Note: The sign depends on how relative mobility is coded. In this analysis, higher relative mobility values indicate less mobility (stronger parent-child income correlation).
+
+### Effect Size
+Since both X and Y are standardized:
+- |β| = 0.20: Weak-moderate effect
+- |β| = 0.40: Moderate-strong effect
+- |β| = 0.60: Strong effect
+
+---
+
+## Key Findings
+
+- **35 covariates** tested across 10 categories
+- **32/35 (91.4%)** significantly associated with relative mobility
+- **100% agreement** between classical and permutation methods
+
+### Strongest Predictors (highest |β|)
+1. Fraction Single Mothers (β = 0.64)
+2. Fraction Black (β = 0.63)
+3. Gini Bottom 99% (β = 0.47)
+
+### Non-Significant Covariates
+1. Top 1% Income Share (p ≈ 0.62)
+2. Teacher-Student Ratio (p ≈ 0.81)
+3. College Graduation Rate (p ≈ 0.55)

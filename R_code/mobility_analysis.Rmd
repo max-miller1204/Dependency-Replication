@@ -1,11 +1,13 @@
 ---
-title: "Classical vs Permutation Testing for Relative Mobility Analysis"
+title: "Replicating Chetty et al. (2014): Classical vs Permutation Inference for Intergenerational Mobility"
 author: "Max Miller"
 date: "`r Sys.Date()`"
 output:
   pdf_document:
     latex_engine: xelatex
     keep_tex: false
+    toc: true
+    toc_depth: 2
 header-includes:
   - \usepackage{fvextra}
   - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
@@ -30,60 +32,128 @@ knitr::opts_chunk$set(
 options(width = 70)
 ```
 
-# Overview
+# Introduction
 
-This analysis tests both **CORRELATION** and **REGRESSION** to demonstrate equivalence between classical and permutation testing approaches for relative mobility analysis.
+## Background: The Chetty et al. Study
 
-# Variable Definitions
+In their landmark 2014 paper "Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States," Chetty, Hendren, Kline, and Saez analyzed tax records from over 40 million children to measure intergenerational economic mobility across U.S. Commuting Zones (CZs).
 
-## Console Output Variables
+A key finding was identifying which community-level characteristics correlate with **relative mobility**---the relationship between a child's income rank and their parents' income rank. Online Appendix Table VIII of their paper reports correlations between relative mobility and 35 covariates spanning categories like segregation, income inequality, education, family structure, and social capital.
 
-The analysis prints results in the following format:
+## Purpose of This Analysis
+
+This analysis has two objectives:
+
+1. **Replicate** the classical OLS regression results from Chetty et al.'s Online Appendix Table VIII
+2. **Compare** these classical results to a permutation-based inference method that does not rely on asymptotic normality assumptions
+
+## Why Permutation Tests?
+
+Classical OLS regression relies on asymptotic theory---as sample sizes grow large, the t-statistic approximately follows a t-distribution. However, this approximation may be unreliable when:
+
+- Sample sizes are moderate (here, n $\approx$ 700 CZs)
+- Error distributions are non-normal or heteroskedastic
+- The relationship between variables violates model assumptions
+
+**Permutation tests** offer an alternative that:
+
+- Makes no distributional assumptions about the errors
+- Provides exact p-values under the null hypothesis of no relationship
+- Is robust to heteroskedasticity when properly studentized
+
+We implement the permutation regression test from **DiCiccio and Romano (2017)**, "Robust Permutation Tests for Correlation and Regression Coefficients," which provides a heteroskedasticity-robust test statistic.
+
+## The Data: Tables 5 and 8
+
+Our analysis uses two of Chetty et al.'s Online Data Tables:
+
+**Online Data Table 5** provides the **dependent variable**: relative mobility estimates for 741 Commuting Zones (CZs). These estimates were computed from IRS tax records covering over 40 million children born between 1980-1991, linked to their parents' tax returns. The key variable is the **rank-rank slope**---the regression coefficient when regressing children's income percentile rank on parents' income percentile rank within each CZ. A higher slope indicates less mobility (children's outcomes more strongly determined by parents' income). The national average is 0.34, meaning a 10 percentile increase in parent rank is associated with a 3.4 percentile increase in child rank. We use the 1980-82 birth cohort estimates and restrict to CZs with at least 250 children to ensure reliable estimates.
+
+**Online Data Table 8** provides the **independent variables**: 35 community-level characteristics for each CZ, including measures of segregation, income inequality, school quality, social capital, family structure, and local labor market conditions. These covariates come from public sources (Census, IRS public statistics, education databases) and allow us to ask: "Which community characteristics predict higher or lower mobility?"
+
+## Why Replicate Table VIII?
+
+We chose to replicate Online Appendix Table VIII because it represents the core empirical contribution of Chetty et al. (2014): identifying which community-level characteristics are associated with intergenerational mobility. While the mobility estimates in Table 5 were computed from restricted IRS tax records and cannot be independently reproduced from raw data, Table VIII's correlational analysis uses these *published* mobility estimates as the dependent variable and publicly available community characteristics as predictors. This makes it both replicable and substantively important---it is this analysis that identifies single-parent household rates as "the single strongest correlate of upward income mobility among all the variables we explored" (Chetty et al., 2014, p. 40), and that links segregation, inequality, and social capital to children's economic outcomes. Policy discussions citing this paper typically draw on Table VIII's findings, making it essential to verify that these correlations are robust to alternative statistical methods.
+
+## A Note on P-Values and Hypothesis Testing
+
+A p-value greater than 0.05 **never** leads to rejecting the null hypothesis when using $\alpha = 0.05$ as the significance threshold. By definition, we reject $H_0$ only when $p < \alpha$. When $p \geq 0.05$, we "fail to reject" the null---this is not the same as accepting the null or proving no effect exists; it simply means the observed data are not sufficiently improbable under $H_0$ to warrant rejection at our chosen confidence level.
+
+Some important clarifications:
+
+- **Different $\alpha$ levels**: If a researcher uses $\alpha = 0.10$, then $p = 0.07$ would lead to rejection. The choice of $\alpha$ is made before seeing the data.
+- **One-tailed vs. two-tailed tests**: A two-tailed $p = 0.08$ corresponds to a one-tailed $p = 0.04$, which would reject under a one-tailed test. However, our analysis uses two-tailed tests throughout.
+- **Multiple testing**: When testing many hypotheses (as we do with 35 covariates), some researchers apply corrections like Bonferroni ($\alpha_{adjusted} = 0.05/35 \approx 0.0014$), which would make rejection even more stringent.
+
+In this analysis, we use the conventional $\alpha = 0.05$ two-tailed threshold without multiple testing correction, consistent with Chetty et al.'s original analysis.
+
+## Research Question
+
+> Do the significance conclusions from Chetty et al.'s classical OLS analysis hold up under permutation-based inference?
+
+If both methods agree, this provides evidence that the original findings are robust to the choice of inference method.
+
+# Methods
+
+## Data Sources
+
+We use two publicly available datasets from the Equality of Opportunity Project:
+
+| Dataset | Contents |
+|---------|----------|
+| Online Data Table 5 | Mobility estimates (relative and absolute) for each CZ |
+| Online Data Table 8 | CZ-level characteristics (35 covariates) |
+
+Following Chetty et al., we restrict the sample to CZs with at least 250 children (n $\geq$ 250) to ensure reliable mobility estimates.
+
+## Statistical Methods
+
+### Method 1: Classical OLS Regression (Chetty et al.'s Approach)
+
+For each covariate $X_j$, we estimate:
+
+$$\text{Relative Mobility}_i = \alpha + \beta_j X_{ji} + \epsilon_i$$
+
+where both the outcome and covariate are standardized (mean 0, SD 1). The standardized coefficient $\beta_j$ equals the Pearson correlation coefficient $r$.
+
+Statistical significance is assessed using the classical t-test, which assumes $\epsilon_i \sim N(0, \sigma^2)$.
+
+### Method 2: Permutation Regression Test (DiCiccio & Romano, 2017)
+
+The permutation test assesses significance by:
+
+1. Computing a heteroskedasticity-robust Wald statistic $S_n$ from the observed data
+2. Permuting the outcome variable $Y$ many times (B = 10,000) to generate a null distribution
+3. Computing the p-value as the proportion of permuted statistics $\geq$ the observed statistic
+
+The test statistic is:
+
+$$S_n = n \hat{\beta}^T \left( \hat{\Sigma}_{XX}^{-1} \hat{\Omega} \hat{\Sigma}_{XX}^{-1} \right) \hat{\beta}$$
+
+where $\hat{\Omega}$ is the heteroskedasticity-robust covariance estimator. This follows Theorem 3.2 of DiCiccio and Romano (2017).
+
+**Key advantages:**
+
+- No assumption of normally distributed errors
+- Robust to heteroskedasticity
+- Exact Type I error control under the null hypothesis
+
+## Console Output Format
+
+Results are printed in the following format:
 
 ```
-[OK] Racial.Segregation  b=0.406 p_c=0.000 p_pc=0.000 p_pr=0.000*
+[OK] Racial.Segregation  b=0.406 p_classical=0.000 p_perm=0.000*
 ```
 
-| Symbol | Name | Description |
-|--------|------|-------------|
-| `[OK]` | Agreement Status | All methods agree on significance. `[X]` indicates disagreement. |
-| `[X]` | Disagreement Status | Classical and permutation methods disagree on significance. |
-| `b` | Beta Coefficient | Standardized regression coefficient (equals Pearson r when both X and Y are standardized). |
-| `p_c` | Classical p-value | p-value from OLS regression (Method 2). |
-| `p_pc` | Permutation Correlation p-value | p-value from permutation correlation test using perk/PermCor (Method 3). |
-| `p_pr` | Permutation Regression p-value | p-value from permutation regression test based on DiCiccio & Romano Theorem 3.2 (Method 4). |
-| `*` | Significance Indicator | Asterisk indicates statistical significance at α = 0.05. |
-
-## CSV Output Variables (mobility_test_results.csv)
-
-| Column | Description |
+| Symbol | Description |
 |--------|-------------|
-| `category` | Thematic grouping: Segregation, Inequality, Education, Family, or Social. |
-| `covariate` | Predictor variable name (e.g., "Racial Segregation"). |
-| `n_obs` | Number of observations (CZs) after removing missing values. |
-| `cor_coefficient` | Pearson correlation coefficient from `cor.test()` (Method 1). |
-| `cor_t_stat` | t-statistic from the correlation test. |
-| `cor_pval` | p-value from the correlation test. |
-| `reg_coefficient` | OLS regression slope β from `lm()` (Method 2). Equals `cor_coefficient` when standardized. |
-| `reg_se` | Standard error of the regression coefficient. |
-| `reg_t_stat` | t-statistic from regression. Equals `cor_t_stat` when standardized. |
-| `reg_pval` | p-value from regression. Equals `cor_pval` when standardized. |
-| `methods_agree` | TRUE if correlation and regression results match (diff < 0.001). |
-| `perm_cor_pval` | p-value from permutation correlation test (Method 3). |
-| `perm_reg_pval` | p-value from permutation regression test (Method 4). |
-| `classical_sig` | TRUE if classically significant (`reg_pval` < 0.05). |
-| `perm_cor_sig` | TRUE if permutation correlation significant (`perm_cor_pval` < 0.05). |
-| `perm_reg_sig` | TRUE if permutation regression significant (`perm_reg_pval` < 0.05). |
-| `all_agree` | TRUE if all methods agree on significance (all significant or all not). |
-
-## Methods Summary
-
-| Method | Function | Test Type | Source |
-|--------|----------|-----------|--------|
-| Method 1 | `cor.test()` | Classical Pearson correlation | Base R |
-| Method 2 | `lm()` | Classical OLS regression | Base R |
-| Method 3 | `perk_test()` or `perm_test()` | Permutation correlation | perk/PermCor packages |
-| Method 4 | `perm_test_regression()` | Permutation regression | Alex's implementation of DiCiccio & Romano (2017) Theorem 3.2 |
+| `[OK]` | Classical and permutation methods agree on significance |
+| `[X]` | Methods disagree on significance |
+| `b` | Standardized regression coefficient (= Pearson r) |
+| `p_classical` | p-value from classical OLS t-test |
+| `p_perm` | p-value from permutation regression test |
+| `*` | Statistically significant at $\alpha = 0.05$ |
 
 # Part 1: Data Loading and Preparation
 
@@ -92,22 +162,11 @@ The analysis prints results in the following format:
 ```{r libraries, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(broom)
-library(tinytex)
-
-# Uncomment to install permutation test packages
-# install.packages("devtools")
-# devtools::install_github("hyu-ub/perk/perk")
-# install.packages("PermCor")
-# tinytex::install_tinytex()
-# install.packages("tinytex")
-
-# Load permutation test libraries (if available)
-# If these fail, only regression permutation tests will run
-has_perk <- require(perk, quietly = TRUE)
-has_permcor <- require(PermCor, quietly = TRUE)
 ```
 
-## Load Data
+## Load the Chetty et al. Data
+
+The data files are structured with metadata rows at the top, which we skip during import.
 
 ```{r load-data}
 # Load Online Data Table 5 (Mobility Estimates)
@@ -119,7 +178,6 @@ table5 <- read.csv("Online_Data_Table_5.csv",
 )
 
 # Remove rows with column numbers "(1)", "(2)", etc. and empty rows
-# These appear right after the header
 table5 <- table5[!grepl("^\\(\\d+\\)$", table5[, 1]) & table5[, 1] != "", ]
 rownames(table5) <- NULL
 
@@ -131,8 +189,7 @@ table8 <- read.csv("Online_Data_Table_8.csv",
   stringsAsFactors = FALSE
 )
 
-# Remove rows with column numbers and reset row names
-# Row 8 has "-1" in first column (negative numbers are not valid CZ codes)
+# Remove invalid rows (negative CZ codes are metadata)
 table8 <- table8[as.numeric(table8[, 1]) > 0 & !is.na(table8[, 1]), ]
 rownames(table8) <- NULL
 
@@ -140,45 +197,40 @@ if (nrow(table8) == 0) {
   stop("ERROR: Online_Data_Table_8.csv loaded 0 rows! Check file location.")
 }
 
-cat(sprintf("Loaded Table 5: %d rows\n", nrow(table5)))
-cat(sprintf("Loaded Table 8: %d rows\n", nrow(table8)))
+cat(sprintf("Loaded Table 5: %d CZs with mobility estimates\n", nrow(table5)))
+cat(sprintf("Loaded Table 8: %d CZs with characteristics\n", nrow(table8)))
 ```
 
 ## Clean and Prepare Data
 
 ```{r clean-data}
-# Clean column names
+# Clean column names (R converts spaces and special chars to dots)
 names(table5) <- gsub("^X\\.", "", names(table5))
 names(table8) <- gsub("^X\\.", "", names(table8))
 
-# DEBUG: Show ALL actual column names after R processing
-# cat(sprintf("Table 8 has %d columns:\n\n", length(names(table8))))
-# for(i in 1:length(names(table8))) {
-#  cat(sprintf("%2d: %s\n", i, names(table8)[i]))
-# }
-
-# Rename key columns
+# Rename key columns for clarity
 colnames(table5)[1] <- "CZ"
-colnames(table5)[5] <- "AM" # Absolute Mobility
-colnames(table5)[6] <- "RM" # Relative Mobility
+colnames(table5)[5] <- "AM"          # Absolute Mobility
+colnames(table5)[6] <- "RM"          # Relative Mobility
 colnames(table5)[4] <- "n_children"
-
 colnames(table8)[1] <- "CZ"
 
-# Convert CZ to numeric in both tables to ensure join compatibility
+# Convert CZ to numeric for joining
 table5$CZ <- as.numeric(table5$CZ)
 table8$CZ <- as.numeric(table8$CZ)
 ```
 
-## Merge Tables on CZ identifier
+## Merge Tables and Apply Sample Restrictions
+
+Following Chetty et al., we restrict to CZs with at least 250 children to ensure reliable mobility estimates.
 
 ```{r merge-tables}
+# Merge mobility estimates with CZ characteristics
 data <- table5 %>%
   select(CZ, RM, AM, n_children) %>%
   inner_join(table8, by = "CZ")
 
-# Convert to numeric (all covariate columns from Table 8)
-# Columns 4-41 contain all the covariates
+# Convert covariate columns to numeric
 numeric_cols <- c("RM", "AM", "n_children", names(table8)[4:ncol(table8)])
 for (col in numeric_cols) {
   if (col %in% names(data)) {
@@ -186,7 +238,7 @@ for (col in numeric_cols) {
   }
 }
 
-# Create sample size indicator and filter
+# Apply sample restriction: n >= 250 children
 data <- data %>%
   mutate(n250 = ifelse(n_children >= 250, 1, 0))
 
@@ -194,16 +246,30 @@ df <- data %>%
   filter(n250 == 1) %>%
   filter(!is.na(RM))
 
-cat(sprintf(
-  "Sample: %d CZs with n>=250 (out of %d total CZs)\n\n",
-  nrow(df), nrow(data)
-))
+cat(sprintf("Final sample: %d CZs with n >= 250 children\n", nrow(df)))
+cat(sprintf("(Dropped %d CZs with insufficient sample size)\n", nrow(data) - nrow(df)))
 ```
 
-# Part 2: Permutation Test Functions
+# Part 2: Permutation Test Implementation
+
+## The DiCiccio & Romano (2017) Permutation Regression Test
+
+This function implements Theorem 3.2 from DiCiccio and Romano (2017). The key innovation is using a **studentized test statistic** that is asymptotically pivotal, meaning the permutation distribution approximates the true null distribution even without exchangeability.
+
+The null hypothesis is $H_0: \beta = 0$ (no linear relationship between X and Y).
 
 ```{r perm-functions}
-# Regression-based permutation test (DiCiccio & Romano 2017, Theorem 3.2)
+#' Permutation Regression Test (DiCiccio & Romano 2017, Theorem 3.2)
+#'
+#' Tests H0: beta = 0 using a heteroskedasticity-robust Wald statistic.
+#' The test permutes Y values to generate the null distribution.
+#'
+#' @param X Matrix of predictor variables (must be centered to mean zero)
+#' @param Y Vector of response variable (must be centered to mean zero)
+#' @param B Number of permutations (default: 10,000)
+#' @param seed Random seed for reproducibility
+#' @return List with observed statistic, permutation distribution, and p-value
+
 perm_test_regression <- function(X, Y, B = 10000, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
 
@@ -213,188 +279,176 @@ perm_test_regression <- function(X, Y, B = 10000, seed = NULL) {
 
   if (n != length(Y)) stop("X and Y must have same number of rows")
 
-  # Add intercept
+  # Always include an intercept (per Remark 3.1 of the paper)
   X <- cbind(1, X)
 
-  # Test statistic function
+  # Compute the heteroskedasticity-robust Wald statistic S_n
   compute_Sn <- function(X, Y) {
-    XtX <- crossprod(X)
-    XtY <- crossprod(X, Y)
-    beta_hat <- solve(XtX, XtY)
+    XtX <- crossprod(X)              # X'X
+    XtY <- crossprod(X, Y)           # X'Y
+    beta_hat <- solve(XtX, XtY)      # OLS estimate
     resid <- as.vector(Y - X %*% beta_hat)
-    Sigma_hat <- XtX / n
+
+    Sigma_hat <- XtX / n             # (1/n) X'X
     r2 <- resid^2
-    Omega_hat <- crossprod(X, X * r2) / n
+    Omega_hat <- crossprod(X, X * r2) / n  # HC0 robust covariance
+
     tmp <- solve(Sigma_hat, beta_hat)
     as.numeric(n * t(tmp) %*% Omega_hat %*% tmp)
   }
 
-  # Observed statistic
+  # Observed test statistic
   S_obs <- compute_Sn(X, Y)
 
-  # Permutation distribution
+  # Generate permutation distribution under H0
   S_perm <- replicate(B, {
-    Y_perm <- sample(Y, replace = FALSE)
+    Y_perm <- sample(Y, replace = FALSE)  # Permute Y values
     compute_Sn(X, Y_perm)
   })
 
-  # P-value
+  # Compute p-value (proportion of permuted stats >= observed)
+  # +1 correction ensures valid p-value (Phipson & Smyth, 2010)
   pval <- (sum(S_perm >= S_obs) + 1) / (B + 1)
 
   list(S_obs = S_obs, S_perm = S_perm, p_value = pval, B = B)
 }
-
-if (has_perk) {
-  cat("perk package loaded (correlation permutation tests)\n")
-} else {
-  cat("perk package not available (install with devtools::install_github('hyu-ub/perk/perk'))\n")
-}
-
-if (has_permcor) {
-  cat("PermCor package loaded (correlation permutation tests)\n")
-} else {
-  cat("PermCor package not available (install with install.packages('PermCor'))\n")
-}
-
-cat("\n")
 ```
 
-# Part 3: Define Covariates to Test
+# Part 3: Define Covariates from Table VIII
+
+## The 35 Covariates
+
+These are the same covariates analyzed in Online Appendix Table VIII of Chetty et al. (2014), organized by thematic category.
 
 ```{r covariates}
-# FULL TABLE VIII: All 35 covariates from Online Appendix Table VIII
-# NOTE: Column names match how R processes the CSV headers
-# Spaces -> dots, special chars (< > % ( )) -> dots
+# Column names match R's processing of CSV headers
+# (spaces -> dots, special characters -> dots)
 covariates_to_test <- list(
+
   # RACE (1 variable)
   Race = c(
-    "Frac..Black" # Fraction Black Residents
+    "Frac..Black"                          # Fraction Black Residents
   ),
 
   # SEGREGATION (5 variables)
   Segregation = c(
-    "Racial.Segregation", # Racial Segregation Theil Index
-    "Income.Segregation", # Income Segregation Theil Index
-    "Segregation.of.Poverty...p25.", # Segregation of Poverty (<p25)
-    "Segregation.of.Affluence...p75.", # Segregation of Affluence (>p75)
-    "Frac..with.Commute...15.Mins" # Share with Commute < 15 Mins
+    "Racial.Segregation",                  # Racial Segregation (Theil Index)
+    "Income.Segregation",                  # Income Segregation (Theil Index)
+    "Segregation.of.Poverty...p25.",       # Segregation of Poverty (<p25)
+    "Segregation.of.Affluence...p75.",     # Segregation of Affluence (>p75)
+    "Frac..with.Commute...15.Mins"         # Share with Commute < 15 Mins
   ),
 
   # INCOME DISTRIBUTION (5 variables)
   Income_Distribution = c(
-    "Household.Income.per.capita", # Household Income per Capita
-    "Gini", # Gini coefficient for Parent Income
-    "Top.1..Income.Share", # Top 1% Income Share for Parents
-    "Gini.Bottom.99.", # Gini Bottom 99%
-    "Frac..Between.p25.and.p75" # Fraction Middle Class
+    "Household.Income.per.capita",         # Household Income per Capita
+    "Gini",                                # Gini Coefficient
+    "Top.1..Income.Share",                 # Top 1% Income Share
+    "Gini.Bottom.99.",                     # Gini Bottom 99%
+    "Frac..Between.p25.and.p75"            # Fraction Middle Class
   ),
 
   # K-12 EDUCATION (4 variables)
   K12_Education = c(
-    "School.Expenditure.per.Student", # School Expenditure per Student
-    "Teacher.Student.Ratio", # Teacher-Student Ratio
-    "Test.Score.Percentile..Income.Adjusted", # Test Score Percentile (Income Adjusted)
-    "High.School.Dropout.Rate..Income.Adjusted." # High School Dropout Rate (Income Adjusted)
+    "School.Expenditure.per.Student",      # School Expenditure per Student
+    "Teacher.Student.Ratio",               # Teacher-Student Ratio
+    "Test.Score.Percentile..Income.Adjusted",    # Test Scores (Income Adjusted)
+    "High.School.Dropout.Rate..Income.Adjusted." # Dropout Rate (Income Adjusted)
   ),
 
   # SOCIAL CAPITAL (3 variables)
   Social_Capital = c(
-    "Social.Capital.Index", # Social Capital Index
-    "Fraction.Religious", # Fraction Religious
-    "Violent.Crime.Rate" # Violent Crime Rate
+    "Social.Capital.Index",                # Social Capital Index
+    "Fraction.Religious",                  # Fraction Religious
+    "Violent.Crime.Rate"                   # Violent Crime Rate
   ),
 
   # FAMILY STRUCTURE (3 variables)
   Family_Structure = c(
-    "Fraction.of.Children.with.Single.Mothers", # Fraction Single Mothers
-    "Fraction.of.Adults.Divorced", # Fraction Divorced
-    "Fraction.of.Adults.Married" # Fraction Married
+    "Fraction.of.Children.with.Single.Mothers",  # Fraction Single Mothers
+    "Fraction.of.Adults.Divorced",               # Fraction Divorced
+    "Fraction.of.Adults.Married"                 # Fraction Married
   ),
 
   # TAX (4 variables)
   Tax = c(
-    "Local.Tax.Rate", # Local Tax Rate
-    "Local.Government.Expenditures.Per.Capita", # Local Gov Expenditures per Capita
-    "State.EITC.Exposure", # State EITC Exposure
-    "State.Income.Tax.Progressivity" # State Income Tax Progressivity
+    "Local.Tax.Rate",                      # Local Tax Rate
+    "Local.Government.Expenditures.Per.Capita",  # Local Gov Expenditures
+    "State.EITC.Exposure",                 # State EITC Exposure
+    "State.Income.Tax.Progressivity"       # State Income Tax Progressivity
   ),
 
   # COLLEGE (3 variables)
   College = c(
-    "Number.of.Colleges.per.Capita", # Number of Colleges per Capita
-    "College.Tuition", # Mean College Tuition
-    "College.Graduation.Rate..Income.Adjusted." # College Graduation Rate (Income Adjusted)
+    "Number.of.Colleges.per.Capita",       # Colleges per Capita
+    "College.Tuition",                     # Mean College Tuition
+    "College.Graduation.Rate..Income.Adjusted."  # Graduation Rate (Inc. Adj.)
   ),
 
   # LOCAL LABOR MARKET (4 variables)
   Local_Labor_Market = c(
-    "Labor.Force.Participation.Rate", # Labor Force Participation Rate
-    "Manufacturing.Employment.Share", # Fraction Working in Manufacturing
-    "Growth.in.Chinese.Imports.1990.2000", # Growth in Chinese Imports 1990-2000
-    "Teenage.Labor.Force.Participation.Rate" # Teenage (14-16) Labor Force Participation
+    "Labor.Force.Participation.Rate",      # Labor Force Participation
+    "Manufacturing.Employment.Share",      # Manufacturing Employment Share
+    "Growth.in.Chinese.Imports.1990.2000", # Growth in Chinese Imports
+    "Teenage.Labor.Force.Participation.Rate"  # Teen Labor Force Participation
   ),
 
   # MIGRATION (3 variables)
   Migration = c(
-    "Migration.Inflow.Rate", # Migration Inflow Rate
-    "Migration.Outlflow.Rate", # Migration Outflow Rate (note: typo in CSV "Outlflow")
-    "Frac..Foreign.Born" # Fraction of Foreign Born Residents
+    "Migration.Inflow.Rate",               # Migration Inflow Rate
+    "Migration.Outlflow.Rate",             # Migration Outflow Rate
+    "Frac..Foreign.Born"                   # Fraction Foreign Born
   )
 )
 
 all_covariates <- unlist(covariates_to_test, use.names = FALSE)
-cat(sprintf(
-  " Testing %d covariates across %d categories\n\n",
-  length(all_covariates), length(covariates_to_test)
-))
+cat(sprintf("Testing %d covariates across %d categories\n",
+  length(all_covariates), length(covariates_to_test)))
 ```
 
-# Phase 1: Replicate Classical Results (OLS)
+# Part 4: Classical OLS Replication
 
-This phase replicates the classical OLS results from Online Appendix Table VIII. We test both CORRELATION and REGRESSION (they should give identical results).
+## Replicating Table VIII Results
+
+This phase replicates Chetty et al.'s classical OLS results. For each covariate, we:
+
+1. Standardize both the covariate and relative mobility (mean 0, SD 1)
+2. Regress relative mobility on the covariate
+3. The standardized coefficient equals the Pearson correlation
 
 ```{r phase1}
-# Initialize results
-phase1_results <- data.frame(
+# Initialize results dataframe
+results <- data.frame(
   category = character(),
   covariate = character(),
   n_obs = integer(),
-
-  # Classical correlation
-  cor_coefficient = numeric(),
-  cor_t_stat = numeric(),
-  cor_pval = numeric(),
-
-  # Classical regression
-  reg_coefficient = numeric(),
-  reg_se = numeric(),
-  reg_t_stat = numeric(),
-  reg_pval = numeric(),
-
-  # Agreement check
-  methods_agree = logical(),
+  beta = numeric(),           # Standardized coefficient (= Pearson r)
+  se = numeric(),             # Standard error
+  t_stat = numeric(),         # t-statistic
+  p_classical = numeric(),    # Classical p-value
   stringsAsFactors = FALSE
 )
 
-# Loop through covariates
+# Loop through all covariates
 for (category_name in names(covariates_to_test)) {
   cat(sprintf("\n%s:\n", toupper(category_name)))
-  cat("-", rep("-", 78), "\n", sep = "")
+  cat(paste(rep("-", 70), collapse = ""), "\n")
 
   for (covariate_name in covariates_to_test[[category_name]]) {
-    # Check if covariate exists
+
+    # Check if covariate exists in data
     if (!(covariate_name %in% names(df))) {
-      cat(sprintf("   %s: NOT FOUND\n", covariate_name))
+      cat(sprintf("  %s: NOT FOUND\n", covariate_name))
       next
     }
 
-    # Extract data
+    # Extract complete cases
     temp_data <- df %>%
       select(RM, all_of(covariate_name)) %>%
       drop_na()
 
     if (nrow(temp_data) < 50) {
-      cat(sprintf("   %s: Insufficient data (n=%d)\n", covariate_name, nrow(temp_data)))
+      cat(sprintf("  %s: Insufficient data (n=%d)\n", covariate_name, nrow(temp_data)))
       next
     }
 
@@ -403,308 +457,178 @@ for (category_name in names(covariates_to_test)) {
     # Standardize variables (mean 0, SD 1)
     y <- temp_data$RM
     y_std <- (y - mean(y)) / sd(y)
-
     x <- temp_data[[covariate_name]]
     x_std <- (x - mean(x)) / sd(x)
 
-    # -------------------------------------------------------------------------
-    # METHOD 1: CLASSICAL CORRELATION TEST
-    # -------------------------------------------------------------------------
-    cor_test_result <- cor.test(x_std, y_std, method = "pearson")
-    cor_coef <- cor_test_result$estimate
-    cor_t <- cor_test_result$statistic
-    cor_p <- cor_test_result$p.value
-
-    # -------------------------------------------------------------------------
-    # METHOD 2: CLASSICAL REGRESSION TEST
-    # -------------------------------------------------------------------------
+    # Fit OLS regression
     fit <- lm(y_std ~ x_std)
     fit_summary <- summary(fit)
     coef_table <- coef(fit_summary)
 
-    reg_coef <- coef_table[2, "Estimate"]
-    reg_se <- coef_table[2, "Std. Error"]
-    reg_t <- coef_table[2, "t value"]
-    reg_p <- coef_table[2, "Pr(>|t|)"]
-
-    # Check agreement (should be identical when standardized)
-    coef_diff <- abs(cor_coef - reg_coef)
-    pval_diff <- abs(cor_p - reg_p)
-    methods_agree <- (coef_diff < 0.001) & (pval_diff < 0.001)
+    beta <- coef_table[2, "Estimate"]
+    se <- coef_table[2, "Std. Error"]
+    t_stat <- coef_table[2, "t value"]
+    p_classical <- coef_table[2, "Pr(>|t|)"]
 
     # Store results
-    phase1_results <- rbind(phase1_results, data.frame(
+    results <- rbind(results, data.frame(
       category = category_name,
       covariate = covariate_name,
       n_obs = n_obs,
-      cor_coefficient = cor_coef,
-      cor_t_stat = cor_t,
-      cor_pval = cor_p,
-      reg_coefficient = reg_coef,
-      reg_se = reg_se,
-      reg_t_stat = reg_t,
-      reg_pval = reg_p,
-      methods_agree = methods_agree
+      beta = beta,
+      se = se,
+      t_stat = t_stat,
+      p_classical = p_classical
     ))
 
     # Print result
-    agreement_icon <- ifelse(methods_agree, "[OK]", "[X]")
-    sig_icon <- ifelse(reg_p < 0.05, "*", " ")
-
-    cat(sprintf(
-      "  %s %-30s n=%3d b=%5.3f p=%5.3f%s\n",
-      agreement_icon,
-      substr(covariate_name, 1, 30),
-      n_obs,
-      reg_coef,
-      reg_p,
-      sig_icon
-    ))
+    sig_icon <- ifelse(p_classical < 0.05, "*", " ")
+    cat(sprintf("  %-35s n=%3d  b=%6.3f  p=%5.3f%s\n",
+      substr(covariate_name, 1, 35), n_obs, beta, p_classical, sig_icon))
   }
 }
-cat(sprintf("  Total tests: %d\n", nrow(phase1_results)))
-cat(sprintf(
-  "  Significant at alpha=0.05: %d (%.1f%%)\n",
-  sum(phase1_results$reg_pval < 0.05),
-  100 * mean(phase1_results$reg_pval < 0.05)
-))
-cat(sprintf(
-  "  Correlation approx Regression: %d/%d (%.1f%% agreement)\n",
-  sum(phase1_results$methods_agree),
-  nrow(phase1_results),
-  100 * mean(phase1_results$methods_agree)
-))
+
+# Summary
+cat(sprintf("\n\nCLASSICAL OLS SUMMARY\n"))
+cat(paste(rep("=", 70), collapse = ""), "\n")
+cat(sprintf("Total covariates tested: %d\n", nrow(results)))
+cat(sprintf("Significant at alpha=0.05: %d (%.1f%%)\n",
+  sum(results$p_classical < 0.05),
+  100 * mean(results$p_classical < 0.05)))
 ```
 
-# Phase 2: Add Permutation Tests
+# Part 5: Permutation Test Comparison
 
-This phase adds permutation tests and compares them to classical results. We run both CORRELATION and REGRESSION permutation tests.
+## Comparing Classical and Permutation Inference
+
+Now we run the permutation regression test for each covariate and compare to the classical results. This tests whether the significance conclusions are robust to the choice of inference method.
 
 ```{r phase2}
-# Check if Phase 1 had any results
-if (nrow(phase1_results) == 0) {
-  cat("ERROR: Phase 1 produced 0 results!\n")
-  cat("This means no covariates were found in the data.\n")
-  cat("Check the DEBUG output above to see actual column names.\n\n")
-  cat("HINT: Look for column names like:\n")
-  cat("  - Racial.Segregation\n")
-  cat("  - Income.Segregation\n")
-  cat("  - Gini\n")
-  cat("  etc.\n")
-  stop("Cannot proceed to Phase 2 without Phase 1 results")
-}
-
-# Initialize results
-phase2_results <- phase1_results # Start with Phase 1 results
-
-# Add permutation columns
-phase2_results$perm_cor_pval <- NA
-phase2_results$perm_reg_pval <- NA
-phase2_results$classical_sig <- phase2_results$reg_pval < 0.05
-phase2_results$perm_cor_sig <- NA
-phase2_results$perm_reg_sig <- NA
-phase2_results$all_agree <- NA
+# Add permutation results columns
+results$p_perm <- NA
+results$classical_sig <- results$p_classical < 0.05
+results$perm_sig <- NA
+results$agree <- NA
 
 # Loop through covariates
-for (i in 1:nrow(phase2_results)) {
-  covariate_name <- phase2_results$covariate[i]
-  category_name <- phase2_results$category[i]
+for (i in 1:nrow(results)) {
+  covariate_name <- results$covariate[i]
+  category_name <- results$category[i]
 
-  if (i == 1 || phase2_results$category[i] != phase2_results$category[i - 1]) {
+  if (i == 1 || results$category[i] != results$category[i - 1]) {
     cat(sprintf("\n%s:\n", toupper(category_name)))
-    cat("-", rep("-", 78), "\n", sep = "")
+    cat(paste(rep("-", 70), collapse = ""), "\n")
   }
 
-  # Extract data
+  # Extract and standardize data
   temp_data <- df %>%
     select(RM, all_of(covariate_name)) %>%
     drop_na()
 
-  # Standardize
   y <- temp_data$RM
   y_std <- (y - mean(y)) / sd(y)
   x <- temp_data[[covariate_name]]
   x_std <- (x - mean(x)) / sd(x)
 
-  # Center to mean zero (required for regression permutation test)
+  # Center to mean zero (required for permutation test)
   x_m0 <- x_std - mean(x_std)
   y_m0 <- y_std - mean(y_std)
 
-  # -------------------------------------------------------------------------
-  # METHOD 3: PERMUTATION CORRELATION TEST
-  # -------------------------------------------------------------------------
-  perm_cor_p <- NA
-
-  if (has_perk) {
-    tryCatch(
-      {
-        perm_cor_result <- perk_test(x_std, y_std,
-          method = "pearson",
-          alternative = "two.sided"
-        )
-        perm_cor_p <- perm_cor_result$p.value
-      },
-      error = function(e) {
-        perm_cor_p <- NA
-      }
-    )
-  } else if (has_permcor) {
-    tryCatch(
-      {
-        perm_cor_result <- perm_test(x_std, y_std,
-          method = "Pearson",
-          alternative = "two.sided"
-        )
-        perm_cor_p <- perm_cor_result$p.value
-      },
-      error = function(e) {
-        perm_cor_p <- NA
-      }
-    )
-  }
-
-  phase2_results$perm_cor_pval[i] <- perm_cor_p
-  phase2_results$perm_cor_sig[i] <- if (!is.na(perm_cor_p)) perm_cor_p < 0.05 else NA
-
-  # -------------------------------------------------------------------------
-  # METHOD 4: PERMUTATION REGRESSION TEST
-  # -------------------------------------------------------------------------
-  perm_reg_result <- perm_test_regression(
+  # Run permutation regression test
+  perm_result <- perm_test_regression(
     X = x_m0,
     Y = y_m0,
     B = 10000,
-    seed = 42 + i # Different seed for each test
+    seed = 42 + i  # Different seed for each test, but reproducible
   )
 
-  perm_reg_p <- perm_reg_result$p_value
-  phase2_results$perm_reg_pval[i] <- perm_reg_p
-  phase2_results$perm_reg_sig[i] <- perm_reg_p < 0.05
-
-  # Check if all methods agree on significance
-  classical_sig <- phase2_results$classical_sig[i]
-  perm_reg_sig <- phase2_results$perm_reg_sig[i]
-  perm_cor_sig <- phase2_results$perm_cor_sig[i]
-
-  if (!is.na(perm_cor_sig)) {
-    all_agree <- (classical_sig == perm_reg_sig) & (classical_sig == perm_cor_sig)
-  } else {
-    all_agree <- (classical_sig == perm_reg_sig)
-  }
-
-  phase2_results$all_agree[i] <- all_agree
+  p_perm <- perm_result$p_value
+  results$p_perm[i] <- p_perm
+  results$perm_sig[i] <- p_perm < 0.05
+  results$agree[i] <- results$classical_sig[i] == results$perm_sig[i]
 
   # Print result
-  agreement_icon <- ifelse(all_agree, "[OK]", "[X]")
-  sig_icon <- ifelse(classical_sig, "*", " ")
+  agree_icon <- ifelse(results$agree[i], "[OK]", "[X]")
+  sig_icon <- ifelse(results$classical_sig[i], "*", " ")
 
-  if (!is.na(perm_cor_p)) {
-    cat(sprintf(
-      "  %s %-25s b=%5.3f p_c=%5.3f p_pc=%5.3f p_pr=%5.3f%s\n",
-      agreement_icon,
-      substr(covariate_name, 1, 25),
-      phase2_results$reg_coefficient[i],
-      phase2_results$reg_pval[i],
-      perm_cor_p,
-      perm_reg_p,
-      sig_icon
-    ))
-  } else {
-    cat(sprintf(
-      "  %s %-25s b=%5.3f p_c=%5.3f p_pr=%5.3f%s\n",
-      agreement_icon,
-      substr(covariate_name, 1, 25),
-      phase2_results$reg_coefficient[i],
-      phase2_results$reg_pval[i],
-      perm_reg_p,
-      sig_icon
-    ))
-  }
+  cat(sprintf("  %s %-30s b=%6.3f  p_class=%5.3f  p_perm=%5.3f%s\n",
+    agree_icon,
+    substr(covariate_name, 1, 30),
+    results$beta[i],
+    results$p_classical[i],
+    p_perm,
+    sig_icon))
 }
 ```
 
-# Final Summary
+# Results Summary
 
-```{r final-summary}
-cat("1. PHASE 1: Classical Results\n")
-cat(sprintf("   - Total tests: %d\n", nrow(phase2_results)))
-cat(sprintf(
-  "   - Significant (classical): %d (%.1f%%)\n",
-  sum(phase2_results$classical_sig),
-  100 * mean(phase2_results$classical_sig)
-))
-cat(sprintf(
-  "   - Correlation approx Regression: %.1f%% agreement\n",
-  100 * mean(phase2_results$methods_agree)
-))
+## Agreement Between Methods
 
-cat("2. PHASE 2: Permutation Results\n")
-cat(sprintf(
-  "   - Significant (perm regression): %d (%.1f%%)\n",
-  sum(phase2_results$perm_reg_sig),
-  100 * mean(phase2_results$perm_reg_sig)
-))
+```{r summary}
+cat("\n")
+cat(paste(rep("=", 70), collapse = ""), "\n")
+cat("RESULTS SUMMARY\n")
+cat(paste(rep("=", 70), collapse = ""), "\n\n")
 
-if (any(!is.na(phase2_results$perm_cor_sig))) {
-  cat(sprintf(
-    "   - Significant (perm correlation): %d (%.1f%%)\n",
-    sum(phase2_results$perm_cor_sig, na.rm = TRUE),
-    100 * mean(phase2_results$perm_cor_sig, na.rm = TRUE)
-  ))
-}
+cat("1. CLASSICAL OLS (Replicating Chetty et al.)\n")
+cat(sprintf("   - Covariates tested: %d\n", nrow(results)))
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(results$classical_sig),
+  100 * mean(results$classical_sig)))
 
-cat("3. AGREEMENT ANALYSIS\n")
-cat(sprintf(
-  "   - All methods agree: %d/%d (%.1f%%)\n",
-  sum(phase2_results$all_agree, na.rm = TRUE),
-  nrow(phase2_results),
-  100 * mean(phase2_results$all_agree, na.rm = TRUE)
-))
+cat("\n2. PERMUTATION REGRESSION (DiCiccio & Romano 2017)\n")
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(results$perm_sig),
+  100 * mean(results$perm_sig)))
 
-# Find disagreements
-disagreements <- phase2_results %>%
-  filter(!all_agree)
+cat("\n3. AGREEMENT ANALYSIS\n")
+cat(sprintf("   - Methods agree: %d/%d (%.1f%%)\n",
+  sum(results$agree),
+  nrow(results),
+  100 * mean(results$agree)))
+
+# Show any disagreements
+disagreements <- results %>% filter(!agree)
 
 if (nrow(disagreements) > 0) {
-  cat(sprintf("   - Disagreements: %d\n\n", nrow(disagreements)))
-  cat("   Details:\n")
-  for (i in 1:nrow(disagreements)) {
-    row <- disagreements[i, ]
-    cat(sprintf("     - %s (%s)\n", row$covariate, row$category))
-    cat(sprintf(
-      "       Classical: p=%.5f %s\n", row$reg_pval,
-      ifelse(row$classical_sig, "[SIG]", "[NOT SIG]")
-    ))
-    cat(sprintf(
-      "       Perm (reg): p=%.5f %s\n", row$perm_reg_pval,
-      ifelse(row$perm_reg_sig, "[SIG]", "[NOT SIG]")
-    ))
-    if (!is.na(row$perm_cor_pval)) {
-      cat(sprintf(
-        "       Perm (cor): p=%.5f %s\n", row$perm_cor_pval,
-        ifelse(row$perm_cor_sig, "[SIG]", "[NOT SIG]")
-      ))
-    }
+  cat(sprintf("\n   DISAGREEMENTS (%d):\n", nrow(disagreements)))
+  for (j in 1:nrow(disagreements)) {
+    row <- disagreements[j, ]
+    cat(sprintf("   - %s: Classical p=%.3f (%s), Perm p=%.3f (%s)\n",
+      row$covariate,
+      row$p_classical,
+      ifelse(row$classical_sig, "SIG", "NOT SIG"),
+      row$p_perm,
+      ifelse(row$perm_sig, "SIG", "NOT SIG")))
   }
 } else {
-  cat("   - No disagreements! All methods agree.\n")
+  cat("\n   No disagreements - all methods agree on significance!\n")
 }
 
-# P-value correlations
-cat("4. P-VALUE CORRELATIONS\n")
-cat(sprintf(
-  "   - Classical vs Perm Regression: r=%.3f\n",
-  cor(phase2_results$reg_pval, phase2_results$perm_reg_pval)
-))
+cat("\n4. P-VALUE CORRELATION\n")
+cat(sprintf("   - Correlation between classical and permutation p-values: r = %.3f\n",
+  cor(results$p_classical, results$p_perm)))
+```
 
-if (any(!is.na(phase2_results$perm_cor_pval))) {
-  cat(sprintf(
-    "   - Classical vs Perm Correlation: r=%.3f\n",
-    cor(phase2_results$reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")
-  ))
-  cat(sprintf(
-    "   - Perm Regression vs Perm Correlation: r=%.3f\n",
-    cor(phase2_results$perm_reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")
-  ))
+## Non-Significant Covariates
+
+These covariates were NOT significantly associated with relative mobility under either method:
+
+```{r nonsig}
+nonsig <- results %>%
+  filter(!classical_sig & !perm_sig) %>%
+  select(category, covariate, beta, p_classical, p_perm)
+
+if (nrow(nonsig) > 0) {
+  cat("\nCovariates NOT significant under both methods:\n\n")
+  for (j in 1:nrow(nonsig)) {
+    cat(sprintf("  - %s (b=%.3f, p_class=%.3f, p_perm=%.3f)\n",
+      nonsig$covariate[j], nonsig$beta[j],
+      nonsig$p_classical[j], nonsig$p_perm[j]))
+  }
+} else {
+  cat("\nAll covariates were significant under at least one method.\n")
 }
 ```
 
@@ -716,157 +640,150 @@ if (!dir.exists("output")) {
   dir.create("output", recursive = TRUE)
 }
 
-# Clean up covariate names for better readability
-phase2_results_clean <- phase2_results %>%
-  mutate(covariate = case_when(
-    # Race
+# Clean up covariate names for readability
+results_clean <- results %>%
+  mutate(covariate_clean = case_when(
     covariate == "Frac..Black" ~ "Fraction Black Residents",
-
-    # Segregation
     covariate == "Racial.Segregation" ~ "Racial Segregation",
     covariate == "Income.Segregation" ~ "Income Segregation",
     covariate == "Segregation.of.Poverty...p25." ~ "Segregation of Poverty (<p25)",
     covariate == "Segregation.of.Affluence...p75." ~ "Segregation of Affluence (>p75)",
     covariate == "Frac..with.Commute...15.Mins" ~ "Share with Commute < 15 Mins",
-
-    # Income Distribution
     covariate == "Household.Income.per.capita" ~ "Household Income per Capita",
     covariate == "Gini" ~ "Gini Coefficient",
     covariate == "Top.1..Income.Share" ~ "Top 1% Income Share",
     covariate == "Gini.Bottom.99." ~ "Gini Bottom 99%",
-    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Middle Class (p25-p75)",
-
-    # K-12 Education
+    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Middle Class",
     covariate == "School.Expenditure.per.Student" ~ "School Expenditure per Student",
     covariate == "Teacher.Student.Ratio" ~ "Teacher-Student Ratio",
-    covariate == "Test.Score.Percentile..Income.Adjusted" ~ "Test Score Percentile (Income Adjusted)",
-    covariate == "High.School.Dropout.Rate..Income.Adjusted." ~ "High School Dropout Rate (Income Adjusted)",
-
-    # Social Capital
+    covariate == "Test.Score.Percentile..Income.Adjusted" ~ "Test Score Percentile (Inc. Adj.)",
+    covariate == "High.School.Dropout.Rate..Income.Adjusted." ~ "HS Dropout Rate (Inc. Adj.)",
     covariate == "Social.Capital.Index" ~ "Social Capital Index",
     covariate == "Fraction.Religious" ~ "Fraction Religious",
     covariate == "Violent.Crime.Rate" ~ "Violent Crime Rate",
-
-    # Family Structure
-    covariate == "Fraction.of.Children.with.Single.Mothers" ~ "Fraction of Children with Single Mothers",
-    covariate == "Fraction.of.Adults.Divorced" ~ "Fraction of Adults Divorced",
-    covariate == "Fraction.of.Adults.Married" ~ "Fraction of Adults Married",
-
-    # Tax
+    covariate == "Fraction.of.Children.with.Single.Mothers" ~ "Fraction Single Mothers",
+    covariate == "Fraction.of.Adults.Divorced" ~ "Fraction Divorced",
+    covariate == "Fraction.of.Adults.Married" ~ "Fraction Married",
     covariate == "Local.Tax.Rate" ~ "Local Tax Rate",
-    covariate == "Local.Government.Expenditures.Per.Capita" ~ "Local Government Expenditures per Capita",
+    covariate == "Local.Government.Expenditures.Per.Capita" ~ "Local Gov Expenditures",
     covariate == "State.EITC.Exposure" ~ "State EITC Exposure",
     covariate == "State.Income.Tax.Progressivity" ~ "State Income Tax Progressivity",
-
-    # College
-    covariate == "Number.of.Colleges.per.Capita" ~ "Number of Colleges per Capita",
+    covariate == "Number.of.Colleges.per.Capita" ~ "Colleges per Capita",
     covariate == "College.Tuition" ~ "Mean College Tuition",
-    covariate == "College.Graduation.Rate..Income.Adjusted." ~ "College Graduation Rate (Income Adjusted)",
-
-    # Local Labor Market
-    covariate == "Labor.Force.Participation.Rate" ~ "Labor Force Participation Rate",
+    covariate == "College.Graduation.Rate..Income.Adjusted." ~ "College Grad Rate (Inc. Adj.)",
+    covariate == "Labor.Force.Participation.Rate" ~ "Labor Force Participation",
     covariate == "Manufacturing.Employment.Share" ~ "Manufacturing Employment Share",
-    covariate == "Growth.in.Chinese.Imports.1990.2000" ~ "Growth in Chinese Imports 1990-2000",
-    covariate == "Teenage.Labor.Force.Participation.Rate" ~ "Teenage Labor Force Participation Rate",
-
-    # Migration
+    covariate == "Growth.in.Chinese.Imports.1990.2000" ~ "Growth in Chinese Imports",
+    covariate == "Teenage.Labor.Force.Participation.Rate" ~ "Teen Labor Force Participation",
     covariate == "Migration.Inflow.Rate" ~ "Migration Inflow Rate",
     covariate == "Migration.Outlflow.Rate" ~ "Migration Outflow Rate",
     covariate == "Frac..Foreign.Born" ~ "Fraction Foreign Born",
-
-    # Default (shouldn't happen, but just in case)
     TRUE ~ gsub("\\.", " ", covariate)
   ))
 
-# Save detailed results
-write.csv(phase2_results_clean,
+# Save results
+write.csv(results_clean,
   "output/mobility_test_results.csv",
-  row.names = FALSE
-)
+  row.names = FALSE)
 cat("Saved: output/mobility_test_results.csv\n")
 
 # Save workspace
-save(phase1_results, phase2_results, df, covariates_to_test,
-  file = "output/mobility_analysis_workspace.RData"
-)
+save(results, results_clean, df, covariates_to_test,
+  file = "output/mobility_analysis_workspace.RData")
 cat("Saved: output/mobility_analysis_workspace.RData\n")
 ```
 
-# Visualizations
+# Visualization
 
-```{r visualizations, fig.width=10, fig.height=8, message=FALSE}
-# Coefficient plot (use cleaned names)
-phase2_results_plot <- phase2_results_clean %>%
+## Coefficient Plot
+
+This plot shows the standardized regression coefficients for all 35 covariates, with colors indicating whether both methods agree on significance.
+
+```{r visualization, fig.width=10, fig.height=9, message=FALSE}
+# Prepare data for plotting
+plot_data <- results_clean %>%
   mutate(
-    covariate_short = substr(covariate, 1, 50), # Use full cleaned name, truncate if needed
     sig_status = case_when(
-      classical_sig & perm_reg_sig ~ "Both significant",
-      !classical_sig & !perm_reg_sig ~ "Neither significant",
+      classical_sig & perm_sig ~ "Both significant",
+      !classical_sig & !perm_sig ~ "Neither significant",
       TRUE ~ "Disagreement"
     )
   ) %>%
-  arrange(reg_coefficient)
+  arrange(beta)
 
-phase2_results_plot$covariate_short <- factor(
-  phase2_results_plot$covariate_short,
-  levels = phase2_results_plot$covariate_short
+plot_data$covariate_clean <- factor(
+  plot_data$covariate_clean,
+  levels = plot_data$covariate_clean
 )
 
-p2 <- ggplot(phase2_results_plot, aes(x = reg_coefficient, y = covariate_short)) +
+# Create coefficient plot
+p <- ggplot(plot_data, aes(x = beta, y = covariate_clean)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
   geom_errorbar(
-    aes(
-      xmin = reg_coefficient - 1.96 * reg_se,
-      xmax = reg_coefficient + 1.96 * reg_se,
-      color = sig_status
-    ),
-    height = 0.3, alpha = 0.7, orientation = "y"
+    aes(xmin = beta - 1.96 * se, xmax = beta + 1.96 * se, color = sig_status),
+    height = 0.3, alpha = 0.7
   ) +
   geom_point(aes(color = sig_status), size = 3) +
   scale_color_manual(values = c(
-    "Both significant" = "#00BA38",
+    "Both significant" = "#2E8B57",
     "Neither significant" = "gray60",
-    "Disagreement" = "#F8766D"
+    "Disagreement" = "#DC143C"
   )) +
   labs(
-    title = "Standardized Coefficients: Predictors of Relative Mobility",
-    subtitle = "Error bars show 95% confidence intervals",
-    x = "Standardized beta coefficient",
+    title = "Predictors of Relative Mobility: Classical vs Permutation Inference",
+    subtitle = "Replication of Chetty et al. (2014) Table VIII with robustness check",
+    x = "Standardized Coefficient (95% CI)",
     y = "",
-    color = "Significance"
+    color = "Significance Agreement"
   ) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
-    axis.text.y = element_text(size = 9)
+    axis.text.y = element_text(size = 9),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "gray40")
   )
 
-print(p2)
+print(p)
 
-ggsave("output/coefficient_plot.png", p2,
-  width = 10, height = 8, dpi = 300
-)
+ggsave("output/coefficient_plot.png", p, width = 10, height = 9, dpi = 300)
 cat("Saved: output/coefficient_plot.png\n")
 ```
 
-# Analysis Complete
+# Conclusion
 
 ```{r conclusion}
-cat(sprintf("  - Tested %d covariates across %d categories\n", nrow(phase2_results), length(covariates_to_test)))
-cat(sprintf(
-  "  - Classical significance: %d/%d (%.1f%%)\n",
-  sum(phase2_results$classical_sig),
-  nrow(phase2_results),
-  100 * mean(phase2_results$classical_sig)
-))
-cat(sprintf(
-  "  - Permutation significance: %d/%d (%.1f%%)\n",
-  sum(phase2_results$perm_reg_sig),
-  nrow(phase2_results),
-  100 * mean(phase2_results$perm_reg_sig)
-))
-cat(sprintf(
-  "  - Overall agreement: %.1f%%\n",
-  100 * mean(phase2_results$all_agree, na.rm = TRUE)
-))
+cat(paste(rep("=", 70), collapse = ""), "\n")
+cat("CONCLUSION\n")
+cat(paste(rep("=", 70), collapse = ""), "\n\n")
+
+agreement_pct <- 100 * mean(results$agree)
+
+if (agreement_pct == 100) {
+  cat("All 35 covariates show IDENTICAL significance conclusions under both\n")
+  cat("classical OLS and permutation regression inference.\n\n")
+  cat("This demonstrates that Chetty et al.'s findings are ROBUST to the\n")
+  cat("choice of inference method and do not depend on asymptotic normality\n")
+  cat("assumptions.\n")
+} else {
+  cat(sprintf("%.1f%% of covariates show identical significance conclusions.\n", agreement_pct))
+  cat(sprintf("%d covariates show disagreement between methods.\n", sum(!results$agree)))
+}
+
+cat(sprintf("\n\nKey Statistics:\n"))
+cat(sprintf("  - Sample size: %d Commuting Zones\n", nrow(df)))
+cat(sprintf("  - Covariates tested: %d\n", nrow(results)))
+cat(sprintf("  - Classically significant: %d (%.1f%%)\n",
+    sum(results$classical_sig), 100*mean(results$classical_sig)))
+cat(sprintf("  - Permutation significant: %d (%.1f%%)\n",
+    sum(results$perm_sig), 100*mean(results$perm_sig)))
+cat(sprintf("  - P-value correlation: r = %.3f\n", cor(results$p_classical, results$p_perm)))
 ```
+
+# References
+
+- Chetty, R., Hendren, N., Kline, P., & Saez, E. (2014). Where is the land of opportunity? The geography of intergenerational mobility in the United States. *Quarterly Journal of Economics*, 129(4), 1553-1623.
+
+- DiCiccio, C. J., & Romano, J. P. (2017). Robust permutation tests for correlation and regression coefficients. *Journal of the American Statistical Association*, 112(519), 1211-1220.
+
+- Jaimes, A. (2025). Where is the Land of Opportunity Replication. [Implementation of DiCiccio & Romano permutation tests]

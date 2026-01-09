@@ -349,7 +349,53 @@ All data is aggregated to **Commuting Zones (CZ)** level:
 
 ---
 
+## Connection to R Analysis
+
+This project uses two data tables from the Chetty et al. online data:
+
+### Data Used in R Analysis
+
+| Table | File | Contents | Used For |
+|-------|------|----------|----------|
+| Table 5 | `Online_Data_Table_5.csv` | Mobility estimates by CZ | Dependent variable (relative mobility) |
+| Table 8 | `Online_Data_Table_8.csv` | CZ characteristics | Independent variables (35 covariates) |
+
+### Analysis Flow
+
+```
+Online_Data_Table_5.csv  →  Relative Mobility (Y)
+         +                         ↓
+Online_Data_Table_8.csv  →  Covariates (X₁...X₃₅)
+                                   ↓
+                        mobility_analysis.Rmd
+                                   ↓
+               ┌───────────────────┴───────────────────┐
+               ↓                                       ↓
+        Classical OLS                       Permutation Regression
+        (t-test inference)                  (DiCiccio & Romano 2017)
+               ↓                                       ↓
+           p_classical                              p_perm
+               └───────────────────┬───────────────────┘
+                                   ↓
+                    Compare significance conclusions
+```
+
+### Key Variables
+
+**Dependent Variable** (from Table 5):
+- `RM, 80-82 Cohort`: Relative mobility (rank-rank slope) for 1980-82 birth cohort
+
+**Independent Variables** (from Table 8):
+- 35 covariates across 10 categories (see `R_code/analysis_guide.md`)
+
+**Sample Restriction**:
+- 709 CZs with ≥250 children (filtered using `count` column from Table 5)
+
+---
+
 ## File Locations
+
+### Original Chetty et al. Replication Files
 
 ```
 Data/
@@ -383,4 +429,25 @@ Data/
 │   ├── ... (through 9)
 │   └── Table_of_Contents.csv
 └── dta_to_csv.ipynb                 # Python notebook for format conversion
+```
+
+### This Project
+
+```
+Dependency-Replication/
+├── R_code/
+│   ├── mobility_analysis.Rmd         # Main R analysis
+│   ├── mobility_analysis.pdf         # Compiled results
+│   ├── analysis_guide.md             # Methodology documentation
+│   ├── Online_Data_Table_5.csv       # Mobility estimates (from Chetty et al.)
+│   ├── Online_Data_Table_8.csv       # CZ characteristics (from Chetty et al.)
+│   └── output/
+│       ├── mobility_test_results.csv # Analysis results
+│       ├── coefficient_plot.png      # Visualization
+│       └── mobility_analysis_workspace.RData
+├── context/
+│   └── DATA_FLOW_DOCUMENTATION.md    # This file
+├── paper_info/
+│   └── where_is_the_land_of_opportunity_replication.pdf
+└── README.md
 ```
