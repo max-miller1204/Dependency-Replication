@@ -12,9 +12,11 @@
 | t_stat | t-statistic from regression (β/SE) |
 | p_classical | p-value from classical OLS t-test |
 | classical_sig | TRUE if classically significant (p_classical < 0.05) |
-| p_perm | p-value from permutation regression test (DiCiccio & Romano 2017) |
-| perm_sig | TRUE if permutation significant (p_perm < 0.05) |
-| agree | TRUE if classical and permutation tests reach the same significance conclusion |
+| p_perk | p-value from perk permutation correlation test |
+| perk_sig | TRUE if perk significant (p_perk < 0.05) |
+| p_perm_reg | p-value from DiCiccio & Romano permutation regression test |
+| perm_reg_sig | TRUE if permutation regression significant (p_perm_reg < 0.05) |
+| all_agree | TRUE if all three methods reach the same significance conclusion |
 
 ---
 
@@ -23,7 +25,39 @@
 | Method | Test Statistic | Source |
 |--------|----------------|--------|
 | **Classical OLS** | t = β̂/SE(β̂) | Standard regression inference |
-| **Permutation Regression** | Wald statistic Sn (heteroskedasticity-robust) | DiCiccio & Romano (2017) Theorem 3.2 |
+| **perk** | Pearson r | `perk` R package (permutation correlation) |
+| **Permutation Regression** | Wald statistic Sₙ (heteroskedasticity-robust) | DiCiccio & Romano (2017) Theorem 3.2 |
+
+---
+
+## The Comparison Structure
+
+```
+                    Classical OLS (Chetty et al.'s original method)
+                                    ↑
+                         Compare significance
+                           ↗              ↖
+            perk (perm correlation)    DiCiccio & Romano (perm regression)
+```
+
+### Why Compare to Classical OLS?
+
+Classical OLS is what Chetty et al. used. We're checking whether their findings are **robust** — would they have reached the same conclusions using permutation methods that don't rely on normality assumptions?
+
+### Why Two Permutation Methods?
+
+Both test the **same null hypothesis** (H₀: no relationship), but use **different test statistics**:
+
+| Test | Test Statistic | Properties |
+|------|----------------|------------|
+| perk | Pearson r | Simple, not studentized |
+| DiCiccio & Romano | Robust Wald Sₙ | Studentized, heteroskedasticity-robust |
+
+| If... | Then... |
+|-------|---------|
+| All three agree | Very strong evidence the findings are robust |
+| Classical ≠ permutation | Normality assumption might be affecting conclusions |
+| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
 
 ---
 
@@ -51,14 +85,25 @@ Since both X and Y are standardized:
 
 - **35 covariates** tested across 10 categories
 - **32/35 (91.4%)** significantly associated with relative mobility
-- **100% agreement** between classical and permutation methods
+- **100% agreement** between all three methods
 
 ### Strongest Predictors (highest |β|)
 1. Fraction Single Mothers (β = 0.64)
 2. Fraction Black (β = 0.63)
 3. Gini Bottom 99% (β = 0.47)
 
-### Non-Significant Covariates
+### Non-Significant Covariates (all three methods agree p > 0.05)
 1. Top 1% Income Share (p ≈ 0.62)
 2. Teacher-Student Ratio (p ≈ 0.81)
 3. College Graduation Rate (p ≈ 0.55)
+
+---
+
+## A Note on P-Values
+
+A p-value greater than 0.05 **never** leads to rejecting the null hypothesis when using α = 0.05.
+
+- "Fail to reject" ≠ "accept the null" or "prove no effect"
+- It means the data aren't sufficiently improbable under H₀
+
+We use α = 0.05 without multiple testing correction, consistent with Chetty et al.'s original analysis.

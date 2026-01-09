@@ -2,18 +2,45 @@
 
 ## Overview
 
-This analysis replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty et al. (2014), then compares classical OLS inference with permutation-based inference.
+This analysis replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty et al. (2014), then compares classical OLS inference with two permutation-based inference methods.
 
-**Two methods are compared:**
+**Three methods are compared:**
 
-| Method | Description | Source |
-|--------|-------------|--------|
-| **Classical OLS** | Standard regression with t-test inference | Chetty et al. (2014) |
-| **Permutation Regression** | DiCiccio & Romano (2017) Theorem 3.2 | Alex Jaimes implementation |
+| Method | Test Statistic | Source |
+|--------|----------------|--------|
+| **Classical OLS** | t = β̂/SE(β̂) | Chetty et al. (2014) original approach |
+| **perk (Permutation Correlation)** | Pearson r | `perk` R package |
+| **Permutation Regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) Theorem 3.2 |
 
-This demonstrates that:
-1. The original findings are robust to the choice of inference method
-2. Permutation methods provide valid inference without distributional assumptions
+---
+
+## The Goal: Comparing Permutation Methods to Classical OLS
+
+The structure of our comparison:
+
+```
+                    Classical OLS (Chetty et al.'s original method)
+                                    ↑
+                         Compare significance
+                           ↗              ↖
+            perk (perm correlation)    DiCiccio & Romano (perm regression)
+```
+
+**The question being answered:**
+
+> "If we replace classical t-test inference with permutation-based inference, do we reach the same conclusions about which covariates significantly predict mobility?"
+
+**Why compare to classical OLS specifically?**
+
+Classical OLS is what Chetty et al. used. It's the published result. We're checking whether their findings are **robust** — would they have reached the same conclusions using permutation methods that don't rely on normality assumptions?
+
+**Why two permutation methods?**
+
+| If... | Then... |
+|-------|---------|
+| All three agree | Very strong evidence the findings are robust |
+| Classical ≠ permutation | Normality assumption might be affecting conclusions |
+| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
 
 ---
 
@@ -36,16 +63,78 @@ From DiCiccio & Romano (2017):
 - **Heteroskedasticity-robust**: Uses a studentized test statistic
 - **Exact finite-sample validity**: Under certain conditions, provides exact p-values
 
-### The DiCiccio & Romano Test
+---
+
+## The Three Methods Explained
+
+### Method 1: Classical OLS (Chetty et al.'s Approach)
+
+For each covariate X, we estimate:
+
+$$\text{Relative Mobility}_i = \alpha + \beta X_i + \epsilon_i$$
+
+where both Y and X are standardized (mean 0, SD 1). The standardized coefficient β equals the Pearson correlation r.
+
+- **Test statistic**: t = β̂/SE(β̂)
+- **Assumption**: ε ~ N(0, σ²)
+- **Implementation**: R's `lm()` function
+
+### Method 2: perk Permutation Correlation
+
+The `perk` package implements permutation tests for Pearson correlation:
+
+1. Compute the observed correlation r between X and Y
+2. Permute Y values 10,000 times to generate null distribution
+3. p-value = proportion of permuted |r*| ≥ |r_obs|
+
+- **Test statistic**: Pearson r (simple, not studentized)
+- **Assumption**: None (permutation-based)
+- **Implementation**: `perk::perk()` function
+
+### Method 3: DiCiccio & Romano Permutation Regression
 
 The permutation regression test uses a heteroskedasticity-robust Wald statistic:
 
 $$S_n = n \hat{\beta}^T \left( \hat{\Sigma}_{XX}^{-1} \hat{\Omega} \hat{\Sigma}_{XX}^{-1} \right) \hat{\beta}$$
 
-where $\hat{\Omega}$ is the HC0 robust covariance estimator. The test:
-1. Computes $S_n$ from the observed data
-2. Permutes Y values B times (default: 10,000) to generate null distribution
-3. Computes p-value as proportion of permuted statistics ≥ observed
+where Ω̂ is the HC0 robust covariance estimator. The test:
+
+1. Computes Sₙ from the observed data
+2. Permutes Y values 10,000 times to generate null distribution
+3. p-value = proportion of permuted Sₙ* ≥ Sₙ_obs
+
+- **Test statistic**: Robust Wald statistic (studentized, heteroskedasticity-robust)
+- **Assumption**: None (permutation-based)
+- **Implementation**: Custom `perm_test_regression()` function
+
+### Why Both Permutation Tests?
+
+Both test the **same null hypothesis** (H₀: no relationship between X and Y), but use **different test statistics**:
+
+| Test | Test Statistic | Properties |
+|------|----------------|------------|
+| perk | Pearson r | Simple, not studentized |
+| DiCiccio & Romano | Robust Wald Sₙ | Studentized, heteroskedasticity-robust |
+
+**Key insight**: For standardized data, r = β̂ (same number!). But Sₙ ≠ r² because Sₙ uses a **robust variance estimator** that adjusts for non-constant error variance.
+
+Comparing them answers: **"Does accounting for heteroskedasticity change our conclusions?"**
+
+- If they always agree → heteroskedasticity isn't affecting inference
+- If they disagree → the robust test is catching something the simple test misses
+
+---
+
+## Why Replicate Table VIII?
+
+We chose to replicate Online Appendix Table VIII because it represents the core empirical contribution of Chetty et al. (2014): identifying which community-level characteristics are associated with intergenerational mobility.
+
+- **Tables 1-7**: Computed from restricted IRS data (cannot be reproduced)
+- **Table VIII**: Uses published mobility estimates + public covariates (reproducible!)
+
+This is where the key policy findings come from:
+- Single-parent household rates as "the single strongest correlate of upward income mobility"
+- Links between segregation, inequality, social capital and children's economic outcomes
 
 ---
 
@@ -142,16 +231,17 @@ where $\hat{\Omega}$ is the HC0 robust covariance estimator. The test:
 
 ---
 
-## Methods Comparison
+## Methods Comparison Summary
 
-| Method | Test Statistic | Null Hypothesis | Implementation |
-|--------|----------------|-----------------|----------------|
-| **Classical OLS** | t = β̂/SE(β̂) | H0: β = 0 | `lm()` |
-| **Permutation Regression** | Wald statistic Sn (robust) | H0: β = 0 | `perm_test_regression()` |
+| Method | Test Statistic | Null Hypothesis | Handles Heteroskedasticity? |
+|--------|----------------|-----------------|----------------------------|
+| **Classical OLS** | t = β̂/SE(β̂) | H₀: β = 0 | No (assumes homoskedasticity) |
+| **perk** | Pearson r | H₀: ρ = 0 | No (simple correlation) |
+| **DiCiccio & Romano** | Robust Wald Sₙ | H₀: β = 0 | Yes (robust variance) |
 
 **Expected agreement**:
-- Strong effects (|r| > 0.3): Both methods should agree
-- Weak effects (|r| < 0.1): Both methods should agree (not significant)
+- Strong effects (|r| > 0.3): All three methods should agree
+- Weak effects (|r| < 0.1): All three methods should agree (not significant)
 - Borderline effects (p ≈ 0.05): May show occasional disagreement
 
 ---
@@ -204,16 +294,17 @@ Since both X and Y are standardized (mean 0, SD 1):
 
 Results are printed as:
 ```
-[OK] Racial.Segregation  b=0.406  p_class=0.000  p_perm=0.000*
+[OK] Racial.Segregation  b=0.406  p_class=0.000  p_perk=0.000  p_reg=0.000*
 ```
 
 | Symbol | Description |
 |--------|-------------|
-| `[OK]` | Classical and permutation methods agree on significance |
-| `[X]` | Methods disagree on significance |
+| `[OK]` | All three methods agree on significance |
+| `[X]` | At least one method disagrees |
 | `b` | Standardized regression coefficient (= Pearson r) |
 | `p_class` | p-value from classical OLS t-test |
-| `p_perm` | p-value from permutation regression test |
+| `p_perk` | p-value from perk permutation correlation |
+| `p_reg` | p-value from DiCiccio & Romano permutation regression |
 | `*` | Statistically significant at α = 0.05 |
 
 ---
@@ -223,7 +314,7 @@ Results are printed as:
 ### Prerequisites
 ```r
 # Core packages (required)
-install.packages(c("tidyverse", "broom"))
+install.packages(c("tidyverse", "broom", "perk"))
 ```
 
 ### Execution
@@ -237,8 +328,8 @@ rmarkdown::render("mobility_analysis.Rmd")
 
 ### Expected Runtime
 - **Classical OLS**: ~1 minute
-- **Permutation tests**: ~5-10 minutes (10,000 permutations × 35 covariates)
-- **Total**: ~6-11 minutes
+- **Permutation tests**: ~10-15 minutes (10,000 permutations × 35 covariates × 2 methods)
+- **Total**: ~11-16 minutes
 
 ### Outputs
 
@@ -247,14 +338,15 @@ All files saved to `R_code/output/`:
 1. **mobility_test_results.csv**: Comprehensive results table
    - Columns: category, covariate, n_obs, beta, se, t_stat
    - Classical: p_classical, classical_sig
-   - Permutation: p_perm, perm_sig
-   - Agreement: agree
+   - perk: p_perk, perk_sig
+   - Permutation Regression: p_perm_reg, perm_reg_sig
+   - Agreement: all_agree
 
 2. **coefficient_plot.png**: Forest plot visualization
    - Shows standardized β ± 1.96×SE for all covariates
    - Color-coded by significance agreement:
-     - Green: Both methods significant
-     - Gray: Neither significant
+     - Green: All three methods significant
+     - Gray: None significant
      - Red: Disagreement
 
 3. **mobility_analysis_workspace.RData**: R workspace for further analysis
@@ -263,22 +355,37 @@ All files saved to `R_code/output/`:
 
 ## Expected Results
 
-### Strong Effects (Should Agree)
-- **Fraction single-parent households**: β ≈ 0.64, both p < 0.001
-- **Social capital index**: β ≈ -0.33, both p < 0.001
-- **Gini coefficient**: β ≈ 0.35, both p < 0.001
+### Strong Effects (All Should Agree)
+- **Fraction single-parent households**: β ≈ 0.64, all p < 0.001
+- **Social capital index**: β ≈ -0.33, all p < 0.001
+- **Gini coefficient**: β ≈ 0.35, all p < 0.001
 
-### Non-Significant Effects (Should Agree)
-- **Top 1% income share**: β ≈ 0.02, both p > 0.05
-- **Teacher-student ratio**: β ≈ 0.01, both p > 0.05
-- **College graduation rate**: β ≈ -0.03, both p > 0.05
+### Non-Significant Effects (All Should Agree)
+- **Top 1% income share**: β ≈ 0.02, all p > 0.05
+- **Teacher-student ratio**: β ≈ 0.01, all p > 0.05
+- **College graduation rate**: β ≈ -0.03, all p > 0.05
 
 ### Interpretation of Disagreements
 
 If disagreements occur:
 1. **Near the 0.05 boundary**: Normal statistical variation
 2. **Permutation more conservative**: Suggests heteroskedasticity or non-normality
-3. **Permutation more liberal**: Unusual, may indicate coding issue
+3. **perk ≠ DiCiccio & Romano**: Heteroskedasticity is affecting inference
+4. **Classical ≠ both permutation**: Normality assumption is problematic
+
+---
+
+## A Note on P-Values
+
+A p-value greater than 0.05 **never** leads to rejecting the null hypothesis when using α = 0.05. By definition, we reject H₀ only when p < α.
+
+- "Fail to reject" ≠ "accept the null" or "prove no effect"
+- It means the data aren't sufficiently improbable under H₀
+
+**Important clarifications**:
+- Different α levels change the threshold (α = 0.10 → p = 0.07 would reject)
+- Multiple testing corrections make rejection more stringent
+- We use α = 0.05 without correction, consistent with Chetty et al.
 
 ---
 
@@ -290,4 +397,6 @@ If disagreements occur:
 
 3. **Implementation**: Jaimes, A. (2025). Where is the Land of Opportunity Replication.
 
-4. **Online Data Tables**: Available at https://opportunityinsights.org/data/
+4. **perk Package**: Permutation tests for correlation coefficients. Available on CRAN.
+
+5. **Online Data Tables**: Available at https://opportunityinsights.org/data/

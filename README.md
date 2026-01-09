@@ -2,22 +2,41 @@
 
 ## Overview
 
-This project replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty, Hendren, Kline, and Saez (2014), then compares classical OLS inference with permutation-based inference.
+This project replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty, Hendren, Kline, and Saez (2014), then compares classical OLS inference with two permutation-based inference methods.
 
 **Goal**: Demonstrate that the original findings are robust to the choice of statistical inference method.
 
 ## Methods Compared
 
-| Method | Description | Source |
-|--------|-------------|--------|
-| **Classical OLS** | Standard regression with t-test inference | Chetty et al. (2014) |
-| **Permutation Regression** | Heteroskedasticity-robust permutation test | DiCiccio & Romano (2017) |
+| Method | Test Statistic | Source |
+|--------|----------------|--------|
+| **Classical OLS** | t = β̂/SE(β̂) | Chetty et al. (2014) original approach |
+| **perk (Permutation Correlation)** | Pearson r | `perk` R package |
+| **Permutation Regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) |
+
+### The Comparison Structure
+
+```
+                    Classical OLS (Chetty et al.'s original method)
+                                    ↑
+                         Compare significance
+                           ↗              ↖
+            perk (perm correlation)    DiCiccio & Romano (perm regression)
+```
+
+### Why Two Permutation Methods?
+
+| If... | Then... |
+|-------|---------|
+| All three agree | Very strong evidence the findings are robust |
+| Classical ≠ permutation | Normality assumption might be affecting conclusions |
+| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
 
 ## Key Findings
 
 - **35 covariates** tested across 10 categories
 - **32/35 (91.4%)** significantly associated with relative mobility
-- **100% agreement** between classical and permutation methods on significance conclusions
+- **100% agreement** between all three methods on significance conclusions
 - Results are **robust** to the choice of inference method
 
 ## Project Structure
@@ -28,11 +47,13 @@ Dependency-Replication/
 │   ├── mobility_analysis.Rmd      # Main analysis (RMarkdown)
 │   ├── mobility_analysis.pdf      # Compiled results
 │   ├── analysis_guide.md          # Detailed methodology guide
+│   ├── why_table_viii.md          # Why we replicate Table VIII
 │   ├── Online_Data_Table_5.csv    # Mobility estimates by CZ
 │   ├── Online_Data_Table_8.csv    # CZ characteristics (covariates)
 │   └── output/
 │       ├── mobility_test_results.csv      # Full results table
 │       ├── coefficient_plot.png           # Visualization
+│       ├── output_explanation.md          # Output documentation
 │       └── mobility_analysis_workspace.RData
 ├── context/
 │   └── DATA_FLOW_DOCUMENTATION.md # Data provenance documentation
@@ -46,7 +67,7 @@ Dependency-Replication/
 ### Prerequisites
 
 ```r
-install.packages(c("tidyverse", "broom"))
+install.packages(c("tidyverse", "broom", "perk"))
 ```
 
 ### Run the Analysis
@@ -57,7 +78,7 @@ rmarkdown::render("mobility_analysis.Rmd")
 ```
 
 ### Expected Runtime
-- ~10 minutes (10,000 permutations per covariate)
+- ~15 minutes (10,000 permutations × 35 covariates × 2 methods)
 
 ## The Analysis
 
@@ -67,9 +88,10 @@ For each of 35 community-level characteristics, we test:
 
 > "Is this characteristic significantly associated with intergenerational mobility?"
 
-Using both:
+Using three methods:
 1. **Classical OLS**: Standard t-test (assumes normality)
-2. **Permutation Regression**: DiCiccio & Romano's robust test (no distributional assumptions)
+2. **perk**: Permutation correlation test (simple, not studentized)
+3. **Permutation Regression**: DiCiccio & Romano's robust test (heteroskedasticity-robust)
 
 ### Why Permutation Tests?
 
@@ -80,8 +102,19 @@ Classical inference relies on asymptotic theory that may be unreliable when:
 
 Permutation tests provide:
 - No distributional assumptions
-- Heteroskedasticity robustness
+- Heteroskedasticity robustness (DiCiccio & Romano)
 - Exact p-values under the null hypothesis
+
+### Why Both Permutation Tests?
+
+Both test the **same null hypothesis** (H₀: no relationship), but use **different test statistics**:
+
+| Test | Test Statistic | Properties |
+|------|----------------|------------|
+| perk | Pearson r | Simple, not studentized |
+| DiCiccio & Romano | Robust Wald Sₙ | Studentized, heteroskedasticity-robust |
+
+Comparing them answers: **"Does accounting for heteroskedasticity change our conclusions?"**
 
 ### Key Results
 
@@ -103,10 +136,17 @@ Permutation tests provide:
 
 | Table | Contents | Source |
 |-------|----------|--------|
-| Online Data Table 5 | Mobility estimates by CZ | IRS tax records (restricted) |
+| Online Data Table 5 | Mobility estimates by CZ | IRS tax records (restricted, published) |
 | Online Data Table 8 | CZ characteristics | Census, public data |
 
 **Sample**: 709 Commuting Zones with ≥250 children
+
+### Why Table VIII?
+
+We replicate Online Appendix Table VIII because:
+- Tables 1-7 use restricted IRS data (cannot be reproduced from raw data)
+- Table VIII uses *published* mobility estimates + public covariates (reproducible!)
+- This is where the key policy findings come from
 
 ## References
 
@@ -115,6 +155,8 @@ Permutation tests provide:
 2. **DiCiccio, C. J., & Romano, J. P.** (2017). Robust Permutation Tests For Correlation And Regression Coefficients. *Journal of the American Statistical Association*, 112(519), 1211-1220.
 
 3. **Jaimes, A.** (2025). Where is the Land of Opportunity Replication. [Implementation of permutation regression test]
+
+4. **perk** R package: Permutation tests for correlation coefficients. Available on CRAN.
 
 ## License
 

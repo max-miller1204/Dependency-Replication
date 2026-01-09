@@ -369,16 +369,38 @@ Online_Data_Table_8.csv  →  Covariates (X₁...X₃₅)
                                    ↓
                         mobility_analysis.Rmd
                                    ↓
-               ┌───────────────────┴───────────────────┐
-               ↓                                       ↓
-        Classical OLS                       Permutation Regression
-        (t-test inference)                  (DiCiccio & Romano 2017)
-               ↓                                       ↓
-           p_classical                              p_perm
-               └───────────────────┬───────────────────┘
+          ┌────────────────────────┼────────────────────────┐
+          ↓                        ↓                        ↓
+   Classical OLS           perk (Perm Corr)      DiCiccio & Romano
+   (t-test inference)      (Pearson r)           (Robust Wald Sₙ)
+          ↓                        ↓                        ↓
+      p_classical               p_perk                  p_perm_reg
+          └────────────────────────┼────────────────────────┘
                                    ↓
                     Compare significance conclusions
+                                   ↓
+                   All three agree? → Robust findings
 ```
+
+### The Three Methods
+
+| Method | Test Statistic | Properties |
+|--------|----------------|------------|
+| **Classical OLS** | t = β̂/SE(β̂) | Assumes normality |
+| **perk** | Pearson r | Permutation-based, simple |
+| **DiCiccio & Romano** | Robust Wald Sₙ | Permutation-based, heteroskedasticity-robust |
+
+### Why Compare to Classical OLS?
+
+Classical OLS is what Chetty et al. used. We're checking whether their findings are **robust** — would they have reached the same conclusions using permutation methods that don't rely on normality assumptions?
+
+### Why Two Permutation Methods?
+
+| If... | Then... |
+|-------|---------|
+| All three agree | Very strong evidence the findings are robust |
+| Classical ≠ permutation | Normality assumption might be affecting conclusions |
+| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
 
 ### Key Variables
 

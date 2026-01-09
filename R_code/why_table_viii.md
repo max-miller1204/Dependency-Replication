@@ -2,15 +2,65 @@
 
 ## Motivation for Choosing Table VIII
 
-We chose to replicate Online Appendix Table VIII because it represents the core empirical contribution of Chetty et al. (2014): identifying which community-level characteristics are associated with intergenerational mobility. While the paper's mobility estimates themselves (Tables 1-7) were computed from restricted IRS tax records and cannot be independently reproduced, Table VIII's correlational analysis uses these published mobility estimates as the dependent variable and publicly available community characteristics as predictors.
+We chose to replicate Online Appendix Table VIII because it represents the core empirical contribution of Chetty et al. (2014): identifying which community-level characteristics are associated with intergenerational mobility.
 
-This makes it both **replicable** and **substantively important**:
+### Data Availability
 
-- It is this analysis that identifies single-parent household rates as "the single strongest correlate of upward income mobility among all the variables we explored" (Chetty et al., 2014, p. 1594)
-- It links segregation, inequality, and social capital to children's economic outcomes
-- Policy discussions citing this paper typically draw on Table VIII's findings
+| Tables | Source | Reproducible? |
+|--------|--------|---------------|
+| **Tables 1-7** | Restricted IRS tax records | No - requires data access agreement |
+| **Table VIII** | Published mobility estimates + public covariates | **Yes** - fully reproducible! |
 
-By verifying that these correlations are robust to alternative statistical methods (specifically, permutation-based inference that does not rely on asymptotic normality), we strengthen confidence in the paper's policy-relevant conclusions.
+Table VIII's correlational analysis uses:
+- **Dependent variable**: Published mobility estimates from Table 5
+- **Independent variables**: Public data from Table 8 (Census, education databases, etc.)
+
+### Substantive Importance
+
+This is where the key policy findings come from:
+
+- **"The fraction of children living in single-parent households is the single strongest correlate of upward income mobility among all the variables we explored"** (Chetty et al., 2014, p. 1594)
+- Links between segregation, inequality, and children's economic outcomes
+- Social capital's strong association with mobility
+
+Policy discussions citing this paper typically draw on Table VIII's findings, making it essential to verify these correlations are robust to alternative statistical methods.
+
+---
+
+## The Comparison: Classical vs Permutation Inference
+
+### Structure
+
+```
+                    Classical OLS (Chetty et al.'s original method)
+                                    ↑
+                         Compare significance
+                           ↗              ↖
+            perk (perm correlation)    DiCiccio & Romano (perm regression)
+```
+
+### Why Compare to Classical OLS?
+
+Classical OLS is what Chetty et al. used. It's the published result. We're checking whether their findings are **robust** — would they have reached the same conclusions using permutation methods that don't rely on normality assumptions?
+
+### Why Two Permutation Methods?
+
+Both test the **same null hypothesis** (H₀: no relationship between X and Y), but use **different test statistics**:
+
+| Test | Test Statistic | Properties |
+|------|----------------|------------|
+| **perk** | Pearson r | Simple, not studentized |
+| **DiCiccio & Romano** | Robust Wald Sₙ | Studentized, heteroskedasticity-robust |
+
+**Key insight**: For standardized data, r = β̂ (same number!). But Sₙ ≠ r² because Sₙ uses a **robust variance estimator** that adjusts for non-constant error variance.
+
+Comparing them answers: **"Does accounting for heteroskedasticity change our conclusions?"**
+
+| If... | Then... |
+|-------|---------|
+| All three agree | Very strong evidence the findings are robust |
+| Classical ≠ permutation | Normality assumption might be affecting conclusions |
+| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
 
 ---
 
@@ -40,6 +90,31 @@ In this analysis, we use the conventional α = 0.05 two-tailed threshold **witho
 
 ---
 
+## The Data: Tables 5 and 8
+
+### Table 5: Mobility Estimates (Dependent Variable)
+
+- Contains relative mobility estimates for 741 Commuting Zones
+- Computed from IRS tax records (40+ million children, 1980-1991 birth cohorts)
+- Key variable: **rank-rank slope** (regression of child income rank on parent income rank)
+- Higher slope = less mobility (children's outcomes more tied to parents')
+- National average: 0.34
+
+### Table 8: CZ Characteristics (Independent Variables)
+
+- 35 community-level characteristics per CZ
+- Categories: segregation, inequality, education, social capital, family structure, labor markets, etc.
+- Sources: Census, IRS public stats, education databases
+
+### Sample Restriction
+
+- 709 CZs with ≥250 children
+- Ensures reliable mobility estimates
+
+---
+
 ## Reference
 
 Chetty, R., Hendren, N., Kline, P., & Saez, E. (2014). Where is the land of opportunity? The geography of intergenerational mobility in the United States. *Quarterly Journal of Economics*, 129(4), 1553-1623.
+
+DiCiccio, C. J., & Romano, J. P. (2017). Robust permutation tests for correlation and regression coefficients. *Journal of the American Statistical Association*, 112(519), 1211-1220.
