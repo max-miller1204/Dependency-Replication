@@ -7,6 +7,8 @@
 # Load required libraries
 library(tidyverse)
 library(broom)
+library(sandwich)  # For vcovHC (heteroskedasticity-consistent covariance)
+library(lmtest)    # For waldtest
 
 # Uncomment to install permutation test packages
 # install.packages("devtools")
@@ -299,6 +301,10 @@ phase1_results <- data.frame(
   reg_t_stat = numeric(),
   reg_pval = numeric(),
 
+  # Waldtest (heteroskedasticity-robust)
+  reg_hc0_pval = numeric(),
+  reg_hc3_pval = numeric(),
+
   # Agreement check
   methods_agree = logical(),
 
@@ -358,6 +364,18 @@ for(category_name in names(covariates_to_test)) {
     reg_t <- coef_table[2, "t value"]
     reg_p <- coef_table[2, "Pr(>|t|)"]
 
+    # -------------------------------------------------------------------------
+    # METHOD 2b: WALDTEST WITH HC0 (heteroskedasticity-robust)
+    # -------------------------------------------------------------------------
+    waldtest_hc0 <- waldtest(fit, vcov = vcovHC(fit, type = "HC0"))
+    reg_hc0_p <- waldtest_hc0$`Pr(>F)`[2]
+
+    # -------------------------------------------------------------------------
+    # METHOD 2c: WALDTEST WITH HC3 (heteroskedasticity-robust, small-sample)
+    # -------------------------------------------------------------------------
+    waldtest_hc3 <- waldtest(fit, vcov = vcovHC(fit, type = "HC3"))
+    reg_hc3_p <- waldtest_hc3$`Pr(>F)`[2]
+
     # Check agreement (should be identical when standardized)
     coef_diff <- abs(cor_coef - reg_coef)
     pval_diff <- abs(cor_p - reg_p)
@@ -375,6 +393,8 @@ for(category_name in names(covariates_to_test)) {
       reg_se = reg_se,
       reg_t_stat = reg_t,
       reg_pval = reg_p,
+      reg_hc0_pval = reg_hc0_p,
+      reg_hc3_pval = reg_hc3_p,
       methods_agree = methods_agree
     ))
 
@@ -556,26 +576,33 @@ cat("=" , rep("=", 78), "\n", sep = "")
 cat("FINAL SUMMARY\n")
 cat("=" , rep("=", 78), "\n", sep = "")
 
-cat("\n1. PHASE 1: Classical Results\n")
+cat("\n=== NON-PERMUTATION METHODS ===\n")
 cat(sprintf("   - Total tests: %d\n", nrow(phase2_results)))
-cat(sprintf("   - Significant (classical): %d (%.1f%%)\n",
+cat(sprintf("   - summary(lm) significant: %d (%.1f%%)\n",
             sum(phase2_results$classical_sig),
             100 * mean(phase2_results$classical_sig)))
-cat(sprintf("   - Correlation ≈ Regression: %.1f%% agreement\n",
-            100 * mean(phase2_results$methods_agree)))
+cat(sprintf("   - cor.test significant: %d (%.1f%%)\n",
+            sum(phase2_results$cor_pval < 0.05),
+            100 * mean(phase2_results$cor_pval < 0.05)))
+cat(sprintf("   - waldtest HC0 significant: %d (%.1f%%)\n",
+            sum(phase2_results$reg_hc0_pval < 0.05),
+            100 * mean(phase2_results$reg_hc0_pval < 0.05)))
+cat(sprintf("   - waldtest HC3 significant: %d (%.1f%%)\n",
+            sum(phase2_results$reg_hc3_pval < 0.05),
+            100 * mean(phase2_results$reg_hc3_pval < 0.05)))
 
-cat("\n2. PHASE 2: Permutation Results\n")
-cat(sprintf("   - Significant (perm regression): %d (%.1f%%)\n",
+cat("\n=== PERMUTATION METHODS ===\n")
+cat(sprintf("   - perm regression significant: %d (%.1f%%)\n",
             sum(phase2_results$perm_reg_sig),
             100 * mean(phase2_results$perm_reg_sig)))
 
 if(any(!is.na(phase2_results$perm_cor_sig))) {
-  cat(sprintf("   - Significant (perm correlation): %d (%.1f%%)\n",
+  cat(sprintf("   - perk (perm correlation) significant: %d (%.1f%%)\n",
               sum(phase2_results$perm_cor_sig, na.rm = TRUE),
               100 * mean(phase2_results$perm_cor_sig, na.rm = TRUE)))
 }
 
-cat("\n3. AGREEMENT ANALYSIS\n")
+cat("\n=== AGREEMENT ANALYSIS ===\n")
 cat(sprintf("   - All methods agree: %d/%d (%.1f%%)\n",
             sum(phase2_results$all_agree, na.rm = TRUE),
             nrow(phase2_results),
@@ -591,12 +618,18 @@ if(nrow(disagreements) > 0) {
   for(i in 1:nrow(disagreements)) {
     row <- disagreements[i,]
     cat(sprintf("     • %s (%s)\n", row$covariate, row$category))
-    cat(sprintf("       Classical: p=%.5f %s\n", row$reg_pval,
+    cat(sprintf("       summary(lm): p=%.5f %s\n", row$reg_pval,
                 ifelse(row$classical_sig, "[SIG]", "[NOT SIG]")))
-    cat(sprintf("       Perm (reg): p=%.5f %s\n", row$perm_reg_pval,
+    cat(sprintf("       cor.test: p=%.5f %s\n", row$cor_pval,
+                ifelse(row$cor_pval < 0.05, "[SIG]", "[NOT SIG]")))
+    cat(sprintf("       waldtest HC0: p=%.5f %s\n", row$reg_hc0_pval,
+                ifelse(row$reg_hc0_pval < 0.05, "[SIG]", "[NOT SIG]")))
+    cat(sprintf("       waldtest HC3: p=%.5f %s\n", row$reg_hc3_pval,
+                ifelse(row$reg_hc3_pval < 0.05, "[SIG]", "[NOT SIG]")))
+    cat(sprintf("       perm_reg: p=%.5f %s\n", row$perm_reg_pval,
                 ifelse(row$perm_reg_sig, "[SIG]", "[NOT SIG]")))
     if(!is.na(row$perm_cor_pval)) {
-      cat(sprintf("       Perm (cor): p=%.5f %s\n", row$perm_cor_pval,
+      cat(sprintf("       perk: p=%.5f %s\n", row$perm_cor_pval,
                   ifelse(row$perm_cor_sig, "[SIG]", "[NOT SIG]")))
     }
   }
@@ -605,16 +638,22 @@ if(nrow(disagreements) > 0) {
 }
 
 # P-value correlations
-cat("\n4. P-VALUE CORRELATIONS\n")
-cat(sprintf("   - Classical vs Perm Regression: r=%.3f\n",
-            cor(phase2_results$reg_pval, phase2_results$perm_reg_pval)))
+cat("\n=== P-VALUE CORRELATIONS ===\n")
+cat("Correlation methods:\n")
+cat(sprintf("   - cor.test vs perk: r=%.3f\n",
+            cor(phase2_results$cor_pval, phase2_results$perm_cor_pval, use = "complete.obs")))
 
-if(any(!is.na(phase2_results$perm_cor_pval))) {
-  cat(sprintf("   - Classical vs Perm Correlation: r=%.3f\n",
-              cor(phase2_results$reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")))
-  cat(sprintf("   - Perm Regression vs Perm Correlation: r=%.3f\n",
-              cor(phase2_results$perm_reg_pval, phase2_results$perm_cor_pval, use = "complete.obs")))
-}
+cat("\nRegression methods:\n")
+cat(sprintf("   - summary(lm) vs waldtest HC0: r=%.3f\n",
+            cor(phase2_results$reg_pval, phase2_results$reg_hc0_pval)))
+cat(sprintf("   - summary(lm) vs waldtest HC3: r=%.3f\n",
+            cor(phase2_results$reg_pval, phase2_results$reg_hc3_pval)))
+cat(sprintf("   - summary(lm) vs perm_reg: r=%.3f\n",
+            cor(phase2_results$reg_pval, phase2_results$perm_reg_pval)))
+cat(sprintf("   - waldtest HC0 vs perm_reg: r=%.3f\n",
+            cor(phase2_results$reg_hc0_pval, phase2_results$perm_reg_pval)))
+cat(sprintf("   - waldtest HC3 vs perm_reg: r=%.3f\n",
+            cor(phase2_results$reg_hc3_pval, phase2_results$perm_reg_pval)))
 
 # ============================================================================
 # SAVE RESULTS
@@ -761,16 +800,34 @@ cat("ANALYSIS COMPLETE\n")
 cat("=" , rep("=", 78), "\n", sep = "")
 
 cat("\nKey Findings:\n")
-cat(sprintf("  • Tested %d covariates across 5 categories\n", nrow(phase2_results)))
-cat(sprintf("  • Classical significance: %d/%d (%.1f%%)\n",
+cat(sprintf("  • Tested %d covariates across 10 categories\n", nrow(phase2_results)))
+cat("\n  Non-permutation methods:\n")
+cat(sprintf("    - summary(lm) significant: %d/%d (%.1f%%)\n",
             sum(phase2_results$classical_sig),
             nrow(phase2_results),
             100 * mean(phase2_results$classical_sig)))
-cat(sprintf("  • Permutation significance: %d/%d (%.1f%%)\n",
+cat(sprintf("    - cor.test significant: %d/%d (%.1f%%)\n",
+            sum(phase2_results$cor_pval < 0.05),
+            nrow(phase2_results),
+            100 * mean(phase2_results$cor_pval < 0.05)))
+cat(sprintf("    - waldtest HC0 significant: %d/%d (%.1f%%)\n",
+            sum(phase2_results$reg_hc0_pval < 0.05),
+            nrow(phase2_results),
+            100 * mean(phase2_results$reg_hc0_pval < 0.05)))
+cat(sprintf("    - waldtest HC3 significant: %d/%d (%.1f%%)\n",
+            sum(phase2_results$reg_hc3_pval < 0.05),
+            nrow(phase2_results),
+            100 * mean(phase2_results$reg_hc3_pval < 0.05)))
+cat("\n  Permutation methods:\n")
+cat(sprintf("    - perk significant: %d/%d (%.1f%%)\n",
+            sum(phase2_results$perm_cor_sig, na.rm = TRUE),
+            nrow(phase2_results),
+            100 * mean(phase2_results$perm_cor_sig, na.rm = TRUE)))
+cat(sprintf("    - perm_reg significant: %d/%d (%.1f%%)\n",
             sum(phase2_results$perm_reg_sig),
             nrow(phase2_results),
             100 * mean(phase2_results$perm_reg_sig)))
-cat(sprintf("  • Overall agreement: %.1f%%\n",
+cat(sprintf("\n  • Overall agreement (all 6 methods): %.1f%%\n",
             100 * mean(phase2_results$all_agree, na.rm = TRUE)))
 
 cat("\nOutput files saved to: output/\n")

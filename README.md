@@ -2,135 +2,129 @@
 
 ## Overview
 
-This project replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty, Hendren, Kline, and Saez (2014), then compares classical OLS inference with two permutation-based inference methods.
+This project replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty, Hendren, Kline, and Saez (2014), then compares classical inference with permutation-based inference methods.
 
 **Goal**: Demonstrate that the original findings are robust to the choice of statistical inference method.
 
-## Methods Compared
-
-| Method | Test Statistic | Source |
-|--------|----------------|--------|
-| **Classical OLS** | t = β̂/SE(β̂) | Chetty et al. (2014) original approach |
-| **perk (Permutation Correlation)** | Pearson r | `perk` R package |
-| **Permutation Regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) |
-
-### The Comparison Structure
-
-```
-                    Classical OLS (Chetty et al.'s original method)
-                                    ↑
-                         Compare significance
-                           ↗              ↖
-            perk (perm correlation)    DiCiccio & Romano (perm regression)
-```
-
-### Why Two Permutation Methods?
-
-| If... | Then... |
-|-------|---------|
-| All three agree | Very strong evidence the findings are robust |
-| Classical ≠ permutation | Normality assumption might be affecting conclusions |
-| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
-
 ## Key Findings
+
+### Main Analysis: 6 Methods Compared
 
 - **35 covariates** tested across 10 categories
 - **32/35 (91.4%)** significantly associated with relative mobility
-- **100% agreement** between all three methods on significance conclusions
+- **100% agreement** between all six methods on significance conclusions
 - Results are **robust** to the choice of inference method
+
+### Experimental: HC3 Permutation Test
+
+We also ran an experimental HC3-based permutation test to investigate whether classical HC3's conservativeness persists in permutation inference.
+
+**Key finding for Violent Crime Rate:**
+
+| Method | p-value | Significant? |
+|--------|---------|--------------|
+| Classical HC0 | 0.030 | YES |
+| Classical HC3 | 0.247 | NO |
+| Permutation HC0 | 0.0001 | YES |
+| **Permutation HC3** | **0.0001** | **YES** |
+
+The HC3 permutation test agrees with HC0 permutation, not classical HC3. This suggests classical HC3's conservativeness is an artifact of the asymptotic approximation.
+
+See `experimental/hc3_findings.md` for full details.
 
 ## Project Structure
 
 ```
 Dependency-Replication/
-├── R_code/
-│   ├── mobility_analysis.Rmd      # Main analysis (RMarkdown)
-│   ├── mobility_analysis.pdf      # Compiled results
-│   ├── analysis_guide.md          # Detailed methodology guide
-│   ├── why_table_viii.md          # Why we replicate Table VIII
+├── README.md
+├── CLAUDE.md                      # Claude Code instructions
+├── .gitignore
+│
+├── analysis/                      # Main analysis code
+│   ├── mobility_analysis.Rmd      # Primary analysis (RMarkdown)
+│   ├── mobility_analysis.R        # Standalone R script
+│   └── mobility_analysis.pdf      # Compiled report
+│
+├── experimental/                  # Experimental work
+│   ├── README.md                  # Explains experimental status
+│   ├── hc3_permutation_test.Rmd   # HC3 permutation test
+│   └── hc3_findings.md            # Results summary
+│
+├── data/                          # Data files
 │   ├── Online_Data_Table_5.csv    # Mobility estimates by CZ
-│   ├── Online_Data_Table_8.csv    # CZ characteristics (covariates)
-│   └── output/
-│       ├── mobility_test_results.csv      # Full results table
-│       ├── coefficient_plot.png           # Visualization
-│       ├── output_explanation.md          # Output documentation
-│       └── mobility_analysis_workspace.RData
-├── context/
-│   └── DATA_FLOW_DOCUMENTATION.md # Data provenance documentation
-├── paper_info/
-│   └── where_is_the_land_of_opportunity_replication.pdf  # Alex Jaimes' paper
-└── README.md
+│   ├── Online_Data_Table_8.csv    # CZ characteristics
+│   └── all_tables/                # All 9 tables for reference
+│
+├── results/                       # Analysis outputs
+│   ├── main/                      # Main analysis results
+│   │   ├── mobility_test_results.csv
+│   │   ├── coefficient_plot.png
+│   │   └── mobility_analysis_workspace.RData
+│   └── experimental/              # Experimental results
+│       ├── mobility_test_results_hc3_experimental.csv
+│       ├── coefficient_plot_hc3_experimental.png
+│       └── mobility_analysis_hc3_experimental_workspace.RData
+│
+├── docs/                          # Documentation
+│   ├── analysis_guide.md          # Detailed methodology
+│   ├── DATA_FLOW_DOCUMENTATION.md # Data provenance
+│   ├── output_explanation.md      # Output file docs
+│   └── why_table_viii.md          # Why we replicate Table VIII
+│
+└── references/                    # Reference materials
+    ├── papers/                    # Academic papers
+    └── original_replication/      # Chetty et al. replication materials
 ```
+
+## Methods Compared
+
+### Non-Permutation Methods (4)
+
+| Method | Test Statistic | Properties |
+|--------|----------------|------------|
+| **cor.test** | Pearson r | Classical correlation t-test |
+| **summary(lm)** | t = β̂/SE(β̂) | Classical OLS (Chetty et al. approach) |
+| **waldtest HC0** | Wald F | Heteroskedasticity-robust |
+| **waldtest HC3** | Wald F | HC-robust with small-sample correction |
+
+### Permutation Methods (2)
+
+| Method | Test Statistic | Properties |
+|--------|----------------|------------|
+| **perk** | Pearson r | Permutation correlation test |
+| **perm_test_regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) |
+
+### Experimental: HC3 Permutation (1)
+
+| Method | Test Statistic | Properties |
+|--------|----------------|------------|
+| **perm_test_regression_hc3** | HC3 Wald Sₙ | Experimental, no theoretical backing |
 
 ## Quick Start
 
 ### Prerequisites
 
 ```r
-install.packages(c("tidyverse", "broom", "perk"))
+install.packages(c("tidyverse", "broom", "perk", "sandwich", "lmtest"))
 ```
 
-### Run the Analysis
+### Run Main Analysis
 
 ```r
-setwd("path/to/R_code")
+setwd("analysis")
 rmarkdown::render("mobility_analysis.Rmd")
 ```
 
-### Expected Runtime
-- ~15 minutes (10,000 permutations × 35 covariates × 2 methods)
+**Expected runtime**: ~15 minutes
 
-## The Analysis
+### Run Experimental Analysis
 
-### What We're Testing
+```r
+setwd("experimental")
+rmarkdown::render("hc3_permutation_test.Rmd")
+```
 
-For each of 35 community-level characteristics, we test:
-
-> "Is this characteristic significantly associated with intergenerational mobility?"
-
-Using three methods:
-1. **Classical OLS**: Standard t-test (assumes normality)
-2. **perk**: Permutation correlation test (simple, not studentized)
-3. **Permutation Regression**: DiCiccio & Romano's robust test (heteroskedasticity-robust)
-
-### Why Permutation Tests?
-
-Classical inference relies on asymptotic theory that may be unreliable when:
-- Sample sizes are moderate (n ≈ 700 CZs)
-- Residuals are non-normal or heteroskedastic
-- Spatial correlation exists between nearby CZs
-
-Permutation tests provide:
-- No distributional assumptions
-- Heteroskedasticity robustness (DiCiccio & Romano)
-- Exact p-values under the null hypothesis
-
-### Why Both Permutation Tests?
-
-Both test the **same null hypothesis** (H₀: no relationship), but use **different test statistics**:
-
-| Test | Test Statistic | Properties |
-|------|----------------|------------|
-| perk | Pearson r | Simple, not studentized |
-| DiCiccio & Romano | Robust Wald Sₙ | Studentized, heteroskedasticity-robust |
-
-Comparing them answers: **"Does accounting for heteroskedasticity change our conclusions?"**
-
-### Key Results
-
-**Strongest Predictors of Low Mobility:**
-| Covariate | β | p-value |
-|-----------|---|---------|
-| Fraction Single Mothers | 0.64 | < 0.001 |
-| Fraction Black | 0.63 | < 0.001 |
-| Gini Bottom 99% | 0.47 | < 0.001 |
-
-**Non-Significant Covariates:**
-| Covariate | β | p-value |
-|-----------|---|---------|
-| Top 1% Income Share | 0.02 | 0.617 |
-| Teacher-Student Ratio | 0.01 | 0.805 |
-| College Graduation Rate | -0.03 | 0.553 |
+**Expected runtime**: ~22-25 minutes
 
 ## Data Sources
 
@@ -141,12 +135,23 @@ Comparing them answers: **"Does accounting for heteroskedasticity change our con
 
 **Sample**: 709 Commuting Zones with ≥250 children
 
-### Why Table VIII?
+## Key Results
 
-We replicate Online Appendix Table VIII because:
-- Tables 1-7 use restricted IRS data (cannot be reproduced from raw data)
-- Table VIII uses *published* mobility estimates + public covariates (reproducible!)
-- This is where the key policy findings come from
+**Strongest Predictors of Low Mobility:**
+
+| Covariate | β | p-value |
+|-----------|---|---------|
+| Fraction Single Mothers | 0.64 | < 0.001 |
+| Fraction Black | 0.63 | < 0.001 |
+| Gini Bottom 99% | 0.47 | < 0.001 |
+
+**Non-Significant Covariates:**
+
+| Covariate | β | p-value |
+|-----------|---|---------|
+| Top 1% Income Share | 0.02 | 0.617 |
+| Teacher-Student Ratio | 0.01 | 0.805 |
+| College Graduation Rate | -0.03 | 0.553 |
 
 ## References
 
@@ -154,9 +159,13 @@ We replicate Online Appendix Table VIII because:
 
 2. **DiCiccio, C. J., & Romano, J. P.** (2017). Robust Permutation Tests For Correlation And Regression Coefficients. *Journal of the American Statistical Association*, 112(519), 1211-1220.
 
-3. **Jaimes, A.** (2025). Where is the Land of Opportunity Replication. [Implementation of permutation regression test]
+3. **Jaimes, A.** (2025). Where is the Land of Opportunity Replication.
 
-4. **perk** R package: Permutation tests for correlation coefficients. Available on CRAN.
+4. **perk** R package: Permutation tests for correlation coefficients.
+
+5. **sandwich** R package: Robust covariance matrix estimators.
+
+6. **lmtest** R package: Testing linear regression models.
 
 ## License
 

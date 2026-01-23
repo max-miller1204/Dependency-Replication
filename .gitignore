@@ -1,3 +1,21 @@
-*.txt
-.zed/settings.json
+# R files
 .Rhistory
+.RData
+*.Rproj.user
+
+# OS files
+.DS_Store
+.zed/settings.json
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# Large output files (keep CSVs and PNGs, ignore RData)
+results/**/*.RData
+
+# Temporary files
+*.txt
+!RA presentations 12_9_25.txt
+

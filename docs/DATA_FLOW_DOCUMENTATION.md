@@ -369,38 +369,47 @@ Online_Data_Table_8.csv  →  Covariates (X₁...X₃₅)
                                    ↓
                         mobility_analysis.Rmd
                                    ↓
-          ┌────────────────────────┼────────────────────────┐
-          ↓                        ↓                        ↓
-   Classical OLS           perk (Perm Corr)      DiCiccio & Romano
-   (t-test inference)      (Pearson r)           (Robust Wald Sₙ)
-          ↓                        ↓                        ↓
-      p_classical               p_perk                  p_perm_reg
-          └────────────────────────┼────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    NON-PERMUTATION                          │
+│  cor.test ──┬── summary(lm) ──┬── waldtest HC0/HC3         │
+└─────────────┼─────────────────┼─────────────────────────────┘
+              │   Compare       │
+              │  significance   │
+┌─────────────┼─────────────────┼─────────────────────────────┐
+│             │   PERMUTATION   │                             │
+│           perk            perm_test_regression              │
+└─────────────────────────────────────────────────────────────┘
                                    ↓
                     Compare significance conclusions
                                    ↓
-                   All three agree? → Robust findings
+                   All six agree? → Robust findings
 ```
 
-### The Three Methods
+### The Six Methods
 
+#### Non-Permutation Methods (4)
 | Method | Test Statistic | Properties |
 |--------|----------------|------------|
-| **Classical OLS** | t = β̂/SE(β̂) | Assumes normality |
-| **perk** | Pearson r | Permutation-based, simple |
-| **DiCiccio & Romano** | Robust Wald Sₙ | Permutation-based, heteroskedasticity-robust |
+| **cor.test** | Pearson r | Classical correlation t-test |
+| **summary(lm)** | t = β̂/SE(β̂) | Classical OLS (Chetty et al. approach) |
+| **waldtest HC0** | Wald F | Heteroskedasticity-robust |
+| **waldtest HC3** | Wald F | HC-robust, small-sample correction |
 
-### Why Compare to Classical OLS?
+#### Permutation Methods (2)
+| Method | Test Statistic | Properties |
+|--------|----------------|------------|
+| **perk** | Pearson r | Permutation correlation test |
+| **perm_test_regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) |
 
-Classical OLS is what Chetty et al. used. We're checking whether their findings are **robust** — would they have reached the same conclusions using permutation methods that don't rely on normality assumptions?
-
-### Why Two Permutation Methods?
+### Why Six Methods?
 
 | If... | Then... |
 |-------|---------|
-| All three agree | Very strong evidence the findings are robust |
-| Classical ≠ permutation | Normality assumption might be affecting conclusions |
-| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
+| All six agree | Very strong evidence the findings are robust |
+| Non-perm ≠ permutation | Distributional assumptions might be affecting conclusions |
+| cor.test ≠ perk | Permutation changes correlation inference |
+| summary(lm) ≠ waldtest | Heteroskedasticity is present |
+| waldtest ≠ perm_test_regression | Permutation vs asymptotic difference |
 
 ### Key Variables
 

@@ -1,0 +1,940 @@
+---
+title: "Replicating Chetty et al. (2014): Classical vs Permutation Inference for Intergenerational Mobility"
+author: "Max Miller"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: false
+    toc: true
+    toc_depth: 2
+header-includes:
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \DefineVerbatimEnvironment{verbatim}{Verbatim}{breaklines,breakanywhere}
+  - \usepackage{geometry}
+  - \geometry{margin=0.75in}
+  - \usepackage{listings}
+  - \lstset{breaklines=true, breakatwhitespace=true, basicstyle=\ttfamily\small}
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = TRUE,
+  warning = TRUE,
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 55),
+  comment = NA
+)
+options(width = 70)
+```
+
+# Introduction
+
+## Background: The Chetty et al. Study
+
+In their landmark 2014 paper "Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States," Chetty, Hendren, Kline, and Saez analyzed tax records from over 40 million children to measure intergenerational economic mobility across U.S. Commuting Zones (CZs).
+
+A key finding was identifying which community-level characteristics correlate with **relative mobility**---the relationship between a child's income rank and their parents' income rank. Online Appendix Table VIII of their paper reports correlations between relative mobility and 35 covariates spanning categories like segregation, income inequality, education, family structure, and social capital.
+
+## Purpose of This Analysis
+
+This analysis has two objectives:
+
+1. **Replicate** the classical OLS regression results from Chetty et al.'s Online Appendix Table VIII
+2. **Compare** these classical results to a permutation-based inference method that does not rely on asymptotic normality assumptions
+
+## Why Permutation Tests?
+
+Classical OLS regression relies on asymptotic theory---as sample sizes grow large, the t-statistic approximately follows a t-distribution. However, this approximation may be unreliable when:
+
+- Sample sizes are moderate (here, n $\approx$ 700 CZs)
+- Error distributions are non-normal or heteroskedastic
+- The relationship between variables violates model assumptions
+
+**Permutation tests** offer an alternative that:
+
+- Makes no distributional assumptions about the errors
+- Provides exact p-values under the null hypothesis of no relationship
+- Is robust to heteroskedasticity when properly studentized
+
+We implement the permutation regression test from **DiCiccio and Romano (2017)**, "Robust Permutation Tests for Correlation and Regression Coefficients," which provides a heteroskedasticity-robust test statistic.
+
+## The Data: Tables 5 and 8
+
+Our analysis uses two of Chetty et al.'s Online Data Tables:
+
+**Online Data Table 5** provides the **dependent variable**: relative mobility estimates for 741 Commuting Zones (CZs). These estimates were computed from IRS tax records covering over 40 million children born between 1980-1991, linked to their parents' tax returns. The key variable is the **rank-rank slope**---the regression coefficient when regressing children's income percentile rank on parents' income percentile rank within each CZ. A higher slope indicates less mobility (children's outcomes more strongly determined by parents' income). The national average is 0.34, meaning a 10 percentile increase in parent rank is associated with a 3.4 percentile increase in child rank. We use the 1980-82 birth cohort estimates and restrict to CZs with at least 250 children to ensure reliable estimates.
+
+**Online Data Table 8** provides the **independent variables**: 35 community-level characteristics for each CZ, including measures of segregation, income inequality, school quality, social capital, family structure, and local labor market conditions. These covariates come from public sources (Census, IRS public statistics, education databases) and allow us to ask: "Which community characteristics predict higher or lower mobility?"
+
+## Why Replicate Table VIII?
+
+We chose to replicate Online Appendix Table VIII because it represents the core empirical contribution of Chetty et al. (2014): identifying which community-level characteristics are associated with intergenerational mobility. While the mobility estimates in Table 5 were computed from restricted IRS tax records and cannot be independently reproduced from raw data, Table VIII's correlational analysis uses these *published* mobility estimates as the dependent variable and publicly available community characteristics as predictors. This makes it both replicable and substantively important---it is this analysis that identifies single-parent household rates as "the single strongest correlate of upward income mobility among all the variables we explored" (Chetty et al., 2014, p. 40), and that links segregation, inequality, and social capital to children's economic outcomes. Policy discussions citing this paper typically draw on Table VIII's findings, making it essential to verify that these correlations are robust to alternative statistical methods.
+
+## A Note on P-Values and Hypothesis Testing
+
+A p-value greater than 0.05 **never** leads to rejecting the null hypothesis when using $\alpha = 0.05$ as the significance threshold. By definition, we reject $H_0$ only when $p < \alpha$. When $p \geq 0.05$, we "fail to reject" the null---this is not the same as accepting the null or proving no effect exists; it simply means the observed data are not sufficiently improbable under $H_0$ to warrant rejection at our chosen confidence level.
+
+Some important clarifications:
+
+- **Different $\alpha$ levels**: If a researcher uses $\alpha = 0.10$, then $p = 0.07$ would lead to rejection. The choice of $\alpha$ is made before seeing the data.
+- **One-tailed vs. two-tailed tests**: A two-tailed $p = 0.08$ corresponds to a one-tailed $p = 0.04$, which would reject under a one-tailed test. However, our analysis uses two-tailed tests throughout.
+- **Multiple testing**: When testing many hypotheses (as we do with 35 covariates), some researchers apply corrections like Bonferroni ($\alpha_{adjusted} = 0.05/35 \approx 0.0014$), which would make rejection even more stringent.
+
+In this analysis, we use the conventional $\alpha = 0.05$ two-tailed threshold without multiple testing correction, consistent with Chetty et al.'s original analysis.
+
+## Research Question
+
+> Do the significance conclusions from Chetty et al.'s classical OLS analysis hold up under permutation-based inference?
+
+If both methods agree, this provides evidence that the original findings are robust to the choice of inference method.
+
+# Methods
+
+## Data Sources
+
+We use two publicly available datasets from the Equality of Opportunity Project:
+
+| Dataset | Contents |
+|---------|----------|
+| Online Data Table 5 | Mobility estimates (relative and absolute) for each CZ |
+| Online Data Table 8 | CZ-level characteristics (35 covariates) |
+
+Following Chetty et al., we restrict the sample to CZs with at least 250 children (n $\geq$ 250) to ensure reliable mobility estimates.
+
+## Statistical Methods
+
+### Method 1: Classical OLS Regression (Chetty et al.'s Approach)
+
+For each covariate $X_j$, we estimate:
+
+$$\text{Relative Mobility}_i = \alpha + \beta_j X_{ji} + \epsilon_i$$
+
+where both the outcome and covariate are standardized (mean 0, SD 1). The standardized coefficient $\beta_j$ equals the Pearson correlation coefficient $r$.
+
+Statistical significance is assessed using the classical t-test, which assumes $\epsilon_i \sim N(0, \sigma^2)$.
+
+### Method 2: Permutation Correlation Test (perk package)
+
+The `perk` package implements permutation tests for Pearson correlation. For each covariate, we:
+
+1. Compute the observed Pearson correlation $r$ between the covariate and relative mobility
+2. Permute the outcome variable $Y$ many times (B = 10,000) to generate a null distribution
+3. Compute the p-value as the proportion of permuted correlations with $|r^*| \geq |r_{obs}|$
+
+This tests $H_0: \rho = 0$ (no correlation) without assuming bivariate normality.
+
+### Method 3: Permutation Regression Test (DiCiccio & Romano, 2017)
+
+The permutation regression test assesses significance by:
+
+1. Computing a heteroskedasticity-robust Wald statistic $S_n$ from the observed data
+2. Permuting the outcome variable $Y$ many times (B = 10,000) to generate a null distribution
+3. Computing the p-value as the proportion of permuted statistics $\geq$ the observed statistic
+
+The test statistic is:
+
+$$S_n = n \hat{\beta}^T \left( \hat{\Sigma}_{XX}^{-1} \hat{\Omega} \hat{\Sigma}_{XX}^{-1} \right) \hat{\beta}$$
+
+where $\hat{\Omega}$ is the heteroskedasticity-robust covariance estimator. This follows Theorem 3.2 of DiCiccio and Romano (2017).
+
+**Key advantages:**
+
+- No assumption of normally distributed errors
+- Robust to heteroskedasticity
+- Exact Type I error control under the null hypothesis
+
+### Why Both Permutation Tests?
+
+We include both `perk` (permutation correlation) and the DiCiccio & Romano regression test to compare:
+
+1. **perk**: Uses the raw correlation coefficient as the test statistic
+2. **DiCiccio & Romano**: Uses a heteroskedasticity-robust Wald statistic
+
+For standardized data, both test the same null hypothesis ($\beta = 0$), but they may yield different p-values due to different test statistics. Comparing them helps assess sensitivity to the choice of permutation method.
+
+## Console Output Format
+
+Results are printed in the following format:
+
+```
+[OK] Racial.Segregation  b=0.406 p_class=0.000 p_perk=0.000 p_reg=0.000*
+```
+
+| Symbol | Description |
+|--------|-------------|
+| `[OK]` | All three methods agree on significance |
+| `[X]` | At least one method disagrees |
+| `b` | Standardized regression coefficient (= Pearson r) |
+| `p_class` | p-value from classical OLS t-test |
+| `p_perk` | p-value from perk permutation correlation test |
+| `p_reg` | p-value from DiCiccio & Romano permutation regression test |
+| `*` | Statistically significant at $\alpha = 0.05$ |
+
+# Part 1: Data Loading and Preparation
+
+## Load Required Libraries
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(broom)
+library(perk)
+library(sandwich)  # For vcovHC (heteroskedasticity-consistent covariance)
+library(lmtest)    # For waldtest
+```
+
+## Load the Chetty et al. Data
+
+The data files are structured with metadata rows at the top, which we skip during import.
+
+```{r load-data}
+# Load Online Data Table 5 (Mobility Estimates)
+# Row 50 contains column headers, so skip first 49 rows
+table5 <- read.csv("../data/Online_Data_Table_5.csv",
+  skip = 49,
+  header = TRUE,
+  stringsAsFactors = FALSE
+)
+
+# Remove rows with column numbers "(1)", "(2)", etc. and empty rows
+table5 <- table5[!grepl("^\\(\\d+\\)$", table5[, 1]) & table5[, 1] != "", ]
+rownames(table5) <- NULL
+
+# Load Online Data Table 8 (CZ Characteristics)
+# Row 7 contains column headers, so skip first 6 rows
+table8 <- read.csv("../data/Online_Data_Table_8.csv",
+  skip = 6,
+  header = TRUE,
+  stringsAsFactors = FALSE
+)
+
+# Remove invalid rows (negative CZ codes are metadata)
+table8 <- table8[as.numeric(table8[, 1]) > 0 & !is.na(table8[, 1]), ]
+rownames(table8) <- NULL
+
+if (nrow(table8) == 0) {
+  stop("ERROR: Online_Data_Table_8.csv loaded 0 rows! Check file location.")
+}
+
+cat(sprintf("Loaded Table 5: %d CZs with mobility estimates\n", nrow(table5)))
+cat(sprintf("Loaded Table 8: %d CZs with characteristics\n", nrow(table8)))
+```
+
+## Clean and Prepare Data
+
+```{r clean-data}
+# Clean column names (R converts spaces and special chars to dots)
+names(table5) <- gsub("^X\\.", "", names(table5))
+names(table8) <- gsub("^X\\.", "", names(table8))
+
+# Rename key columns for clarity
+colnames(table5)[1] <- "CZ"
+colnames(table5)[5] <- "AM"          # Absolute Mobility
+colnames(table5)[6] <- "RM"          # Relative Mobility
+colnames(table5)[4] <- "n_children"
+colnames(table8)[1] <- "CZ"
+
+# Convert CZ to numeric for joining
+table5$CZ <- as.numeric(table5$CZ)
+table8$CZ <- as.numeric(table8$CZ)
+```
+
+## Merge Tables and Apply Sample Restrictions
+
+Following Chetty et al., we restrict to CZs with at least 250 children to ensure reliable mobility estimates.
+
+```{r merge-tables}
+# Merge mobility estimates with CZ characteristics
+data <- table5 %>%
+  select(CZ, RM, AM, n_children) %>%
+  inner_join(table8, by = "CZ")
+
+# Convert covariate columns to numeric
+numeric_cols <- c("RM", "AM", "n_children", names(table8)[4:ncol(table8)])
+for (col in numeric_cols) {
+  if (col %in% names(data)) {
+    data[[col]] <- as.numeric(data[[col]])
+  }
+}
+
+# Apply sample restriction: n >= 250 children
+data <- data %>%
+  mutate(n250 = ifelse(n_children >= 250, 1, 0))
+
+df <- data %>%
+  filter(n250 == 1) %>%
+  filter(!is.na(RM))
+
+cat(sprintf("Final sample: %d CZs with n >= 250 children\n", nrow(df)))
+cat(sprintf("(Dropped %d CZs with insufficient sample size)\n", nrow(data) - nrow(df)))
+```
+
+# Part 2: Permutation Test Implementation
+
+## The DiCiccio & Romano (2017) Permutation Regression Test
+
+This function implements Theorem 3.2 from DiCiccio and Romano (2017). The key innovation is using a **studentized test statistic** that is asymptotically pivotal, meaning the permutation distribution approximates the true null distribution even without exchangeability.
+
+The null hypothesis is $H_0: \beta = 0$ (no linear relationship between X and Y).
+
+```{r perm-functions}
+#' Permutation Regression Test (DiCiccio & Romano 2017, Theorem 3.2)
+#'
+#' Tests H0: beta = 0 using a heteroskedasticity-robust Wald statistic.
+#' The test permutes Y values to generate the null distribution.
+#'
+#' @param X Matrix of predictor variables (must be centered to mean zero)
+#' @param Y Vector of response variable (must be centered to mean zero)
+#' @param B Number of permutations (default: 10,000)
+#' @param seed Random seed for reproducibility
+#' @return List with observed statistic, permutation distribution, and p-value
+
+perm_test_regression <- function(X, Y, B = 10000, seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)
+
+  X <- as.matrix(X)
+  Y <- as.numeric(Y)
+  n <- nrow(X)
+
+  if (n != length(Y)) stop("X and Y must have same number of rows")
+
+  # Always include an intercept (per Remark 3.1 of the paper)
+  X <- cbind(1, X)
+
+  # Compute the heteroskedasticity-robust Wald statistic S_n
+  compute_Sn <- function(X, Y) {
+    XtX <- crossprod(X)              # X'X
+    XtY <- crossprod(X, Y)           # X'Y
+    beta_hat <- solve(XtX, XtY)      # OLS estimate
+    resid <- as.vector(Y - X %*% beta_hat)
+
+    Sigma_hat <- XtX / n             # (1/n) X'X
+    r2 <- resid^2
+    Omega_hat <- crossprod(X, X * r2) / n  # HC0 robust covariance
+
+    tmp <- solve(Sigma_hat, beta_hat)
+    as.numeric(n * t(tmp) %*% Omega_hat %*% tmp)
+  }
+
+  # Observed test statistic
+  S_obs <- compute_Sn(X, Y)
+
+  # Generate permutation distribution under H0
+  S_perm <- replicate(B, {
+    Y_perm <- sample(Y, replace = FALSE)  # Permute Y values
+    compute_Sn(X, Y_perm)
+  })
+
+  # Compute p-value (proportion of permuted stats >= observed)
+  # +1 correction ensures valid p-value (Phipson & Smyth, 2010)
+  pval <- (sum(S_perm >= S_obs) + 1) / (B + 1)
+
+  list(S_obs = S_obs, S_perm = S_perm, p_value = pval, B = B)
+}
+```
+
+# Part 3: Define Covariates from Table VIII
+
+## The 35 Covariates
+
+These are the same covariates analyzed in Online Appendix Table VIII of Chetty et al. (2014), organized by thematic category.
+
+```{r covariates}
+# Column names match R's processing of CSV headers
+# (spaces -> dots, special characters -> dots)
+covariates_to_test <- list(
+
+  # RACE (1 variable)
+  Race = c(
+    "Frac..Black"                          # Fraction Black Residents
+  ),
+
+  # SEGREGATION (5 variables)
+  Segregation = c(
+    "Racial.Segregation",                  # Racial Segregation (Theil Index)
+    "Income.Segregation",                  # Income Segregation (Theil Index)
+    "Segregation.of.Poverty...p25.",       # Segregation of Poverty (<p25)
+    "Segregation.of.Affluence...p75.",     # Segregation of Affluence (>p75)
+    "Frac..with.Commute...15.Mins"         # Share with Commute < 15 Mins
+  ),
+
+  # INCOME DISTRIBUTION (5 variables)
+  Income_Distribution = c(
+    "Household.Income.per.capita",         # Household Income per Capita
+    "Gini",                                # Gini Coefficient
+    "Top.1..Income.Share",                 # Top 1% Income Share
+    "Gini.Bottom.99.",                     # Gini Bottom 99%
+    "Frac..Between.p25.and.p75"            # Fraction Middle Class
+  ),
+
+  # K-12 EDUCATION (4 variables)
+  K12_Education = c(
+    "School.Expenditure.per.Student",      # School Expenditure per Student
+    "Teacher.Student.Ratio",               # Teacher-Student Ratio
+    "Test.Score.Percentile..Income.Adjusted",    # Test Scores (Income Adjusted)
+    "High.School.Dropout.Rate..Income.Adjusted." # Dropout Rate (Income Adjusted)
+  ),
+
+  # SOCIAL CAPITAL (3 variables)
+  Social_Capital = c(
+    "Social.Capital.Index",                # Social Capital Index
+    "Fraction.Religious",                  # Fraction Religious
+    "Violent.Crime.Rate"                   # Violent Crime Rate
+  ),
+
+  # FAMILY STRUCTURE (3 variables)
+  Family_Structure = c(
+    "Fraction.of.Children.with.Single.Mothers",  # Fraction Single Mothers
+    "Fraction.of.Adults.Divorced",               # Fraction Divorced
+    "Fraction.of.Adults.Married"                 # Fraction Married
+  ),
+
+  # TAX (4 variables)
+  Tax = c(
+    "Local.Tax.Rate",                      # Local Tax Rate
+    "Local.Government.Expenditures.Per.Capita",  # Local Gov Expenditures
+    "State.EITC.Exposure",                 # State EITC Exposure
+    "State.Income.Tax.Progressivity"       # State Income Tax Progressivity
+  ),
+
+  # COLLEGE (3 variables)
+  College = c(
+    "Number.of.Colleges.per.Capita",       # Colleges per Capita
+    "College.Tuition",                     # Mean College Tuition
+    "College.Graduation.Rate..Income.Adjusted."  # Graduation Rate (Inc. Adj.)
+  ),
+
+  # LOCAL LABOR MARKET (4 variables)
+  Local_Labor_Market = c(
+    "Labor.Force.Participation.Rate",      # Labor Force Participation
+    "Manufacturing.Employment.Share",      # Manufacturing Employment Share
+    "Growth.in.Chinese.Imports.1990.2000", # Growth in Chinese Imports
+    "Teenage.Labor.Force.Participation.Rate"  # Teen Labor Force Participation
+  ),
+
+  # MIGRATION (3 variables)
+  Migration = c(
+    "Migration.Inflow.Rate",               # Migration Inflow Rate
+    "Migration.Outlflow.Rate",             # Migration Outflow Rate
+    "Frac..Foreign.Born"                   # Fraction Foreign Born
+  )
+)
+
+all_covariates <- unlist(covariates_to_test, use.names = FALSE)
+cat(sprintf("Testing %d covariates across %d categories\n",
+  length(all_covariates), length(covariates_to_test)))
+```
+
+# Part 4: Classical OLS Replication
+
+## Replicating Table VIII Results
+
+This phase replicates Chetty et al.'s classical OLS results. For each covariate, we:
+
+1. Standardize both the covariate and relative mobility (mean 0, SD 1)
+2. Regress relative mobility on the covariate
+3. The standardized coefficient equals the Pearson correlation
+
+```{r phase1}
+# Initialize results dataframe
+results <- data.frame(
+  category = character(),
+  covariate = character(),
+  n_obs = integer(),
+  beta = numeric(),           # Standardized coefficient (= Pearson r)
+  se = numeric(),             # Standard error
+  t_stat = numeric(),         # t-statistic
+  p_classical = numeric(),    # Classical p-value from summary(lm)
+  p_cor_test = numeric(),     # p-value from cor.test
+  p_waldtest_hc0 = numeric(), # p-value from waldtest with HC0
+  p_waldtest_hc3 = numeric(), # p-value from waldtest with HC3
+  stringsAsFactors = FALSE
+)
+
+# Loop through all covariates
+for (category_name in names(covariates_to_test)) {
+  cat(sprintf("\n%s:\n", toupper(category_name)))
+  cat(paste(rep("-", 70), collapse = ""), "\n")
+
+  for (covariate_name in covariates_to_test[[category_name]]) {
+
+    # Check if covariate exists in data
+    if (!(covariate_name %in% names(df))) {
+      cat(sprintf("  %s: NOT FOUND\n", covariate_name))
+      next
+    }
+
+    # Extract complete cases
+    temp_data <- df %>%
+      select(RM, all_of(covariate_name)) %>%
+      drop_na()
+
+    if (nrow(temp_data) < 50) {
+      cat(sprintf("  %s: Insufficient data (n=%d)\n", covariate_name, nrow(temp_data)))
+      next
+    }
+
+    n_obs <- nrow(temp_data)
+
+    # Standardize variables (mean 0, SD 1)
+    y <- temp_data$RM
+    y_std <- (y - mean(y)) / sd(y)
+    x <- temp_data[[covariate_name]]
+    x_std <- (x - mean(x)) / sd(x)
+
+    # Fit OLS regression
+    fit <- lm(y_std ~ x_std)
+    fit_summary <- summary(fit)
+    coef_table <- coef(fit_summary)
+
+    beta <- coef_table[2, "Estimate"]
+    se <- coef_table[2, "Std. Error"]
+    t_stat <- coef_table[2, "t value"]
+    p_classical <- coef_table[2, "Pr(>|t|)"]
+
+    # --- cor.test (non-permutation correlation test) ---
+    cor_result <- cor.test(x = x_std, y = y_std,
+                           alternative = "two.sided",
+                           method = "pearson",
+                           conf.level = 0.95)
+    p_cor_test <- cor_result$p.value
+
+    # --- waldtest with HC0 (heteroskedasticity-robust) ---
+    waldtest_hc0 <- waldtest(fit, vcov = vcovHC(fit, type = "HC0"))
+    p_waldtest_hc0 <- waldtest_hc0$`Pr(>F)`[2]
+
+    # --- waldtest with HC3 (heteroskedasticity-robust, small-sample) ---
+    waldtest_hc3 <- waldtest(fit, vcov = vcovHC(fit, type = "HC3"))
+    p_waldtest_hc3 <- waldtest_hc3$`Pr(>F)`[2]
+
+    # Store results
+    results <- rbind(results, data.frame(
+      category = category_name,
+      covariate = covariate_name,
+      n_obs = n_obs,
+      beta = beta,
+      se = se,
+      t_stat = t_stat,
+      p_classical = p_classical,
+      p_cor_test = p_cor_test,
+      p_waldtest_hc0 = p_waldtest_hc0,
+      p_waldtest_hc3 = p_waldtest_hc3
+    ))
+
+    # Print result
+    sig_icon <- ifelse(p_classical < 0.05, "*", " ")
+    cat(sprintf("  %-35s n=%3d  b=%6.3f  p=%5.3f%s\n",
+      substr(covariate_name, 1, 35), n_obs, beta, p_classical, sig_icon))
+  }
+}
+
+# Summary
+cat(sprintf("\n\nCLASSICAL OLS SUMMARY\n"))
+cat(paste(rep("=", 70), collapse = ""), "\n")
+cat(sprintf("Total covariates tested: %d\n", nrow(results)))
+cat(sprintf("Significant at alpha=0.05: %d (%.1f%%)\n",
+  sum(results$p_classical < 0.05),
+  100 * mean(results$p_classical < 0.05)))
+```
+
+# Part 5: Permutation Test Comparison
+
+## Comparing Classical and Permutation Inference
+
+Now we run both permutation tests (perk correlation and DiCiccio & Romano regression) for each covariate and compare to the classical results. This tests whether the significance conclusions are robust to the choice of inference method.
+
+```{r phase2}
+# Add permutation results columns
+results$p_perk <- NA           # perk permutation correlation p-value
+results$p_perm_reg <- NA       # DiCiccio & Romano permutation regression p-value
+results$classical_sig <- results$p_classical < 0.05
+results$perk_sig <- NA
+results$perm_reg_sig <- NA
+results$all_agree <- NA        # TRUE if classical, perk, perm_reg agree
+
+# Loop through covariates
+for (i in 1:nrow(results)) {
+  covariate_name <- results$covariate[i]
+  category_name <- results$category[i]
+
+  if (i == 1 || results$category[i] != results$category[i - 1]) {
+    cat(sprintf("\n%s:\n", toupper(category_name)))
+    cat(paste(rep("-", 70), collapse = ""), "\n")
+  }
+
+  # Extract and standardize data
+  temp_data <- df %>%
+    select(RM, all_of(covariate_name)) %>%
+    drop_na()
+
+  y <- temp_data$RM
+  y_std <- (y - mean(y)) / sd(y)
+  x <- temp_data[[covariate_name]]
+  x_std <- (x - mean(x)) / sd(x)
+
+  # Center to mean zero (required for permutation test)
+  x_m0 <- x_std - mean(x_std)
+  y_m0 <- y_std - mean(y_std)
+
+  # --- Method 2: perk permutation correlation test ---
+  set.seed(42 + i)
+  perk_result <- perk::perk_test(x_std, y_std, method = "pearson", alternative = "two.sided")
+  p_perk <- perk_result$p.value
+  results$p_perk[i] <- p_perk
+  results$perk_sig[i] <- p_perk < 0.05
+
+  # --- Method 3: DiCiccio & Romano permutation regression test ---
+  perm_reg_result <- perm_test_regression(
+    X = x_m0,
+    Y = y_m0,
+    B = 10000,
+    seed = 42 + i
+  )
+  p_perm_reg <- perm_reg_result$p_value
+  results$p_perm_reg[i] <- p_perm_reg
+  results$perm_reg_sig[i] <- p_perm_reg < 0.05
+
+  # Check if all three methods agree
+  results$all_agree[i] <- (results$classical_sig[i] == results$perk_sig[i]) &
+                          (results$classical_sig[i] == results$perm_reg_sig[i])
+
+  # Print result
+  agree_icon <- ifelse(results$all_agree[i], "[OK]", "[X]")
+  sig_icon <- ifelse(results$classical_sig[i], "*", " ")
+
+  cat(sprintf("  %s %-25s b=%6.3f  p_class=%5.3f  p_perk=%5.3f  p_reg=%5.3f%s\n",
+    agree_icon,
+    substr(covariate_name, 1, 25),
+    results$beta[i],
+    results$p_classical[i],
+    p_perk,
+    p_perm_reg,
+    sig_icon))
+}
+```
+
+# Results Summary
+
+## Agreement Between Methods
+
+```{r summary}
+cat("\n")
+cat(paste(rep("=", 70), collapse = ""), "\n")
+cat("RESULTS SUMMARY\n")
+cat(paste(rep("=", 70), collapse = ""), "\n\n")
+
+cat("=== NON-PERMUTATION METHODS ===\n\n")
+
+cat("1. CLASSICAL OLS - summary(lm)\n")
+cat(sprintf("   - Covariates tested: %d\n", nrow(results)))
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(results$classical_sig),
+  100 * mean(results$classical_sig)))
+
+cat("\n2. COR.TEST (Pearson correlation)\n")
+cor_test_sig <- results$p_cor_test < 0.05
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(cor_test_sig),
+  100 * mean(cor_test_sig)))
+
+cat("\n3. WALDTEST with HC0 (heteroskedasticity-robust)\n")
+hc0_sig <- results$p_waldtest_hc0 < 0.05
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(hc0_sig),
+  100 * mean(hc0_sig)))
+
+cat("\n4. WALDTEST with HC3 (heteroskedasticity-robust, small-sample)\n")
+hc3_sig <- results$p_waldtest_hc3 < 0.05
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(hc3_sig),
+  100 * mean(hc3_sig)))
+
+cat("\n=== PERMUTATION METHODS ===\n\n")
+
+cat("5. PERK PERMUTATION CORRELATION\n")
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(results$perk_sig),
+  100 * mean(results$perk_sig)))
+
+cat("\n6. PERMUTATION REGRESSION (DiCiccio & Romano 2017)\n")
+cat(sprintf("   - Significant (p < 0.05): %d (%.1f%%)\n",
+  sum(results$perm_reg_sig),
+  100 * mean(results$perm_reg_sig)))
+
+cat("\n=== AGREEMENT ANALYSIS ===\n\n")
+cat(sprintf("All six methods agree: %d/%d (%.1f%%)\n",
+  sum(results$all_agree & cor_test_sig == results$classical_sig &
+      hc0_sig == results$classical_sig & hc3_sig == results$classical_sig),
+  nrow(results),
+  100 * mean(results$all_agree & cor_test_sig == results$classical_sig &
+      hc0_sig == results$classical_sig & hc3_sig == results$classical_sig)))
+
+# Show any disagreements (check all 6 methods, not just the 3 in all_agree)
+all_six_agree <- results$all_agree &
+                 cor_test_sig == results$classical_sig &
+                 hc0_sig == results$classical_sig &
+                 hc3_sig == results$classical_sig
+
+disagreements <- results %>% filter(!all_six_agree)
+
+if (nrow(disagreements) > 0) {
+  cat(sprintf("\nDISAGREEMENTS (%d):\n", nrow(disagreements)))
+  for (j in 1:nrow(disagreements)) {
+    row <- disagreements[j, ]
+    cat(sprintf("   - %s:\n", row$covariate))
+    cat(sprintf("       summary(lm) p=%.4f (%s)\n",
+      row$p_classical, ifelse(row$classical_sig, "SIG", "NOT SIG")))
+    cat(sprintf("       cor.test p=%.4f (%s)\n",
+      row$p_cor_test, ifelse(row$p_cor_test < 0.05, "SIG", "NOT SIG")))
+    cat(sprintf("       waldtest HC0 p=%.4f (%s)\n",
+      row$p_waldtest_hc0, ifelse(row$p_waldtest_hc0 < 0.05, "SIG", "NOT SIG")))
+    cat(sprintf("       waldtest HC3 p=%.4f (%s)\n",
+      row$p_waldtest_hc3, ifelse(row$p_waldtest_hc3 < 0.05, "SIG", "NOT SIG")))
+    cat(sprintf("       perk p=%.4f (%s)\n",
+      row$p_perk, ifelse(row$perk_sig, "SIG", "NOT SIG")))
+    cat(sprintf("       perm_reg p=%.4f (%s)\n",
+      row$p_perm_reg, ifelse(row$perm_reg_sig, "SIG", "NOT SIG")))
+  }
+} else {
+  cat("\nNo disagreements - all methods agree on significance!\n")
+}
+
+cat("\n=== P-VALUE CORRELATIONS ===\n\n")
+cat("Correlation methods:\n")
+cat(sprintf("   - cor.test vs perk: r = %.3f\n",
+  cor(results$p_cor_test, results$p_perk)))
+
+cat("\nRegression methods:\n")
+cat(sprintf("   - summary(lm) vs waldtest HC0: r = %.3f\n",
+  cor(results$p_classical, results$p_waldtest_hc0)))
+cat(sprintf("   - summary(lm) vs waldtest HC3: r = %.3f\n",
+  cor(results$p_classical, results$p_waldtest_hc3)))
+cat(sprintf("   - summary(lm) vs perm_reg: r = %.3f\n",
+  cor(results$p_classical, results$p_perm_reg)))
+cat(sprintf("   - waldtest HC0 vs perm_reg: r = %.3f\n",
+  cor(results$p_waldtest_hc0, results$p_perm_reg)))
+cat(sprintf("   - waldtest HC3 vs perm_reg: r = %.3f\n",
+  cor(results$p_waldtest_hc3, results$p_perm_reg)))
+```
+
+## Non-Significant Covariates
+
+These covariates were NOT significantly associated with relative mobility under any method:
+
+```{r nonsig}
+nonsig <- results %>%
+  filter(!classical_sig & !perk_sig & !perm_reg_sig &
+         p_cor_test >= 0.05 & p_waldtest_hc0 >= 0.05 & p_waldtest_hc3 >= 0.05) %>%
+  select(category, covariate, beta, p_classical, p_cor_test,
+         p_waldtest_hc0, p_waldtest_hc3, p_perk, p_perm_reg)
+
+if (nrow(nonsig) > 0) {
+  cat("\nCovariates NOT significant under ALL six methods:\n\n")
+  for (j in 1:nrow(nonsig)) {
+    cat(sprintf("  - %s (b=%.3f)\n", nonsig$covariate[j], nonsig$beta[j]))
+    cat(sprintf("      Non-perm: lm=%.3f, cor.test=%.3f, HC0=%.3f, HC3=%.3f\n",
+      nonsig$p_classical[j], nonsig$p_cor_test[j],
+      nonsig$p_waldtest_hc0[j], nonsig$p_waldtest_hc3[j]))
+    cat(sprintf("      Perm:     perk=%.3f, perm_reg=%.3f\n",
+      nonsig$p_perk[j], nonsig$p_perm_reg[j]))
+  }
+} else {
+  cat("\nAll covariates were significant under at least one method.\n")
+}
+```
+
+# Save Results
+
+```{r save-results}
+# Create output directory if needed
+if (!dir.exists("../results/main")) {
+  dir.create("../results/main", recursive = TRUE)
+}
+
+# Clean up covariate names for readability
+results_clean <- results %>%
+  mutate(covariate_clean = case_when(
+    covariate == "Frac..Black" ~ "Fraction Black Residents",
+    covariate == "Racial.Segregation" ~ "Racial Segregation",
+    covariate == "Income.Segregation" ~ "Income Segregation",
+    covariate == "Segregation.of.Poverty...p25." ~ "Segregation of Poverty (<p25)",
+    covariate == "Segregation.of.Affluence...p75." ~ "Segregation of Affluence (>p75)",
+    covariate == "Frac..with.Commute...15.Mins" ~ "Share with Commute < 15 Mins",
+    covariate == "Household.Income.per.capita" ~ "Household Income per Capita",
+    covariate == "Gini" ~ "Gini Coefficient",
+    covariate == "Top.1..Income.Share" ~ "Top 1% Income Share",
+    covariate == "Gini.Bottom.99." ~ "Gini Bottom 99%",
+    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Middle Class",
+    covariate == "School.Expenditure.per.Student" ~ "School Expenditure per Student",
+    covariate == "Teacher.Student.Ratio" ~ "Teacher-Student Ratio",
+    covariate == "Test.Score.Percentile..Income.Adjusted" ~ "Test Score Percentile (Inc. Adj.)",
+    covariate == "High.School.Dropout.Rate..Income.Adjusted." ~ "HS Dropout Rate (Inc. Adj.)",
+    covariate == "Social.Capital.Index" ~ "Social Capital Index",
+    covariate == "Fraction.Religious" ~ "Fraction Religious",
+    covariate == "Violent.Crime.Rate" ~ "Violent Crime Rate",
+    covariate == "Fraction.of.Children.with.Single.Mothers" ~ "Fraction Single Mothers",
+    covariate == "Fraction.of.Adults.Divorced" ~ "Fraction Divorced",
+    covariate == "Fraction.of.Adults.Married" ~ "Fraction Married",
+    covariate == "Local.Tax.Rate" ~ "Local Tax Rate",
+    covariate == "Local.Government.Expenditures.Per.Capita" ~ "Local Gov Expenditures",
+    covariate == "State.EITC.Exposure" ~ "State EITC Exposure",
+    covariate == "State.Income.Tax.Progressivity" ~ "State Income Tax Progressivity",
+    covariate == "Number.of.Colleges.per.Capita" ~ "Colleges per Capita",
+    covariate == "College.Tuition" ~ "Mean College Tuition",
+    covariate == "College.Graduation.Rate..Income.Adjusted." ~ "College Grad Rate (Inc. Adj.)",
+    covariate == "Labor.Force.Participation.Rate" ~ "Labor Force Participation",
+    covariate == "Manufacturing.Employment.Share" ~ "Manufacturing Employment Share",
+    covariate == "Growth.in.Chinese.Imports.1990.2000" ~ "Growth in Chinese Imports",
+    covariate == "Teenage.Labor.Force.Participation.Rate" ~ "Teen Labor Force Participation",
+    covariate == "Migration.Inflow.Rate" ~ "Migration Inflow Rate",
+    covariate == "Migration.Outlflow.Rate" ~ "Migration Outflow Rate",
+    covariate == "Frac..Foreign.Born" ~ "Fraction Foreign Born",
+    TRUE ~ gsub("\\.", " ", covariate)
+  ))
+
+# Save results
+write.csv(results_clean,
+  "../results/main/mobility_test_results.csv",
+  row.names = FALSE)
+cat("Saved: ../results/main/mobility_test_results.csv\n")
+
+# Save workspace
+save(results, results_clean, df, covariates_to_test,
+  file = "../results/main/mobility_analysis_workspace.RData")
+cat("Saved: ../results/main/mobility_analysis_workspace.RData\n")
+```
+
+# Visualization
+
+## Coefficient Plot
+
+This plot shows the standardized regression coefficients for all 35 covariates, with colors indicating significance agreement across all six methods.
+
+```{r visualization, fig.width=10, fig.height=9, message=FALSE}
+# Prepare data for plotting
+plot_data <- results_clean %>%
+  mutate(
+    sig_status = case_when(
+      classical_sig & perk_sig & perm_reg_sig &
+        (p_cor_test < 0.05) & (p_waldtest_hc0 < 0.05) & (p_waldtest_hc3 < 0.05) ~ "All significant",
+      !classical_sig & !perk_sig & !perm_reg_sig &
+        (p_cor_test >= 0.05) & (p_waldtest_hc0 >= 0.05) & (p_waldtest_hc3 >= 0.05) ~ "None significant",
+      TRUE ~ "Disagreement"
+    )
+  ) %>%
+  arrange(beta)
+
+plot_data$covariate_clean <- factor(
+  plot_data$covariate_clean,
+  levels = plot_data$covariate_clean
+)
+
+# Create coefficient plot
+p <- ggplot(plot_data, aes(x = beta, y = covariate_clean)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_errorbar(
+    aes(xmin = beta - 1.96 * se, xmax = beta + 1.96 * se, color = sig_status),
+    height = 0.3, alpha = 0.7
+  ) +
+  geom_point(aes(color = sig_status), size = 3) +
+  scale_color_manual(values = c(
+    "All significant" = "#2E8B57",
+    "None significant" = "gray60",
+    "Disagreement" = "#DC143C"
+  )) +
+  labs(
+    title = "Predictors of Relative Mobility: Classical vs Permutation Inference",
+    subtitle = "Replication of Chetty et al. (2014) Table VIII with robustness check (6 methods)",
+    x = "Standardized Coefficient (95% CI)",
+    y = "",
+    color = "Significance Agreement"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.y = element_text(size = 9),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(color = "gray40")
+  )
+
+print(p)
+
+ggsave("../results/main/coefficient_plot.png", p, width = 10, height = 9, dpi = 300)
+cat("Saved: ../results/main/coefficient_plot.png\n")
+```
+
+# Conclusion
+
+```{r conclusion}
+cat(paste(rep("=", 70), collapse = ""), "\n")
+cat("CONCLUSION\n")
+cat(paste(rep("=", 70), collapse = ""), "\n\n")
+
+# Check agreement across all 6 methods
+cor_test_sig <- results$p_cor_test < 0.05
+hc0_sig <- results$p_waldtest_hc0 < 0.05
+hc3_sig <- results$p_waldtest_hc3 < 0.05
+
+all_six_agree <- results$all_agree &
+                 cor_test_sig == results$classical_sig &
+                 hc0_sig == results$classical_sig &
+                 hc3_sig == results$classical_sig
+
+agreement_pct <- 100 * mean(all_six_agree)
+
+if (agreement_pct == 100) {
+  cat("All 35 covariates show IDENTICAL significance conclusions under all\n")
+  cat("six methods:\n")
+  cat("  Non-permutation: summary(lm), cor.test, waldtest HC0, waldtest HC3\n")
+  cat("  Permutation: perk, DiCiccio & Romano regression\n\n")
+  cat("This demonstrates that Chetty et al.'s findings are ROBUST to the\n")
+  cat("choice of inference method and do not depend on asymptotic normality\n")
+  cat("assumptions.\n")
+} else {
+  cat(sprintf("%.1f%% of covariates show identical significance conclusions across\n", agreement_pct))
+  cat("all six methods.\n\n")
+  cat(sprintf("%d covariates show disagreement between at least two methods.\n", sum(!all_six_agree)))
+}
+
+cat(sprintf("\n\nKey Statistics:\n"))
+cat(sprintf("  - Sample size: %d Commuting Zones\n", nrow(df)))
+cat(sprintf("  - Covariates tested: %d\n", nrow(results)))
+
+cat("\n  Non-permutation methods:\n")
+cat(sprintf("    - summary(lm) significant: %d (%.1f%%)\n",
+    sum(results$classical_sig), 100*mean(results$classical_sig)))
+cat(sprintf("    - cor.test significant: %d (%.1f%%)\n",
+    sum(cor_test_sig), 100*mean(cor_test_sig)))
+cat(sprintf("    - waldtest HC0 significant: %d (%.1f%%)\n",
+    sum(hc0_sig), 100*mean(hc0_sig)))
+cat(sprintf("    - waldtest HC3 significant: %d (%.1f%%)\n",
+    sum(hc3_sig), 100*mean(hc3_sig)))
+
+cat("\n  Permutation methods:\n")
+cat(sprintf("    - perk significant: %d (%.1f%%)\n",
+    sum(results$perk_sig), 100*mean(results$perk_sig)))
+cat(sprintf("    - perm_reg significant: %d (%.1f%%)\n",
+    sum(results$perm_reg_sig), 100*mean(results$perm_reg_sig)))
+
+cat("\n  Key p-value correlations:\n")
+cat(sprintf("    - cor.test vs perk: r = %.3f\n",
+    cor(results$p_cor_test, results$p_perk)))
+cat(sprintf("    - summary(lm) vs perm_reg: r = %.3f\n",
+    cor(results$p_classical, results$p_perm_reg)))
+cat(sprintf("    - waldtest HC0 vs perm_reg: r = %.3f\n",
+    cor(results$p_waldtest_hc0, results$p_perm_reg)))
+```
+
+# References
+
+- Chetty, R., Hendren, N., Kline, P., & Saez, E. (2014). Where is the land of opportunity? The geography of intergenerational mobility in the United States. *Quarterly Journal of Economics*, 129(4), 1553-1623.
+
+- DiCiccio, C. J., & Romano, J. P. (2017). Robust permutation tests for correlation and regression coefficients. *Journal of the American Statistical Association*, 112(519), 1211-1220.
+
+- Jaimes, A. (2025). Where is the Land of Opportunity Replication. [Implementation of DiCiccio & Romano permutation tests]
+
+- `perk` R package: Permutation tests for correlation coefficients. Available on CRAN.

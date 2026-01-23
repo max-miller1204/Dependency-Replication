@@ -2,45 +2,66 @@
 
 ## Overview
 
-This analysis replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty et al. (2014), then compares classical OLS inference with two permutation-based inference methods.
+This analysis replicates key findings from **"Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"** by Chetty et al. (2014), then compares classical inference with permutation-based inference methods.
 
-**Three methods are compared:**
+**Six methods are compared:**
 
+### Non-Permutation Methods (4)
 | Method | Test Statistic | Source |
 |--------|----------------|--------|
-| **Classical OLS** | t = β̂/SE(β̂) | Chetty et al. (2014) original approach |
-| **perk (Permutation Correlation)** | Pearson r | `perk` R package |
-| **Permutation Regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) Theorem 3.2 |
+| **cor.test** | Pearson r | R's `cor.test()` function |
+| **summary(lm)** | t = β̂/SE(β̂) | Chetty et al. (2014) original approach |
+| **waldtest HC0** | Wald F | `lmtest::waldtest()` with `sandwich::vcovHC(type="HC0")` |
+| **waldtest HC3** | Wald F | `lmtest::waldtest()` with `sandwich::vcovHC(type="HC3")` |
+
+### Permutation Methods (2)
+| Method | Test Statistic | Source |
+|--------|----------------|--------|
+| **perk** | Pearson r | `perk` R package |
+| **perm_test_regression** | Robust Wald Sₙ | DiCiccio & Romano (2017) Theorem 3.2 |
 
 ---
 
-## The Goal: Comparing Permutation Methods to Classical OLS
+## The Goal: Comparing Methods
 
 The structure of our comparison:
 
 ```
-                    Classical OLS (Chetty et al.'s original method)
-                                    ↑
-                         Compare significance
-                           ↗              ↖
-            perk (perm correlation)    DiCiccio & Romano (perm regression)
+┌─────────────────────────────────────────────────────────────┐
+│                    NON-PERMUTATION                          │
+│  cor.test ──┬── summary(lm) ──┬── waldtest HC0/HC3         │
+└─────────────┼─────────────────┼─────────────────────────────┘
+              │   Compare       │
+              │  significance   │
+┌─────────────┼─────────────────┼─────────────────────────────┐
+│             │   PERMUTATION   │                             │
+│           perk            perm_test_regression              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 **The question being answered:**
 
-> "If we replace classical t-test inference with permutation-based inference, do we reach the same conclusions about which covariates significantly predict mobility?"
+> "Do we reach the same conclusions about which covariates significantly predict mobility using different inference methods?"
 
-**Why compare to classical OLS specifically?**
+**Why multiple non-permutation methods?**
 
-Classical OLS is what Chetty et al. used. It's the published result. We're checking whether their findings are **robust** — would they have reached the same conclusions using permutation methods that don't rely on normality assumptions?
+- **cor.test vs summary(lm)**: Should give identical p-values for standardized data (verification)
+- **waldtest HC0/HC3**: Account for heteroskedasticity without permutation
+- Allows us to ask: "Does heteroskedasticity correction alone change conclusions?"
 
-**Why two permutation methods?**
+**Why permutation methods?**
+
+- Test whether asymptotic assumptions affect conclusions
+- Provide exact p-values under the null
+
+**What agreement tells us:**
 
 | If... | Then... |
 |-------|---------|
-| All three agree | Very strong evidence the findings are robust |
-| Classical ≠ permutation | Normality assumption might be affecting conclusions |
-| perk ≠ DiCiccio & Romano | Heteroskedasticity might be an issue |
+| All six agree | Very strong evidence the findings are robust |
+| Non-perm ≠ permutation | Distributional assumptions might be affecting conclusions |
+| summary(lm) ≠ waldtest | Heteroskedasticity is present |
+| perk ≠ perm_test_regression | Heteroskedasticity affects permutation inference too |
 
 ---
 
@@ -65,21 +86,51 @@ From DiCiccio & Romano (2017):
 
 ---
 
-## The Three Methods Explained
+## The Six Methods Explained
 
-### Method 1: Classical OLS (Chetty et al.'s Approach)
+### Non-Permutation Methods
 
-For each covariate X, we estimate:
+#### Method 1: cor.test (Classical Correlation)
+
+R's built-in `cor.test()` function tests H₀: ρ = 0 using a t-test.
+
+- **Test statistic**: t = r√(n-2)/√(1-r²)
+- **Assumption**: Bivariate normality
+- **Implementation**: `cor.test(x, y, method = "pearson")`
+
+#### Method 2: summary(lm) (Classical OLS)
+
+Chetty et al.'s original approach. For each covariate X:
 
 $$\text{Relative Mobility}_i = \alpha + \beta X_i + \epsilon_i$$
 
 where both Y and X are standardized (mean 0, SD 1). The standardized coefficient β equals the Pearson correlation r.
 
 - **Test statistic**: t = β̂/SE(β̂)
-- **Assumption**: ε ~ N(0, σ²)
-- **Implementation**: R's `lm()` function
+- **Assumption**: ε ~ N(0, σ²) (homoskedasticity)
+- **Implementation**: `summary(lm(y ~ x))`
 
-### Method 2: perk Permutation Correlation
+**Note**: For standardized data, cor.test and summary(lm) give identical p-values.
+
+#### Method 3: waldtest HC0 (Heteroskedasticity-Robust)
+
+Uses the Wald test with HC0 (White's) robust standard errors:
+
+- **Test statistic**: Wald F with robust variance
+- **Assumption**: None about error variance
+- **Implementation**: `waldtest(fit, vcov = vcovHC(fit, type = "HC0"))`
+
+#### Method 4: waldtest HC3 (Small-Sample Robust)
+
+Uses HC3 robust standard errors with a small-sample correction:
+
+- **Test statistic**: Wald F with HC3 variance
+- **Assumption**: More conservative than HC0
+- **Implementation**: `waldtest(fit, vcov = vcovHC(fit, type = "HC3"))`
+
+### Permutation Methods
+
+#### Method 5: perk (Permutation Correlation)
 
 The `perk` package implements permutation tests for Pearson correlation:
 
@@ -89,9 +140,9 @@ The `perk` package implements permutation tests for Pearson correlation:
 
 - **Test statistic**: Pearson r (simple, not studentized)
 - **Assumption**: None (permutation-based)
-- **Implementation**: `perk::perk()` function
+- **Implementation**: `perk::perk_test()` function
 
-### Method 3: DiCiccio & Romano Permutation Regression
+#### Method 6: perm_test_regression (DiCiccio & Romano)
 
 The permutation regression test uses a heteroskedasticity-robust Wald statistic:
 
@@ -107,21 +158,25 @@ where Ω̂ is the HC0 robust covariance estimator. The test:
 - **Assumption**: None (permutation-based)
 - **Implementation**: Custom `perm_test_regression()` function
 
-### Why Both Permutation Tests?
+### Why Multiple Methods?
 
-Both test the **same null hypothesis** (H₀: no relationship between X and Y), but use **different test statistics**:
+**Correlation tests** (cor.test vs perk):
+- Both test H₀: ρ = 0 using Pearson r
+- cor.test uses asymptotic t-distribution
+- perk uses permutation distribution
+- If they agree → normality assumption is fine
 
-| Test | Test Statistic | Properties |
-|------|----------------|------------|
-| perk | Pearson r | Simple, not studentized |
-| DiCiccio & Romano | Robust Wald Sₙ | Studentized, heteroskedasticity-robust |
+**Regression tests** (summary(lm) vs waldtest vs perm_test_regression):
+- All test H₀: β = 0
+- summary(lm) assumes homoskedasticity
+- waldtest HC0/HC3 corrects for heteroskedasticity
+- perm_test_regression uses permutation + robust variance
 
-**Key insight**: For standardized data, r = β̂ (same number!). But Sₙ ≠ r² because Sₙ uses a **robust variance estimator** that adjusts for non-constant error variance.
+**Key insight**: For standardized data, r = β̂. But p-values may differ due to:
+- Heteroskedasticity (waldtest catches this)
+- Non-normality (permutation catches this)
 
-Comparing them answers: **"Does accounting for heteroskedasticity change our conclusions?"**
-
-- If they always agree → heteroskedasticity isn't affecting inference
-- If they disagree → the robust test is catching something the simple test misses
+If all six agree → findings are very robust!
 
 ---
 
@@ -233,15 +288,18 @@ This is where the key policy findings come from:
 
 ## Methods Comparison Summary
 
-| Method | Test Statistic | Null Hypothesis | Handles Heteroskedasticity? |
-|--------|----------------|-----------------|----------------------------|
-| **Classical OLS** | t = β̂/SE(β̂) | H₀: β = 0 | No (assumes homoskedasticity) |
-| **perk** | Pearson r | H₀: ρ = 0 | No (simple correlation) |
-| **DiCiccio & Romano** | Robust Wald Sₙ | H₀: β = 0 | Yes (robust variance) |
+| Method | Type | Test Statistic | Handles Heteroskedasticity? |
+|--------|------|----------------|----------------------------|
+| **cor.test** | Non-perm | Pearson r | No |
+| **summary(lm)** | Non-perm | t = β̂/SE(β̂) | No |
+| **waldtest HC0** | Non-perm | Wald F | Yes (White's) |
+| **waldtest HC3** | Non-perm | Wald F | Yes (small-sample) |
+| **perk** | Permutation | Pearson r | No |
+| **perm_test_regression** | Permutation | Robust Wald Sₙ | Yes (robust variance) |
 
 **Expected agreement**:
-- Strong effects (|r| > 0.3): All three methods should agree
-- Weak effects (|r| < 0.1): All three methods should agree (not significant)
+- Strong effects (|r| > 0.3): All six methods should agree
+- Weak effects (|r| < 0.1): All six methods should agree (not significant)
 - Borderline effects (p ≈ 0.05): May show occasional disagreement
 
 ---
@@ -299,12 +357,15 @@ Results are printed as:
 
 | Symbol | Description |
 |--------|-------------|
-| `[OK]` | All three methods agree on significance |
+| `[OK]` | All six methods agree on significance |
 | `[X]` | At least one method disagrees |
 | `b` | Standardized regression coefficient (= Pearson r) |
-| `p_class` | p-value from classical OLS t-test |
+| `p_class` | p-value from summary(lm) |
+| `p_cor_test` | p-value from cor.test |
+| `p_waldtest_hc0` | p-value from waldtest with HC0 |
+| `p_waldtest_hc3` | p-value from waldtest with HC3 |
 | `p_perk` | p-value from perk permutation correlation |
-| `p_reg` | p-value from DiCiccio & Romano permutation regression |
+| `p_perm_reg` | p-value from DiCiccio & Romano permutation regression |
 | `*` | Statistically significant at α = 0.05 |
 
 ---
@@ -314,7 +375,7 @@ Results are printed as:
 ### Prerequisites
 ```r
 # Core packages (required)
-install.packages(c("tidyverse", "broom", "perk"))
+install.packages(c("tidyverse", "broom", "perk", "sandwich", "lmtest"))
 ```
 
 ### Execution
@@ -337,15 +398,15 @@ All files saved to `R_code/output/`:
 
 1. **mobility_test_results.csv**: Comprehensive results table
    - Columns: category, covariate, n_obs, beta, se, t_stat
-   - Classical: p_classical, classical_sig
-   - perk: p_perk, perk_sig
-   - Permutation Regression: p_perm_reg, perm_reg_sig
+   - Non-permutation: p_classical, p_cor_test, p_waldtest_hc0, p_waldtest_hc3
+   - Permutation: p_perk, p_perm_reg
+   - Significance flags: classical_sig, perk_sig, perm_reg_sig
    - Agreement: all_agree
 
 2. **coefficient_plot.png**: Forest plot visualization
    - Shows standardized β ± 1.96×SE for all covariates
    - Color-coded by significance agreement:
-     - Green: All three methods significant
+     - Green: All six methods significant
      - Gray: None significant
      - Red: Disagreement
 
@@ -355,12 +416,12 @@ All files saved to `R_code/output/`:
 
 ## Expected Results
 
-### Strong Effects (All Should Agree)
+### Strong Effects (All Six Should Agree)
 - **Fraction single-parent households**: β ≈ 0.64, all p < 0.001
 - **Social capital index**: β ≈ -0.33, all p < 0.001
 - **Gini coefficient**: β ≈ 0.35, all p < 0.001
 
-### Non-Significant Effects (All Should Agree)
+### Non-Significant Effects (All Six Should Agree)
 - **Top 1% income share**: β ≈ 0.02, all p > 0.05
 - **Teacher-student ratio**: β ≈ 0.01, all p > 0.05
 - **College graduation rate**: β ≈ -0.03, all p > 0.05
@@ -369,9 +430,10 @@ All files saved to `R_code/output/`:
 
 If disagreements occur:
 1. **Near the 0.05 boundary**: Normal statistical variation
-2. **Permutation more conservative**: Suggests heteroskedasticity or non-normality
-3. **perk ≠ DiCiccio & Romano**: Heteroskedasticity is affecting inference
-4. **Classical ≠ both permutation**: Normality assumption is problematic
+2. **summary(lm) ≠ waldtest**: Heteroskedasticity is present
+3. **cor.test ≠ perk**: Permutation changes correlation inference
+4. **waldtest ≠ perm_test_regression**: Permutation vs asymptotic difference
+5. **Non-perm ≠ permutation**: Distributional assumptions are problematic
 
 ---
 
@@ -399,4 +461,8 @@ A p-value greater than 0.05 **never** leads to rejecting the null hypothesis whe
 
 4. **perk Package**: Permutation tests for correlation coefficients. Available on CRAN.
 
-5. **Online Data Tables**: Available at https://opportunityinsights.org/data/
+5. **sandwich Package**: Robust covariance matrix estimators. Used for `vcovHC()`.
+
+6. **lmtest Package**: Testing linear regression models. Used for `waldtest()`.
+
+7. **Online Data Tables**: Available at https://opportunityinsights.org/data/
