@@ -1,0 +1,1433 @@
+Where is the Land of Opportunity?
+The Geography of Intergenerational Mobility in the United States⇤
+Raj Chetty, Harvard University and NBER
+Nathaniel Hendren, Harvard University and NBER
+Patrick Kline, UC-Berkeley and NBER
+Emmanuel Saez, UC-Berkeley and NBER
+June 2014
+
+Abstract
+We use administrative records on the incomes of more than 40 million children and their parents
+to describe three features of intergenerational mobility in the United States. First, we characterize the joint distribution of parent and child income at the national level. The conditional
+expectation of child income given parent income is linear in percentile ranks. On average, a
+10 percentile increase in parent income is associated with a 3.4 percentile increase in a child’s
+income. Second, intergenerational mobility varies substantially across areas within the U.S. For
+example, the probability that a child reaches the top quintile of the national income distribution starting from a family in the bottom quintile is 4.4% in Charlotte but 12.9% in San Jose.
+Third, we explore the factors correlated with upward mobility. High mobility areas have (1)
+less residential segregation, (2) less income inequality, (3) better primary schools, (4) greater
+social capital, and (5) greater family stability. While our descriptive analysis does not identify the causal mechanisms that determine upward mobility, the publicly available statistics on
+intergenerational mobility developed here can facilitate research on such mechanisms.
+
+⇤
+
+The opinions expressed in this paper are those of the authors alone and do not necessarily reflect the views of the
+Internal Revenue Service or the U.S. Treasury Department. This work is a component of a larger project examining
+the e↵ects of tax expenditures on the budget deficit and economic activity. All results based on tax data in this
+paper are constructed using statistics originally reported in the SOI Working Paper “The Economic Impacts of Tax
+Expenditures: Evidence from Spatial Variation across the U.S.,” approved under IRS contract TIRNO-12-P-00374
+and presented at the National Tax Association meeting on November 22, 2013. We thank David Autor, Gary Becker,
+David Card, David Dorn, John Friedman, James Heckman, Nathaniel Hilger, Richard Hornbeck, Lawrence Katz,
+Sara Lalumia, Adam Looney, Pablo Mitnik, Jonathan Parker, Laszlo Sandor, Gary Solon, Danny Yagan, numerous
+seminar participants, and four anonymous referees for helpful comments. Sarah Abraham, Alex Bell, Shelby Lin, Alex
+Olssen, Evan Storms, Michael Stepner, and Wentao Xiong provided outstanding research assistance. This research
+was funded by the National Science Foundation, the Lab for Economic Applications and Policy at Harvard, the
+Center for Equitable Growth at UC-Berkeley, and Laura and John Arnold Foundation. Publicly available portions
+of the data and code, including intergenerational mobility statistics by commuting zone and county, are available at
+www.equality-of-opportunity.org.
+
+I
+
+Introduction
+
+The United States is often hailed as the “land of opportunity,” a society in which a child’s chances
+of success depend little on his family background. Is this reputation warranted? We show that this
+question does not have a clear answer because there is substantial variation in intergenerational
+mobility across areas within the U.S. The U.S. is better described as a collection of societies, some
+of which are “lands of opportunity” with high rates of mobility across generations, and others in
+which few children escape poverty.
+We characterize intergenerational mobility using information from de-identified federal income
+tax records, which provide data on the incomes of more than 40 million children and their parents
+between 1996 and 2012. We organize our analysis into three parts.
+In the first part, we present new statistics on intergenerational mobility in the U.S. as a whole.
+In our baseline analysis, we focus on U.S. citizens in the 1980-1982 birth cohorts – the oldest
+children in our data for whom we can reliably identify parents based on information on dependent
+claiming. We measure these children’s income as mean total family income in 2011 and 2012, when
+they are approximately 30 years old. We measure their parents’ income as mean family income
+between 1996 and 2000, when the children are between the ages of 15 and 20.1
+Following the prior literature (e.g., Solon 1999), we begin by estimating the intergenerational
+elasticity of income (IGE) by regressing log child income on log parent income. Unfortunately, we
+find that this canonical log-log specification yields very unstable estimates of mobility because the
+relationship between log child income and log parent income is non-linear and the estimates are
+sensitive to the treatment of children with zero or very small incomes. When restricting the sample
+between the 10th and 90th percentile of the parent income distribution and excluding children with
+zero income, we obtain an IGE estimate of 0.45. However, alternative specifications yield IGEs
+ranging from 0.26 to 0.70, spanning most of the estimates in the prior literature.2
+To obtain a more stable summary of intergenerational mobility, we use a rank-rank specification
+similar to that used by Dahl and DeLeire (2008). We rank children based on their incomes relative
+to other children in the same birth cohort. We rank parents of these children based on their incomes
+relative to other parents with children in these birth cohorts. We characterize mobility based on the
+1
+
+We show that our baseline measures do not su↵er from significant lifecycle or attenuation bias (Solon 1992,
+Zimmerman 1992, Mazumder 2005) by establishing that estimates of mobility stabilize by the time children reach
+age 30 and are not very sensitive to the number of years used to measure parent income.
+2
+In an important recent study, Mitnik et al. (2014) propose a new dollar-weighted measure of the IGE and show
+that it yields more stable estimates. We discuss the di↵erences between the new measure of mobility proposed by
+Mitnik et al. and the canonical definition of the IGE in Section IV.A.
+
+1
+
+slope of this rank-rank relationship, which identifies the correlation between children’s and parents
+positions in the income distribution.3
+We find that the relationship between mean child ranks and parent ranks is almost perfectly
+linear and highly robust to alternative specifications. A 10 percentile point increase in parent rank
+is associated with a 3.41 percentile increase in a child’s income rank on average. Children’s college
+attendance and teenage birth rates are also linearly related to parent income ranks. A 10 percentile
+point increase in parent income is associated with a 6.7 percentage point (pp) increase in college
+attendance rates and a 3 pp reduction in teenage birth rates for women.
+In the second part of the paper, we characterize variation in intergenerational mobility across
+commuting zones (CZs). Commuting zones are geographical aggregations of counties that are
+similar to metro areas but cover the entire U.S., including rural areas (Tolbert and Sizer 1996). We
+assign children to commuting zones based on where they lived at age 16 – i.e., where they grew
+up – irrespective of whether they left that CZ afterward. When analyzing CZs, we continue to
+rank both children and parents based on their positions in the national income distribution, which
+allows us to measure children’s absolute outcomes as we discuss below.
+The relationship between mean child ranks and parent ranks is almost perfectly linear within
+commuting zones, allowing us to summarize the conditional expectation of a child’s rank given
+his parents’ rank with just two parameters: a slope and intercept. The slope measures relative
+mobility: the di↵erence in outcomes between children from top vs. bottom income families within
+a CZ. The intercept measures the expected rank for children from families at the bottom of the
+income distribution. Combining the intercept and slope for a CZ, we can calculate the expected
+rank of children from families at any given percentile p of the national parent income distribution.
+We term this measure absolute mobility at percentile p. Measuring absolute mobility is valuable
+because increases in relative mobility have ambiguous normative implications, as they may be
+driven by worse outcomes for the rich rather than better outcomes for the poor.
+We find substantial variation in both relative and absolute mobility across CZs. Relative mobility is lowest for children who grew up in the Southeast and highest in the Mountain West and
+the rural Midwest. Some CZs in the U.S. have relative mobility comparable to the highest mobility
+countries in the world, such as Canada and Denmark, while others have lower levels of mobility
+than any developed country for which data are available.
+3
+The rank-rank slope and IGE both measure the degree to which di↵erences in children’s incomes are determined
+by their parents’ incomes. We discuss the conceptual di↵erences between the two measures in Section II.
+
+2
+
+We find similar geographical variation in absolute mobility. We focus much of our analysis on
+absolute mobility at p = 25, which we term “absolute upward mobility.” This statistic measures
+the mean income rank of children with parents in the bottom half of the income distribution given
+linearity of the rank-rank relationship. Absolute upward mobility ranges from 35.8 in Charlotte
+to 46.2 in Salt Lake City among the 50 largest CZs. A 1 standard deviation (SD) increase in
+CZ-level upward mobility is associated with a 0.2 SD improvement in a child’s expected rank given
+parents at p = 25, 60% as large as the e↵ect of a 1 SD increase in his own parents’ income. Other
+measures of upward mobility exhibit similar spatial variation. For instance, the probability that a
+child reaches the top fifth of the income distribution conditional on having parents in the bottom
+fifth is 4.4% in Charlotte, compared with 10.8% in Salt Lake City and 12.9% in San Jose. The
+CZ-level mobility statistics are robust to adjusting for di↵erences in the local cost-of-living, shocks
+to local growth, and using alternative measures of income.
+Absolute upward mobility is highly correlated with relative mobility: areas with high levels of
+relative mobility (low rank-rank slopes) tend to have better outcomes for children from low-income
+families. On average, children from families below percentile p = 85 have better outcomes when
+relative mobility is greater; those above p = 85 have worse outcomes. Location matters more for
+children growing up in low income families: the expected rank of children from low-income families
+varies more across CZs than the expected rank of children from high income families.
+The spatial patterns of the gradients of college attendance and teenage birth rates with respect
+to parent income across CZs are very similar to the variation in intergenerational income mobility.
+This suggests that the spatial di↵erences in mobility are driven by factors that a↵ect children while
+they are growing up rather than after they enter labor market.
+In the final part of the paper, we explore such factors by correlating the spatial variation
+in mobility with observable characteristics. To begin, we show that upward income mobility is
+significantly lower in areas with larger African-American populations. However, white individuals
+in areas with large African-American populations also have lower rates of upward mobility, implying
+that racial shares matter at the community level.
+We then identify five factors that are strongly correlated with the variation in upward mobility
+across areas. The first is segregation: areas that are more residentially segregated by race and
+income have lower levels of mobility. Second, areas with more inequality as measured by Gini coefficients have less mobility, consistent with the “Great Gatsby curve” documented across countries
+(Krueger 2012, Corak 2013). Top 1% income shares are not highly correlated with intergenera3
+
+tional mobility both across CZs within the U.S. and across countries, suggesting that the factors
+that erode the middle class may hamper intergenerational mobility more than the factors that
+lead to income growth in the upper tail. Third, proxies for the quality of the K-12 school system
+are positively correlated with mobility. Fourth, social capital indices (Putnam 1995) – which are
+proxies for the strength of social networks and community involvement in an area – are also positively correlated with mobility. Finally, mobility is significantly lower in areas with weaker family
+structures, as measured e.g. by the fraction of single parents. As with race, parents’ marital status
+does not matter purely through its e↵ects at the individual level. Children of married parents also
+have higher rates of upward mobility in communities with fewer single parents. Interestingly, we
+find no correlation between racial shares and upward mobility once we control for the fraction of
+single parents in an area.
+We find modest correlations between upward mobility and local tax policies and no systematic
+correlation between mobility and local labor market conditions, rates of migration, or access to
+higher education. In a multivariable regression, the five key factors described above generally
+remain statistically significant predictors of both relative and absolute upward mobility, even in
+specifications with state fixed e↵ects. However, we emphasize that these factors should not be
+interpreted as causal determinants of mobility because all of these variables are endogenously
+determined and our analysis does not control for numerous other unobserved di↵erences across
+areas.
+Our results build on an extensive literature on intergenerational mobility, reviewed by Solon
+(1999) and Black and Devereux (2011). Our estimates of the level of mobility in the U.S. as
+a whole are broadly consistent with prior results, with the exception of Mazumder’s (2005) and
+Clark’s (2014) IGE estimates, which imply much lower levels of intergenerational mobility. We
+discuss why our findings may di↵er from their results in Online Appendices D and E. Our focus
+on within-country comparisons o↵ers two advantages over the cross-country comparisons that have
+been the focus of prior comparative work (e.g., Bjorklund and Jäntti 1997, Jäntti et al. 2006,
+Corak 2013). First, di↵erences in measurement and methods make it difficult to reach definitive
+conclusions from cross-country comparisons (Solon 2002). The variables we analyze are measured
+using the same data sources across all CZs. Second, and more importantly, we characterize both
+relative and absolute mobility across CZs. The cross-country literature has focused exclusively
+on di↵erences in relative mobility; much less is known about how the prospects of children from
+low-income families vary across countries when measured on a common absolute scale (Ray 2010).
+4
+
+Our analysis also relates to the literature on neighborhood e↵ects, reviewed by Jencks and
+Mayer (1990) and Sampson, Moreno↵ and Gannon-Rowley (2002). Unlike recent experimental work
+on neighborhood e↵ects (e.g., Katz, Kling and Liebman 2001, Oreopoulos 2003), our descriptive
+analysis does not shed light on whether the di↵erences in outcomes across areas are due to the causal
+e↵ect of neighborhoods or di↵erences in the characteristics of people living in those neighborhoods.
+However, in a followup paper, Chetty and Hendren (2014) show that a substantial portion of the
+spatial variation documented here is driven by causal e↵ects of place by studying families that move
+across areas with children of di↵erent ages.
+The paper is organized as follows. We begin in Section II by defining the measures of intergenerational mobility that we study and discussing their conceptual properties. Section III describes the
+data. Section IV reports estimates of intergenerational mobility at the national level. In Section
+V, we present estimates of absolute and relative mobility by commuting zone. Section VI reports
+correlations of our mobility measures with observable characteristics of commuting zones. Section
+VII concludes. Statistics on intergenerational mobility and related covariates are publicly available
+by commuting zone, metropolitan statistical area, and county on the project website.
+
+II
+
+Measures of Intergenerational Mobility
+
+At the most general level, studies of intergenerational mobility seek to measure the degree to which a
+child’s social and economic opportunities depend upon his parents’ income or social status. Because
+opportunities are difficult to measure, virtually all empirical studies of mobility measure the extent
+to which a child’s income (or occupation) depends upon his parents’ income (or occupation).4
+Following this approach, we aim to characterize the joint distribution of a child’s lifetime pre-tax
+family income (Yi ), and his parents’ lifetime pre-tax family income (Xi ).5
+In large samples, one can characterize the joint distribution of (Yi , Xi ) non-parametrically, and
+we provide such a characterization in the form of a 100 x 100 centile transition matrix below.
+However, in order to provide a parsimonious summary of the degree of mobility and compare
+rates of mobility across areas, it is useful to characterize the joint distribution using a small set
+of statistics. We divide measures of mobility into two classes that capture di↵erent normative
+4
+This simplification is not innocuous, as a child’s realized income may di↵er from his opportunities. For instance,
+children of wealthy parents may choose not to work or may choose lower-paying jobs, which would reduce the
+persistence of income across generations relative to the persistence of underlying opportunities.
+5
+If taxes and transfers do not generate rank-reversals (as is typically the case in practice), using post-tax income
+instead of pre-tax income would have no impact on our preferred rank-based measures of mobility. See Mitnik et al.
+(2014) for a comparison of pre-tax and post-tax measures of the intergenerational elasticity of income.
+
+5
+
+concepts: relative mobility and absolute mobility. In this section, we define a set of statistics that
+we use to measure these two concepts empirically and compare their conceptual properties.
+Relative Mobility. One way to study intergenerational mobility is to ask, “What are the outcomes of children from low-income families relative to those of children from high-income families?”
+This question, which focuses on the relative outcomes of children from di↵erent parental backgrounds, has been the subject of most prior research on intergenerational mobility (Solon 1999,
+Black et al. 2011).
+The canonical measure of relative mobility is the elasticity of child income with respect to parent
+Yi |Xi =x]
+income ( dE[log
+), commonly termed the intergenerational income elasticity (IGE). The most
+d log x
+
+common method of estimating the IGE is to regress log child income (logYi ) on log parent income
+(logXi ), which yields a coefficient of
+IGE = ⇢XY
+
+SD(logYi )
+,
+SD(logXi )
+
+(1)
+
+where ⇢XY = Corr(logXi , logYi ) is the correlation between log child income and parent income and
+SD() denotes the standard deviation. The IGE is a relative mobility measure because it measures
+the di↵erence in (log) outcomes between children of high vs. low income parents.
+An alternative measure of relative mobility is the correlation between child and parent ranks
+(Dahl and Deleire 2008). Let Ri denote child i’s percentile rank in the income distribution of
+children and Pi denote parent i’s percentile rank in the income distribution of parents. Regressing
+the child’s rank Ri on his parents’ rank Pi yields a regression coefficient ⇢P R = Corr(Pi , Ri ), which
+we term the rank-rank slope.6 The rank-rank slope ⇢P R measures the association between a child’s
+position in the income distribution and his parents’ position in the distribution.
+To understand the connection between the IGE and the rank-rank slope, note that the correlation of log incomes ⇢XY and the correlation of ranks ⇢P R are closely related scale-invariant
+measures of the degree to which child income depends on parent income.7 Hence, (1) implies that
+the IGE combines the dependence features captured by the rank-rank slope with the ratio of standard deviations of income across generations.8 The IGE di↵ers from the rank-rank slope to the
+extent that inequality changes across generations. Intuitively, a given increase in parents’ incomes
+6
+
+The regression coefficient equals the correlation coefficient because both child and parent ranks follow a Uniform
+distribution by construction.
+7
+For example, if parent and child income follow a bivariate log Normal distribution, ⇢P R = 6ArcSin(⇢XY /2)/⇡ ⇡
+3⇢XY /⇡ = 0.95⇢XY when ⇢XY is small (Trivedi and Zimmer 2007).
+8
+More generally, the joint distribution of parent and child incomes can be decomposed into two components: the
+joint distribution of parent and child percentile ranks (the copula) and the marginal distributions of parent and child
+income. The rank-rank slope depends purely on the copula, while the IGE combines both components.
+
+6
+
+has a greater impact on the level of children’s incomes when inequality is greater among children
+than parents.
+We estimate both the IGE and the rank-rank slope to distinguish di↵erences in mobility from
+di↵erences in inequality and to provide a comparison to the prior literature. However, we focus
+primarily on rank-rank slopes because they prove to be much more robust across specifications and
+are thus more suitable for comparisons across areas from a statistical perspective.
+Absolute Mobility. A di↵erent way to measure intergenerational mobility is to ask, “What are
+the outcomes of children from families of a given income level in absolute terms?” For example,
+one may be interested in measuring the mean outcomes of children whose grow up in low-income
+families. Absolute mobility may be of greater normative interest than relative mobility. Increases
+in relative mobility (i.e., a lower IGE or rank-rank slope) could be undesirable if they are caused
+by worse outcomes for the rich. In contrast, increases in absolute mobility at a given income
+level, holding fixed absolute mobility at other income levels, unambiguously increase welfare if one
+respects the Pareto principle (and if welfare depends purely on income).
+We consider three statistical measures of absolute mobility. Our primary measure, which we
+term absolute upward mobility, is the mean rank (in the national child income distribution) of
+children whose parents are at the 25th percentile of the national parent income distribution.9 At
+the national level, this statistic is mechanically related to the rank-rank slope and does not provide
+any additional information about mobility.10 However, when we study small areas within the U.S.,
+a child’s rank in the national income distribution is e↵ectively an absolute outcome because incomes
+in a given area have little impact on the national distribution.
+The second measure we analyze is the probability of rising from the bottom quintile to the top
+quintile of the income distribution (Corak and Heisz 1999, Hertz 2006), which can be interpreted as
+a measure of the fraction of children who achieve the “American Dream.” Again, when the quintiles
+are defined in the national income distribution, these transition probabilities can be interpreted as
+measures of absolute outcomes in small areas. Our third measure is the probability that a child has
+family income above the poverty line conditional on having parents at the 25th percentile. Because
+the poverty line is defined in absolute dollar terms in the U.S., this statistic measures the fraction
+9
+
+This measure is the analog of the rank-rank slope in terms of absolute mobility. The corresponding analog of
+the IGE is the mean log income of children whose parents are at the 25th percentile. We do not study this statistic
+because it is very sensitive to the treatment of zeros and small incomes.
+10
+We show below that the rank-rank relationship is approximately linear. Because child and parent ranks each
+have a mean of 0.5 by construction in the national distribution, the mean rank of children with parents at percentile
+p is simply 0.5 + ⇢P R (p 0.5). Conceptually, the slope is the only free parameter in the linear national rank-rank
+relationship. Intuitively, if one child moves up in the income distribution in terms of ranks, another must come down.
+
+7
+
+of children who achieve a given absolute living standard.11
+It is useful to analyze multiple measures of mobility because the appropriate measure of intergenerational mobility depends upon one’s normative objective (Fields and Ok 1999). Fortunately,
+we find that the patterns of spatial variation in absolute and relative mobility are very similar using alternative measures. In addition, we provide non-parametric transition matrices and marginal
+distributions that allow readers to construct measures of mobility beyond those we consider here.
+
+III
+
+Data
+
+We use data from federal income tax records spanning 1996-2012. The data include both income
+tax returns (1040 forms) and third-party information returns (e.g., W-2 forms), which give us
+information on the earnings of those who do not file tax returns. We provide a detailed description
+of how we construct our analysis sample starting from the raw population data in Online Appendix
+A. Here, we briefly summarize the key variable and sample definitions. Note that in what follows,
+the year always refers to the tax year (i.e., the calendar year in which the income is earned).
+
+III.A
+
+Sample Definitions
+
+Our base dataset of children consists of all individuals who (1) have a valid Social Security Number
+or Individual Taxpayer Identification Number, (2) were born between 1980-1991, and (3) are U.S.
+citizens as of 2013. We impose the citizenship requirement to exclude individuals who are likely to
+have immigrated to the U.S. as adults, for whom we cannot measure parent income. We cannot
+directly restrict the sample to individuals born in the U.S. because the database only records current
+citizenship status.
+We identify the parents of a child as the first tax filers (between 1996-2012) who claim the child
+as a child dependent and were between the ages of 15 and 40 when the child was born. If the child is
+first claimed by a single filer, the child is defined as having a single parent. For simplicity, we assign
+each child a parent (or parents) permanently using this algorithm, regardless of any subsequent
+changes in parents’ marital status or dependent claiming.12
+11
+
+Another intuitive measure of upward mobility is the fraction of children whose income exceeds that of their
+parents. This statistic turns out to be problematic for our application because we measure parent and child income
+at di↵erent ages and because it is very sensitive to di↵erences in local income distributions.
+12
+12% of children in our core sample are claimed as dependents by di↵erent individuals in subsequent years. To
+ensure that this potential measurement error in linking children to parents does not a↵ect our findings, we show that
+we obtain similar estimates of mobility for the subset of children who are never claimed by other individuals (row 9
+of Online Appendix Table VII).
+
+8
+
+If parents never file a tax return, we cannot link them to their child. Although some low-income
+individuals do not file tax returns in a given year, almost all parents file a tax return at some point
+between 1996 and 2012 to obtain a tax refund on their withheld taxes and the Earned Income
+Tax Credit (Cilke 1998). We are therefore able to identify parents for approximately 95% of the
+children in the 1980-1991 birth cohorts. The fraction of children linked to parents drops sharply
+prior to the 1980 birth cohort because our data begin in 1996 and many children begin to the leave
+the household starting at age 17 (Online Appendix Table I). This is why we limit our analysis to
+children born during or after 1980.
+Our primary analysis sample, which we refer to as the core sample, includes all children in the
+base dataset who (1) are born in the 1980-82 birth cohorts, (2) for whom we are able to identify
+parents, and (3) whose mean parent income between 1996-2000 is strictly positive (which excludes
+1.2% of children).13 For some robustness checks, we use the extended sample, which imposes
+the same restrictions as the core sample, but includes all birth cohorts from 1980-1991. There
+are approximately 10 million children in the core sample and 44 million children in the extended
+sample.
+Statistics of Income Sample. Because we can only reliably link children to parents starting
+with the 1980 birth cohort in the population tax data, we can only measure earnings of children
+up to age 32 (in 2012) in the full sample. To evaluate whether estimates of intergenerational
+mobility would change significantly if earnings were measured at later ages, we supplement our
+analysis using annual cross-sections of tax returns maintained by the Statistics of Income (SOI)
+division of the Internal Revenue Service prior to 1996. The SOI cross-sections provide identifiers for
+dependents claimed on tax forms starting in 1987, allowing us to link parents to children back to
+the 1971 birth cohort using an algorithm analogous to that described above (see Online Appendix
+A for further details). The SOI cross-sections are stratified random samples of tax returns with
+a sampling probability that rises with income; using sampling weights, we can calculate statistics
+representative of the national distribution. After linking parents to children in the SOI sample,
+we use population tax data to obtain data on income for children and parents, using the same
+definitions as in the core sample. There are approximately 63,000 children in the 1971-79 birth
+cohorts in the SOI sample (Online Appendix Table II).
+13
+We limit the sample to parents with positive income because parents who file a tax return (as required to link
+them to a child) yet have zero income are unlikely to be representative of individuals with zero income and those
+with negative income typically have large capital losses, which are a proxy for having significant wealth.
+
+9
+
+III.B
+
+Variable Definitions and Summary Statistics
+
+In this section, we define the key variables we use to measure intergenerational mobility. We
+measure all monetary variables in 2012 dollars, adjusting for inflation using the consumer price
+index (CPI-U).
+Parent Income. Following Lee and Solon (2009), our primary measure of parent income is total
+pre-tax income at the household level, which we label parent family income. More precisely, in years
+where a parent files a tax return, we define family income as Adjusted Gross Income (as reported on
+the 1040 tax return) plus tax-exempt interest income and the non-taxable portion of Social Security
+and Disability benefits. In years where a parent does not file a tax return, we define family income
+as the sum of wage earnings (reported on form W-2), unemployment benefits (reported on form
+1099-G), and gross social security and disability benefits (reported on form SSA-1099) for both
+parents.14 In years where parents have no tax return and no information returns, family income is
+coded as zero.15
+Our baseline income measure includes labor earnings and capital income as well as unemployment insurance, social security, and disability benefits. It excludes non-taxable cash transfers such
+as TANF and SSI, in-kind benefits such as food stamps, all refundable tax credits such as the
+EITC, non-taxable pension contributions (e.g., to 401(k)’s), and any earned income not reported
+to the IRS. Income is always measured prior to the deduction of individual income taxes and
+employee-level payroll taxes.
+In our baseline analysis, we average parents’ family income over the five years from 1996 to 2000
+to obtain a proxy for parent lifetime income that is less a↵ected by transitory fluctuations (Solon
+1992). We use the earliest years in our sample to best reflect the economic resources of parents while
+the children in our sample are growing up.16 We evaluate the robustness of our findings using data
+14
+The database does not record W-2’s and other information returns prior to 1999, so non-filer’s income is coded
+as 0 prior to 1999. Assigning non-filing parents 0 income has little impact on our estimates because only 2.9% of
+parents in our core sample do not file in each year prior to 1999 and most non-filers have very low W-2 income. For
+instance, in 2000, median W-2 income among non-filers was $29. Furthermore, we show below that defining parent
+income based on data from 1999-2003 (when W-2 data are available) yields virtually identical estimates (Table I,
+row 5). Note that we never observe self-employment income for non-filers and therefore code it as zero; given the
+strong incentives for individuals with children to file created by the EITC, most non-filers likely have very low levels
+of self-employment income as well.
+15
+Importantly, these observations are true zeros rather than missing data. Because the database covers all tax
+records, we know that these individuals have 0 taxable income.
+16
+Formally, we define mean family income as the mother’s family income plus the father’s family income in each
+year from 1996 to 2000 divided by 10 (or divided by 5 if we only identify a single parent). For parents who do
+not change marital status, this is simply mean family income over the 5 year period. For parents who are married
+initially and then divorce, this measure tracks the mean family incomes of the two divorced parents over time. For
+parents who are single initially and then get married, this measure tracks individual income prior to marriage and
+
+10
+
+from other years and using a measure of individual parent income instead of family income. We
+define individual income as the sum of individual W-2 wage earnings, UI benefits, SSDI payments,
+and half of household self-employment income (see Online Appendix A for details).
+Child Income. We define child family income in exactly the same way as parent family income.
+In our baseline analysis, we average child family income over the last two years in our data (2011
+and 2012), when children are in their early 30’s. We report results using alternative years to assess
+the sensitivity of our findings. For children, we define household income based on current marital
+status rather than marital status at a fixed point in time. Because family income varies with
+marital status, we also report results using individual income measures for children, constructed in
+the same way as for parents.
+College Attendance. We define college attendance as an indicator for having one or more 1098-T
+forms filed on one’s behalf when the individual is aged 18-21. Title IV institutions – all colleges and
+universities as well as vocational schools and other post-secondary institutions eligible for federal
+student aid – are required to file 1098-T forms that report tuition payments or scholarships received
+for every student. Because the 1098-T forms are filed directly by colleges independent of whether
+an individual files a tax return, we have complete records on college attendance for all children.
+The 1098-T data are available from 1999-2012. Comparisons to other data sources indicate that
+1098-T forms capture college enrollment quite accurately overall (Chetty, Friedman, and Rocko↵
+2014, Appendix B).17
+College Quality. Using data from 1098-T forms, Chetty, Friedman, and Rocko↵ (2014 forthcoming) construct an earnings-based index of “college quality” using the mean individual wage earnings
+at age 31 of children born in 1979-80 based on the college they attended at age 20. Children who
+do not attend college are included in a separate “no college” category in this index. We assign each
+child in our sample a value of this college quality index based on the college in which they were
+enrolled at age 20. We then convert this dollar index to percentile ranks within each birth cohort.
+The children in the no-college group, who constitute roughly 54% of our core sample, all have the
+same value of the college quality index. Breaking ties at the mean, we assign all of these children
+total family income (including the new spouse’s income) after marriage. These household measures of income increase
+with marriage and naturally do not account for cohabitation; to ensure that these features do not generate bias, we
+assess the robustness of our results to using individual measures of income.
+17
+Colleges are not required to file 1098-T forms for students whose qualified tuition and related expenses are
+waived or paid entirely with scholarships or grants. However, the forms are frequently available even for such cases,
+presumably because of automated reporting to the IRS by universities. Approximately 6% of 1098-T forms are
+missing from 2000-2003 because the database contains no 1098-T forms for some small colleges in these years. To
+verify that this does not a↵ect our results, we confirm that our estimates of college attendance by parent income
+gradients are very similar for later birth cohorts (not reported).
+
+11
+
+a college quality rank of approximately 54/2 = 27.18
+Teenage Birth. We define a woman as having a teenage birth if she ever claims a dependent
+who was born while she was between the ages of 13 and 19. This measure is an imperfect proxy
+for having a teenage birth because it only covers children who are claimed as dependents by their
+mothers. Nevertheless, the aggregate level and spatial pattern of teenage births in our data are
+closely aligned with estimates based on the American Community Survey.19
+Summary Statistics. Online Appendix Table III reports summary statistics for the core sample.
+Median parent family income is $60,129 (in 2012 dollars). Among the 30.6% of children matched to
+single parents, 72.0% are matched to a female parent. Children in our core sample have a median
+family income of $34,975 when they are approximately 30 years old. 6.1% of children have zero
+income in both 2011 and 2012. 58.9% are enrolled in a college at some point between the ages of
+18 and 21 and 15.8% of women have a teenage birth.
+In Online Appendix B and Appendix Table IV, we show that the total cohort size, labor
+force participation rate, distribution of child income, and other demographic characteristics of our
+core sample line up closely with corresponding estimates in the Current Population Survey and
+American Community Survey. This confirms that our sample covers roughly the same nationally
+representative population as previous survey-based research.
+
+IV
+
+National Statistics
+
+We begin our empirical analysis by characterizing the relationship between parent and child income
+at the national level. We first present a set of baseline estimates of relative mobility and then
+evaluate the robustness of our estimates to alternative sample and income definitions.20
+
+IV.A
+
+Baseline Estimates
+
+In our baseline analysis, we use the core sample (1980-82 birth cohorts) and measure parent income
+as mean family income from 1996-2000 and child income as mean family income in 2011-12, when
+18
+
+The exact value varies across cohorts. For example, in the 1980 birth cohort, 55.1% of children do not attend
+college. We assign these children a rank of 55.1/2+0.02=27.7% because 0.2% of children in the 1980 birth cohort
+attend colleges whose mean earnings are below the mean earnings of those not in college.
+19
+15.8% of women in our core sample have teenage births; the corresponding number is 14.6% in the 2003 ACS.
+The unweighted correlation between state-level teenage birth rates in the tax data and the ACS is 0.80.
+20
+We do not present estimates of absolute mobility at the national level because absolute mobility in terms of
+percentile ranks is mechanically related to relative mobility at the national level (see Section II). While one can
+compute measures of absolute mobility at the national level based on mean incomes (e.g., the mean income of
+children whose parents are at the 25th percentile), there is no natural benchmark for such a statistic as it has not
+been computed in other countries or time periods.
+
+12
+
+children are approximately 30 years old. Figure Ia presents a binned scatter plot of the mean
+family income of children versus the mean family income of their parents. To construct this figure,
+we divide the horizontal axis into 100 equal-sized (percentile) bins and plot mean child income
+vs. mean parent income in each bin.21 This binned scatter plot provides a non-parametric representation of the conditional expectation of child income given parent income, E[Yi |Xi = x]. The
+regression coefficients and standard errors reported in this and all subsequent binned scatter plots
+are estimated on the underlying microdata using OLS regressions.
+The conditional expectation of children’s income given parents’ income is strongly concave.
+Below the 90th percentile of parent income, a $1 increase in parent family income is associated
+with a 33.5 cent increase in average child family income. In contrast, between the 90th and 99th
+percentile, a $1 increase in parent income is associated with only a 7.6 cent increase in child income.
+Log-Log Intergenerational Elasticity Estimates. Partly motivated by the non-linearity of the relationship in Figure Ia, the canonical approach to characterizing the joint distribution of child and
+parent income is to regress the log of child income on the log of parent income (as discussed in Section II), excluding children with zero income. This regression yields an estimated intergenerational
+elasticity (IGE) of 0.344, as shown in the first column of row 1 of Table I.
+Unfortunately, this estimate turns out to be quite sensitive to changes in the regression specifications for two reasons, illustrated in Figure Ib. First, the relationship between log child income
+and log parent income is highly non-linear, consistent with the findings of Corak and Heisz (1999)
+in Canadian tax data. This is illustrated in the series in circles in Figure Ib, which plots mean log
+child income vs. mean log family income by percentile bin, constructed using the same method as
+Figure Ia. Because of this non-linearity, the IGE is sensitive to the point of measurement in the
+income distribution. For example, restricting the sample to observations between the 10th and 90th
+percentile of parent income (denoted by the vertical dashed lines in the graph) yields a considerably
+higher IGE estimate of 0.452.
+Second, the log-log specification discards observations with zero income. The series in triangles
+in Figure Ib plots the fraction of children with zero income by parental income bin. This fraction
+varies from 17% among the poorest families to 3% among the richest families. Dropping children
+with zero income therefore overstates the degree of intergenerational mobility. The way in which
+these zeros are treated can change the IGE dramatically. For instance, including the zeros by
+21
+For scaling purposes, we exclude the top bin (parents in the top 1%) in this figure only; mean parent income in
+this bin is $1,408,760 and mean child income is $113,846.
+
+13
+
+assigning those with zero income an income of $1 (so that the log of their income is zero) raises
+the estimated IGE to 0.618, as shown in row 2 of Table I. If instead we treat those with 0 income
+as having an income of $1,000, the estimated IGE becomes 0.413. These exercises show that small
+di↵erences in the way children’s income is measured at the bottom of the distribution can produce
+substantial variation in IGE estimates.
+Columns 2-7 in Table I replicate the baseline specification in Column 1 for alternative subsamples analyzed in the prior literature. Columns 2-5 split the sample by the child’s gender and the
+parents’ marital status in the year they first claim the child. Column 6 replicates Column 1 for
+the extended sample of 1980-85 birth cohorts. Column 7 restricts the sample to children whose
+mothers are between the ages of 24-28 and fathers are between 26-30 (a five year window around the
+median age of birth). This column eliminates variation in parent income correlated with di↵erences
+in parent age at child birth and restricts the sample to parents who are less than 50 years old when
+we measure their incomes (for children born in 1980). Across these subsamples, the IGE estimates
+range from 0.264 (for children of single parents, excluding children with zero income) to 0.697 (for
+male children, recoding zeroes to $1).
+The IGE is unstable because the income distribution is not well approximated by a bivariate
+Log-Normal distribution, a result that was not apparent in smaller samples used in prior work.
+This makes it difficult to obtain reliable comparisons of mobility across samples or geographical
+areas using the IGE. For example, income measures in survey data are typically top-coded and
+sometimes include transfers and other sources of income that increase incomes at the bottom of
+the distribution, which may lead to larger IGE estimates than those obtained in administrative
+datasets such as the one used here.
+In a recent paper, Mitnik et al. (2014) propose a new measure of the IGE, the elasticity of
+i |Xi =x]
+expected child income with respect to parent income ( d log E[Y
+), which they show is more
+d log x
+
+robust to the treatment of small incomes. In large samples, one can estimate this parameter by
+regressing the log of mean child income in each percentile bin (plotted in Figure Ia) on the log of
+mean parent income in each bin. In Online Appendix C, we show that Mitnik et al.’s statistic can
+be interpreted as a dollar-weighted average of elasticities (placing greater weight on high income
+children), whereas the traditional IGE weights all individuals with positive income equally. These
+two parameters need not coincide in general and the “correct” parameter depends upon the policy
+question one seeks to answer. However, it turns out that in our data, the Mitnik et al. dollarweighted IGE estimate is 0.335, very similar to our baseline IGE estimate of 0.344 when excluding
+14
+
+children with zero income (Online Appendix Figure Ia).22
+In another recent study, Clark (2014) argues that traditional estimates of the IGE understate
+the persistence of status across generations because they are attenuated by fluctuations in realized
+individual incomes across generations. To resolve this problem, Clark estimates the IGE based on
+surname-level means of income in each generation and obtains a central IGE estimate of 0.8, much
+larger than that in prior studies. In our data, estimates of mobility based on surname means are
+similar to our baseline estimates based on individual income data (Online Appendix Table V). One
+reason that Clark (2014) may obtain larger estimates of intergenerational persistence is that his
+focus on distinctive surnames partly identifies the degree of convergence in income between racial
+or ethnic groups (Borjas 1992) rather than across individuals (see Online Appendix D for further
+details).23
+Rank-Rank Estimates. Next, we present estimates of the rank-rank slope, the second measure
+of relative mobility discussed in Section II. We measure the percentile rank of parents Pi based
+on their positions in the distribution of parent incomes in the core sample. Similarly, we define
+children’s percentile ranks Ri based on their positions in the distribution of child incomes within
+their birth cohorts. Importantly, this definition allows us to include zeros in child income.24 Unless
+otherwise noted, we hold the definition of these ranks fixed based on positions in the aggregate
+distribution, even when analyzing subgroups.
+Figure IIa presents a binned scatter plot of the mean percentile rank of children E[Ri |Pi = p]
+vs. their parents’ percentile rank p. The conditional expectation of a child’s rank given his parents’
+rank is almost perfectly linear. Using an OLS regression, we estimate that a one percentage point
+(pp) increase in parent rank is associated with a 0.341 pp increase in the child’s mean rank, as
+reported in row 4 of Table I. The rank-rank slope estimates are generally quite similar across
+subsamples, as shown in Columns 2-7 of Table I.
+Figure IIb compares the rank-rank relationship in the U.S. with analogous estimates for Denmark constructed using data from Boserup, Kopczuk and Kreiner (2013) and estimates for Canada
+22
+
+Mitnik et al. (2014) find larger estimates of the dollar-weighted IGE in their sample of tax returns. A useful
+direction for further work would be to understand why the two samples yield di↵erent IGE estimates.
+23
+For example, Clark (2014, page 60, Figure 3.10) compares the outcomes of individuals with the surname “Katz”
+(a predominantly Jewish name) vs. “Washington” (a predominantly black name). This comparison generates an
+implied IGE close to 1, which partly reflects the fact that the black-white income gap has changed very little over
+the past few decades. Estimates of the IGE based on individual-level data (or pooling all surnames) are much lower
+because there is much more social mobility within racial groups.
+24
+In the case of ties, we define the rank as the mean rank for the individuals in that group. For example, if 10%
+of a birth cohort has zero income, all children with zero income would receive a percentile rank of 5.
+
+15
+
+constructed from the decile transition matrix reported by Corak and Heisz (1999).25 The relationship between child and parent ranks is nearly linear in Denmark and Canada as well, suggesting
+that the rank-rank specification provides a good summary of mobility across diverse environments.
+The rank-rank slope is 0.180 in Denmark and 0.174 in Canada, nearly half that in the U.S.
+Importantly, the smaller rank-rank slopes in Denmark and Canada do not necessarily mean that
+children from low-income families in these countries do better than those in the U.S. in absolute
+terms. It could be that children of high-income parents in Denmark and Canada have worse
+outcomes than children of high-income parents in the U.S. One cannot distinguish between these
+possibilities because the ranks are defined within each country. One advantage of the withinU.S. CZ-level analysis implemented below is that it naturally allows us to study both relative and
+absolute outcomes by analyzing children’s performance on a fixed national scale.
+Transition Matrices. Table II presents a quintile transition matrix: the probability that a child
+is in quintile m of the child income distribution conditional on his parent being in quintile n of the
+parent income distribution. One statistic of particular interest in this matrix is the probability of
+moving from the bottom quintile to the top quintile, a simple measure of success that we return to
+below. This probability is 7.5% in the U.S., compared with 11.7% in Denmark (Boserup, Kopczuk
+and Kreiner 2013) and 13.4% in Canada (Corak and Heisz 1999). In this sense, the chances of
+achieving the “American Dream” are considerably higher for children in Denmark and Canada
+than those in the U.S.
+In Online Data Table I, we report a 100 x 100 percentile-level transition matrix for the U.S.
+Using this matrix and the marginal distributions for child and parent income in Online Data Table
+II, one can construct any mobility statistic of interest for the U.S. population.26
+
+IV.B
+
+Robustness of Baseline Estimates
+
+We now evaluate the robustness of our estimates of intergenerational mobility to alternative specifications. We begin by evaluating two potential sources of bias emphasized in prior work: lifecycle
+bias and attenuation bias.
+25
+Both the Danish and Canadian studies use administrative earnings information for large samples as we do here.
+The Danish sample, which was constructed to match the analysis sample in this paper as closely as possible, consists
+of children in the 1980-81 birth cohorts and measures child income based on mean income between 2009-11. Child
+income in the Danish sample is measured at the individual level and parents’ income is the mean of the two biological
+parents’ income from 1997-1999, irrespective of their marital status. The Canadian sample is less comparable to our
+sample, as it consists of male children in the 1963-66 birth cohorts and studies the link between their mean earnings
+from 1993-95 and their fathers’ mean earnings from 1978-82.
+26
+All of the online data tables are available at http://www.equality-of-opportunity.org/index.php/data.
+
+16
+
+Lifecycle Bias. Prior research has shown that measuring children’s income at early ages can
+understate intergenerational persistence in lifetime income because children with high lifetime incomes have steeper earnings profiles when they are young (Haider and Solon, 2006, Grawe, 2006,
+Solon 1999). To evaluate whether our baseline estimates su↵er from such lifecycle bias, Figure IIIa
+plots estimates of the rank-rank slope by the age at which the child’s income is measured. We
+construct the series in circles by measuring children’s income as mean family income in 2011-2012
+and parent income as mean family income between 1996-2000, as in our baseline analysis. We
+then replicate the OLS regression of child income rank on parent income rank for each birth cohort
+between 1980-1990. For children in the 1980 birth cohort, we measure earnings in 2011-12 at age
+31-32 (denoted by 32 in the figure); for the 1990 cohort, we measure earnings at age 21-22.27 The
+rank-rank slope rises very steeply in the early 20’s as children enter the labor force, but stabilizes
+around age 30. It increases by 2.1% from age 30 to 31 and 0.2% from age 31 to 32.
+To obtain estimates beyond age 32, we use the SOI 0.1% random sample described in Section
+III.A, which contains data back to the 1971 birth cohort. The series in triangles in Figure IIIa
+replicates the analysis above within the SOI sample, using sampling weights to recover estimates
+representative of the population. The estimates in the SOI sample are very similar to those in
+the full population prior to age 32. After age 32, the estimates remain roughly constant. These
+findings indicate that rank-rank correlations exhibit little lifecycle bias provided that child income
+is measured after age 30, as in our baseline definition.
+We also find that estimates of the IGE using the traditional log-log specification (limiting the
+sample between the 10th and 90th percentiles of the parent income distribution) stabilize around
+age 30, as shown in Online Appendix Figure IIa. In the population data, the IGE estimate is a
+strictly concave function of age and rises by only 1.7% from age 31 to 32. The SOI 0.1% sample
+exhibits a similar, albeit noisier, pattern.
+An analogous lifecycle bias can arise if parent income is measured at very old or young ages. In
+Online Appendix Figure IIb we plot the rank-rank slope using the core sample, varying the 5-year
+window used to measure parent income from a starting year of 1996 (when mothers are 41 years
+old on average) to 2010 (when mothers are 55 years old). The rank-rank estimates exhibit virtually
+no variation with the age of parent income measurement within this range.
+A closely related concern is that parent income at earlier ages might matter more for children’s
+27
+We obtain very similar results if we instead track a single cohort and vary age by measuring earnings in di↵erent
+calendar years.
+
+17
+
+outcomes, e.g. if resources in early childhood are relevant for child development (e.g., Heckman
+2006, Duncan, Ziol-Guest and Kalil 2010). While we cannot measure parent income before age 14
+for children in our core sample, we can measure parent income at earlier ages for later birth cohorts.
+In Chetty et al. (2014), we use data from the 1993 birth cohort and regress an indicator for college
+attendance at age 19 on parent income rank in each year from 1996 to 2012. We reproduce the
+coefficients from those regressions in Online Appendix Figure IIc. The relationship between college
+attendance rates and parent income rank is virtually constant when children are between ages 3 and
+19. Once again, this result indicates that the point at which parent income is measured (provided
+parents are between ages 30-55) does not significantly a↵ect intergenerational associations, at least
+in administrative earnings records.28
+Attenuation Bias. Income in a single year is a noisy measure of lifetime income, which attenuates estimates of intergenerational persistence (Solon (1992)). To evaluate whether our baseline
+estimates su↵er from such attenuation bias, Figure IIIb plots estimates of the rank-rank slope,
+varying the number of years used to calculate mean parent family income. In this figure, we plot
+the slope from an OLS regression of child rank on parent rank (as in Row 4, Column 1 of Table
+I), varying the number of years used to calculate mean parent income from one (1996 only) to 17
+(1996-2012). The rank-rank slope based on five years of data (0.341) is 6.6% larger than the slope
+based on one year of parent income (0.320). Solon (1992) finds a 33% increase in the IGE (from
+0.3 to 0.4) when using a five-year average instead of one year of data in the PSID. We find less
+attenuation bias for three reasons: (1) income is measured with less error in the tax data than in
+the PSID, (2) we use family income measures rather than individual income, which fluctuates more
+across years, and (3) we use a rank-rank specification rather than a log-log specification, which is
+more sensitive to income fluctuations at the bottom of the distribution.
+Mazumder (2005) reports that even five-year averages of parent income yield attenuated estimates of intergenerational persistence relative to longer time averages. Contrary to this result,
+we find that the rank-rank slope is virtually unchanged by adding more years of data beyond five
+years: the estimated slope using 15 years of data to measure parent income (0.350) is only 2.8%
+larger than the baseline slope of 0.341 using 5 years of data. We believe our results di↵er because
+we directly measure parent income, whereas Mazumder imputes parent income based on race and
+28
+
+While we cannot measure income before the year in which children turn 3, the fact that the college-income
+gradient is not declining from ages 3-19 makes it unlikely that the gradient is significantly larger prior to age 2.
+Parent income ranks in year t have a correlation of 0.91 with parent income ranks in year t + 1, 0.77 in year t + 5,
+and 0.65 in year t + 15. The decay in this autocorrelation would generate a decreasing slope in the gradient in Online
+Appendix Figure IIc if there were a discontinuous jump in the gradient prior to age 2.
+
+18
+
+education for up to 60% of the observations in his sample, with a higher imputation rate when
+measuring parent income using more years (see Online Appendix E for further details). Such imputations are analogous to instrumenting for income with race and education, which is known to
+yield upward-biased estimates of intergenerational persistence (Solon 1992).
+We analyze the impact of varying the number of years used to measure the child’s income in
+Online Appendix Figure IId. The rank-rank slope increases very little when increasing the number
+of years used to compute child family income, with no detectable change once one averages over
+at least two years, as in our baseline measure. An ancillary implication of this result is that our
+estimates of intergenerational mobility are not sensitive to the calendar year in which we measure
+children’s incomes. This finding is consistent with the results of Chetty et al. (2014), who show that
+estimates of intergenerational mobility do not vary significantly across birth cohorts when income
+is measured at a fixed age.
+Alternative Income Definitions. In rows 5-8 of Table I, we explore the robustness of the baseline
+rank-rank estimate to alternative definitions of child and parent income. In row 5, we verify that the
+missing W-2 data from 1996-1998 does not create significant bias by defining parent income as mean
+income from 1999-2003. The rank-rank estimates are virtually unchanged with this redefinition.
+In row 6, we define the parent’s rank based on the individual income of the parent with higher
+mean income from 1999-2003.29 This specification eliminates the mechanical variation in family
+income driven by the number of parents in the household, which could overstate the persistence of
+income across generations if parent marital status has a direct e↵ect of children’s outcomes. The
+rank-rank correlation falls by approximately 10%, from 0.341 to 0.312 when we use top parent
+income. The impact of using individual parent income instead of family income is modest because
+(1) most of the variation in parent income across households is not due to di↵erences in marital
+status and (2) the mean ranks of children with married parents are only 4.6 percentile points higher
+than those with single parents.
+Next, we consider alternative income definitions for the children. Here, one concern is that
+children of higher income parents may be more likely to marry, again exaggerating the observed
+persistence in family income relative to individual income. Using individual income to measure
+the child’s rank has di↵erential impacts by the child’s gender, consistent with Chadwick and Solon
+29
+
+We use 1999-2003 income here because we cannot allocate earnings across spouses before 1999, as W-2 forms are
+available starting only in 1999. Note that top income rank di↵ers from family income rank even for single parents
+because some individuals get married in subsequent years and because these individuals are ranked relative to the
+population, not relative to other single individuals.
+
+19
+
+(2002). For male children, using individual income instead of family income reduces the rank-rank
+correlation from 0.336 in the baseline specification to 0.317, a 6% reduction. For female children,
+using individual income reduces the rank-rank correlation from 0.346 to 0.257, a 26% reduction.
+The change may be larger for women because women from high income families tend to marry
+high-income men and may choose not to work.
+Finally, in row 8 of Table I, we define a measure of child income that excludes capital and
+other non-labor income using the sum of individual wage earnings, UI benefits, SSDI benefits,
+and Schedule C self-employment income. We divide self-employment income by two for married
+individuals. This individual earnings measure also yields virtually identical estimates of the rankrank slope.
+
+IV.C
+
+Intermediate Outcomes: College Attendance and Teenage Birth
+
+We supplement our analysis of intergenerational income mobility by studying the relationship
+between parent income and two intermediate outcomes for children: college attendance and teenage
+birth.
+The series in circles in Figure IVa presents a binned scatter plot of the college attendance rate of
+children vs. the percentile rank of parent family income using the core sample. College attendance
+is defined as attending college in one or more years between the ages 18 and 21. The relationship
+between college attendance rates and parental income rank is again virtually linear, with a slope
+of 0.675. That is, moving from the lowest-income to highest-income parents increases the college
+attendance rate by 67.5 percentage points, similar to the estimates reported by Bailey and Dynarski
+(2011) using survey data.
+The series in triangles in Figure IVa plots college quality ranks vs. parent ranks. We define a
+child’s college quality rank based on the mean earnings at age 30 of students who attended each
+college at age 20. The 54% of children who do not attend college at age 20 are included in this
+analysis and are assigned the mean rank for the non-college group, which is approximately 54/2 =
+27 (see Section III.B for details). The relationship between college quality rank and parent income
+rank is convex because most children from low-income families do not attend college and hence
+increases in parent income have little impact on college quality rank at the bottom. To account for
+this non-linearity, we regress college quality ranks on a quadratic function of parent income rank
+and define the gradient in college quality as the di↵erence in the predicted college quality rank for
+children with parents at the 75th percentile and children with parents at the 25th percentile. The
+
+20
+
+P25-75 gap in college quality ranks is 19.1 percentiles in our core sample.
+Figure IVb plots teenage birth rates for female children vs. parent income ranks. Teenage birth
+is defined (for females only) as having a child when the mother is aged 13-19. There is a 29.8
+percentage point gap in teenage birth rates between children from the highest- and lowest-income
+families.
+These correlations between intermediate outcomes and parent income ranks do not vary significantly across subsamples or birth cohorts, as shown in rows 9-11 of Table I. The strength of
+these correlations indicates that much of the divergence between children from low vs. high income
+families emerges well before they enter the labor market, consistent with the findings of prior work
+(e.g., Neal and Johnson 1996, Cameron and Heckman 2001, Bhattacharya and Mazumder 2011).
+
+V
+
+Spatial Variation in Mobility
+
+We now turn to our central goal of characterizing the variation in intergenerational mobility across
+areas within the U.S. We begin by defining measures of geographic location. We then present
+estimates of relative and absolute mobility by area and assess the robustness of these estimates to
+alternative specifications.
+
+V.A
+
+Geographical Units
+
+To characterize the variation in children’s outcomes across areas, one must first partition the U.S.
+into a set of geographical areas in which children grow up. One way to conceptualize the choice of
+a geographical partition is using a hierarchical model in which children’s outcomes depend upon
+conditions in their immediate neighborhood (e.g., peers or resources in their city block), local
+community (e.g., the quality of schools in their county), and broader metro area (e.g., local labor
+market conditions). To fully characterize the geography of intergenerational mobility, one would
+ideally estimate all of the components of such a hierarchical model.
+As a first step toward this goal, we characterize intergenerational mobility at the level of commuting zones (CZs). CZs are aggregations of counties based on commuting patterns in the 1990
+Census constructed by Tolbert and Sizer (1996) and introduced to the economics literature by Dorn
+(2009). Since CZs are designed to span the area in which people live and work, they provide a
+natural starting point as the coarsest partition of areas. CZs are similar to metropolitan statistical
+areas (MSA), but unlike MSAs, they cover the entire U.S., including rural areas. There are 741
+CZs in the U.S.; on average, each CZ contains 4 counties and has a population of 380,000. See
+21
+
+Online Appendix Figure III for an illustration of the Boston CZ.
+We focus on CZ-level variation because mobility statistics in very small neighborhoods are
+likely to be heavily a↵ected by sorting. Because property prices are typically homogeneous within
+narrow areas and home values are highly correlated with parent income, comparisons within a
+small neighborhood e↵ectively condition on a proxy for parent income. As a result, the variation
+in parent income across individuals in a small area (such as a city block) must be correlated with
+other latent factors that could a↵ect children’s outcomes directly, making it difficult to interpret
+the resulting mobility estimates.30 Nevertheless, to obtain some insight into within-CZ variation,
+we also report statistics on intergenerational mobility by county in Online Data Table III. There
+is almost as much variance in intergenerational mobility across counties within a CZ as there is
+across CZs, suggesting that the total amount of geographical variation may be even greater than
+that documented below.31
+We permanently assign each child to a single CZ based on the ZIP code from which his or his
+parent filed their tax return in the first year the child was claimed as a dependent. We interpret
+this CZ as the area where a child grew up. Because our data begin in 1996, location is measured
+in 1996 for 95.9% of children in our core sample.32 For children in our core sample of 1980-82 birth
+cohorts, we therefore typically measure location when children were approximately 15 years old.
+For the children in the more recent birth cohorts in our extended sample, location is measured at
+earlier ages. Using these more recent cohorts, we find that 83.5% of children live in the same CZ
+at age 16 as they did at age 5. Furthermore, we verify that the spatial patterns for the outcomes
+we can measure at earlier ages (college attendance and teenage birth) are similar if we define CZs
+based on location at age 5 instead of age 16.
+The CZ where a child grew up does not necessarily correspond to the CZ he lives in as an adult
+when we measure his income (at age 30) in 2011-12. In our core sample, 38% of children live in a
+di↵erent CZ in 2012 relative to where they grew up.
+30
+
+For example, it would be difficult to estimate the degree of intergenerational mobility on Park Avenue in Manhattan because any families with low observed income in such a high-property-value area would have to be latently
+wealthy to be able to a↵ord to live there.
+31
+We also report statistics by MSA in Online Data Table IV. For CZs that intersect MSAs, correlations between
+CZ-level and MSA-level mobility statistics exceed 0.9.
+32
+Location is measured after 1996 for approximately 3% of children because they were linked to parents based on
+tax returns filed after 1996. We have no information on location for the remaining 1% of children in the national
+sample because the ZIP code listed on the parent’s tax returns is invalid or missing (see Online Appendix Table I);
+these children are excluded from the analysis in the remainder of the paper.
+
+22
+
+V.B
+
+Measures of Relative and Absolute Mobility
+
+In our baseline analysis, we measure mobility at the CZ level using the core sample (1980-82 birth
+cohorts) and the definitions of parent and child family income described in III.B. Importantly,
+we continue to rank both children and parents based on their positions in the national income
+distribution (rather than the distribution within their CZ).
+We begin by examining the rank-rank relationship in selected CZs. Figure Va presents a binned
+scatter plot of the mean child rank vs. parent rank for children who grew up in the Salt Lake City,
+UT (circles) or Charlotte, NC (triangles) commuting zones. The rank-rank relationship is virtually
+linear in both of these CZs. The linearity of the rank-rank relationship is a remarkably robust
+property across CZs, as illustrated for the 20 largest CZs in Online Appendix Figure IV.
+Exploiting this approximate linearity, we summarize the conditional expectation of a child’s
+rank given his parents’ rank in each CZ using two parameters: a slope and an intercept. Let Ric
+denote the national income rank (among children in his birth cohort) of child i who grew up in
+CZ c. Similarly, let Pic denote his parent’s rank in the income distribution of parents in the core
+sample. We estimate the slope and intercept of the rank-rank relationship in CZ c by regressing
+child rank on parent rank:
+Ric = ↵c +
+
+c Pic + "ic
+
+(2)
+
+The slope of the rank-rank relationship ( c ) in (2) measures degree of relative mobility in CZ c, as
+defined in Section II. In Salt Lake City,
+
+c = 0.264.
+
+33 The di↵erence between the expected ranks of
+
+children born to parents at the top and bottom of the income distribution is r̄100,c r̄0,c = 100⇥ c =
+26.4 in Salt Lake City. There is much less relative mobility (i.e., much greater persistence of income
+across generations) in Charlotte, where r̄100
+
+r̄0 = 39.7.
+
+Following the discussion in Section II, we define absolute mobility at percentile p in CZ c as the
+expected rank of a child who grew up in CZ c with parents who have a national income rank of p:
+r̄pc = ↵c +
+
+c p.
+
+(3)
+
+We focus much of our analysis on average absolute mobility for children from families with belowmedian parent income in the national distribution (E [Ric |Pic < 50]), which we term absolute upward
+mobility.34 Because the rank-rank relationship is linear, the average rank of children with below33
+
+We always measure percentile ranks on a 0-100 scale and slopes on a 0-1 scale, so ↵c ranges from 0-100 and c
+ranges from 0 to 1 in (3).
+34
+We integrate over the national parent income distribution rather than the local distribution when defining
+E [Ric |Pic < 50] to ensure that our cross-CZ comparisons are not a↵ected by di↵erences in local income distributions.
+
+23
+
+median parent income equals the average rank of children with parents at the 25th percentile in
+the national distribution (r̄25,c = ↵c + 25 c ), illustrated by the dashed vertical line in Figure Va.
+Absolute upward mobility is r̄25 = 46.2 in Salt Lake City, compared with r̄25 = 35.8 in Charlotte.
+That is, among families earning $28,800 – the 25th percentile of the national parent family income
+distribution – children who grew up in Salt Lake City are on average 10 percentile points higher in
+their birth cohort’s income distribution at age 30 than children who grew up in Charlotte.
+Absolute mobility is higher in Salt Lake City not just for below-median families, but at all
+percentiles p of the parent income distribution. The gap in absolute outcomes is largest at the
+bottom of the income distribution and nearly zero at the top. Hence, the greater relative mobility
+in this particular comparison comes purely from better absolute outcomes at the bottom of the
+distribution rather than worse outcomes at the top. Of course, this is not always the case. Figure Vb
+shows that San Francisco has substantially higher relative mobility than Chicago: r̄100
+in San Francisco vs. r̄100
+
+r̄0 = 25.0
+
+r̄0 = 39.3 in Chicago. But part of the greater relative mobility in
+
+San Francisco comes from worse outcomes for children from high-income families. Below the 60th
+percentile, children in San Francisco have better outcomes than those in Chicago; above the 60th
+percentile, the reverse is true.
+The comparisons in Figure V illustrate the importance of measuring both relative and absolute
+mobility. Any social welfare function based on mean income ranks that respects the Pareto principle
+would rate Salt Lake City above Charlotte. But normative comparisons of San Francisco and
+Chicago depend on the weight one puts on relative vs. absolute mobility (or, equivalently, on the
+weights one places on absolute mobility at each percentile p).
+
+V.C
+
+Baseline Estimates by CZ
+
+We estimate (2) using OLS to calculate absolute upward mobility (r̄25,c = ↵c + 25 c ) and relative
+mobility ( c ) by CZ. The estimates for each CZ are reported in Online Data Table V.
+Absolute Upward Mobility. Figure VIa presents a heat map of absolute upward mobility. We
+construct this map by dividing CZs into deciles based on their estimated value of r̄25,c . Lighter
+colors represent deciles with higher levels of r̄25,c .35 Upward mobility varies significantly across
+We focus on the absolute outcomes of children from low-income families both because the outcomes of disadvantaged
+youth are a central focus of policy interest and because there is more variation across areas in the outcomes of
+children from low-income families than those from high-income families, as we show in Figure VII below. However,
+the CZ-level statistics in Online Data Tables V and VI can be used to analyze spatial variation in the outcomes of
+children from high-income families.
+35
+We cannot estimate mobility for 32 CZs in which we have fewer than 250 children in the core sample, shown by
+the cross-hatched areas in the maps in Figure VI. These CZs account for less than 0.05% of the U.S. population in
+
+24
+
+areas. CZs in the top decile have r̄25,c > 52.0, while those in the bottom decile have r̄25,c < 37.4.
+Note that the 37th percentile of the family income distribution for children at age 30 is $22,900,
+while the 52nd percentile is $35,500; hence, the di↵erence in upward mobility across areas translates
+to substantial di↵erences in children’s incomes.
+Pooling all CZs, the unweighted standard deviation (SD) of r̄25,c is 5.68; the population-weighted
+SD is 3.34. The unconditional SD of children’s income ranks (which have a Uniform distribution) is
+p
+100/ 12 = 28.9. Hence, a 1 SD improvement in CZ “quality” – as measured by its level of absolute
+upward mobility r̄25,c – is associated with a 5.68/28.9 = 0.20 SD increase in the expected income
+rank of children whose parents are at the 25th percentile.36 For comparison, a 1 SD increase in
+parent income rank is associated with a 0.34 SD increase in a child’s income rank (Figure IIa).
+Hence, a 1 SD improvement in CZ quality is associated with 60% as large an increase in a child’s
+income as a 1 SD increase in his own parent’s income.
+There are three broad spatial patterns in upward mobility evident in Figure VIa. First, upward
+mobility varies substantially at the regional level. Upward mobility is lowest in the Southeast and
+highest in the Great Plains. The West Coast and Northeast also have high rates of upward mobility,
+though not as high as the Great Plains.
+Second, there is substantial within-region variation as well. Using unweighted CZ-level regressions of the upward mobility estimates on Census division and state fixed e↵ects, we estimate that
+53% of the cross-CZ variance in absolute upward mobility is within the nine Census divisions and
+36% is within states. For example, many parts of Texas exhibit relatively high rates of upward
+mobility, unlike much of the rest of the South. Ohio exhibits much lower rates of upward mobility
+than nearby Pennsylvania. The statistics also pick up much more granular variation in upward
+mobility. For example, South Dakota generally exhibits very high levels of upward mobility, with
+the exception of a few areas in the Southwest corner of the state. These areas are some of the
+largest Native American reservations in the U.S. and are well known to su↵er from very high rates
+of persistent poverty.
+the 2000 Census. In Online Appendix Figure V, we present a version of this map in which we use data from the
+1980-85 cohorts to estimate mobility for the CZs that have fewer than 250 observations in the core (1980-82) sample.
+The estimates of mobility in the CZs with missing data are quite similar to those in neighboring CZs, consistent with
+the spatial autocorrelation evident in the rest of the map.
+36
+An analogous calculation using the estimates of college attendance gradients by CZ in Section IV.C below implies
+that a 1 SD increase in CZ quality is associated with a 0.19 SD (9.3 percentage point) increase in college attendance
+rates for children with parents at the 25th percentile. Using data from the PSID, Solon, Page and Duncan (2002, p390)
+estimate that a 1 SD increase in neighborhood quality is associated with a 0.32 SD increase in years of education.
+We find less variation in outcomes across neighborhoods presumably because commuting zones are much larger than
+the PSID sampling clusters analyzed by Solon, Page, and Duncan.
+
+25
+
+The third generic pattern is that urban areas tend to exhibit lower levels of intergenerational
+mobility than rural areas on average. For instance, children from low-income families who grow
+up in the Chicago area have significantly lower incomes at age 30 than those who grow up in rural
+areas in Illinois. On average, urban areas – which we define as CZs that intersect MSAs – have
+upward mobility of r̄25,c = 41.7, while rural areas have r̄25,c = 45.8. In interpreting this comparison,
+it is important to recall that our definition of geography is based on where children grew up, not
+where they live as adults. 44.6% of children who grow up in rural areas live in urban areas at age
+30. Among those who rose from the bottom quintile of the national income distribution to the top
+quintile, 55.2% of children who grew up in rural areas live in urban areas at age 30.
+Table III shows statistics on intergenerational mobility for the 50 largest CZs by population.
+Among these cities, absolute upward mobility ranges from 46.2 in the Salt Lake City area to 35.8
+in Charlotte (Column 4). There is considerable variation even between nearby cities: Pittsburgh
+is ranked second in terms of upward mobility among large metro areas, while Cleveland – approximately 100 miles away – is ranked in the bottom 10. Upward mobility is especially low in certain
+cities in the “Rust Belt” such as Indianapolis and Columbus and cities in the Southeast such as
+Atlanta and Raleigh. The fact that children who grow up in low-income families in Atlanta and
+Raleigh fare poorly is especially noteworthy because these cities are generally considered to be
+booming cities in the South with relatively high rates of job growth.
+In Column 5 of Table III, we consider an alternative measure of upward mobility: the probability
+that a child born to a family in the bottom quintile of the national income distribution reaches the
+top quintile of the national income distribution.37 To improve precision in smaller CZs, we estimate
+this probability pooling the 1980-1985 birth cohorts.38 The ranking of areas based on this statistic
+is similar to that based on the mean rank measure of upward mobility. The probability that a
+child from the lowest quintile of parental income rises to the top quintile is 10.8% in Salt Lake
+City, compared with 4.4% in Charlotte. The city with the highest probability of moving from the
+bottom fifth to the top fifth is San Jose, where the probability (12.9%) is nearly three times that
+37
+
+In principle, di↵erences in local income distributions within the bottom quintile could generate di↵erences in
+this probability. In an earlier version of this analysis (v1.0 available on the project website), we accounted for these
+di↵erences by calculating the chance of reaching the top quintile separately for each percentile and computed the
+unweighted mean across the percentiles, e↵ectively integrating over the national parent income distribution. The
+adjusted CZ-level transition probabilities obtained using this approach were virtually identical to the raw transition
+probabilities we report in this paper.
+38
+We verify that including more recent cohorts does not generate significant bias by showing that the national
+transition matrix based on the 1980-85 cohorts (Online Appendix Table VI) is virtually identical to the matrix based
+on the 1980-82 cohorts in Table II. We report the quintile transition matrix for each CZ in Online Data Table VI and
+provide statistics on the marginal distributions of parent and child income by CZ in Online Data Table VII.
+
+26
+
+in Charlotte. The chances of rising from the bottom fifth to the top fifth for children growing up in
+San Jose are comparable to those in Denmark and Canada (see Section IV.A). Note that if parent
+income played no role in determining children’s outcomes, all the quintile transition probabilities
+would be 20%. Hence, the variation in rates of upward mobility across areas is large relative to the
+maximum plausible range of 0 to 20%.
+In Column 6 of Table III, we consider another measure of absolute upward mobility: the probability that a child has family income above the poverty line conditional on having parents at the
+25th percentile (see Online Appendix F for details on the construction of this measure). This statistic also generates very similar rankings across CZs, confirming that our results are not sensitive to
+the way in which we measure upward mobility.
+Relative Mobility. Figure VIb presents a heat map of relative mobility. This map is constructed
+in the same way as Panel A, dividing CZs into deciles based on the rank-rank slope
+lighter areas denote areas with greater relative mobility (lower
+
+c ).
+
+c . In this map,
+
+Relative mobility also varies
+
+substantially across areas. The expected rank of children from the richest vs. poorest families di↵ers
+by more than 40.2 percentiles in CZs in the bottom decile of relative mobility. The corresponding
+gap is less than 23.5 percentiles for CZs in the top decile.
+The geographical patterns in relative mobility in Panel B are similar to those for absolute
+upward mobility in Panel A. The unweighted correlation across CZs between the two measures is
+-0.68; the population-weighted correlation is -0.61. This indicates that areas with greater relative
+mobility tend to have better absolute outcomes for children from low-income families.
+To investigate the connection between absolute and relative mobility more systematically, let
+µpc = E [Ric |Pic = p] denote a child’s expected rank given a parent rank of p in CZ c. We estimate
+µpc in each CZ non-parametrically as the mean value of Ric for children in each percentile bin of
+the parent income distribution p = 0, ..., 99.39 For each of the 100 values of p, we estimate an
+unweighted OLS regression of µpc on relative mobility
+µpc = a +
+In this equation,
+
+c with one observation per CZ:
+
+p c + ⌘pc .
+
+p measures the association across CZs between a 1 unit increase in
+
+39
+
+c (i.e., greater
+
+The expected value µpc di↵ers from r̄pc defined above because µpc is estimated non-parametrically using only
+data in percentile bin p, whereas r̄pc is calculated based on the linear approximation to the rank-rank relationship in
+(3). In practice, the two estimates are extremely similar. For instance, in the 100 largest CZs, where µpc is estimated
+with very little error, the correlation between µpc and r̄pc exceeds 0.99. We use the linear approximation r̄pc in most
+of our analysis to obtain more precise estimates of absolute mobility in smaller CZs. However, because the goal of
+the exercise here is to evaluate the relationship between relative mobility c and absolute mobility at each percentile
+non-parametrically, we use µpc here.
+
+27
+
+intergenerational persistence) and the mean rank of children with parents at the pth percentile of
+the national income distribution. A negative coefficient (ˆp < 0) implies that CZs with greater
+relative mobility generate better mean outcomes for children with parents at percentile p.
+Figure VIIa plots the coefficients ˆp at each parent income percentile p along with a linear fit to
+the coefficients. The coefficients ˆp are increasing with p: CZs with greater relative mobility (lower
+c ) produce better outcomes for children from lower income families. The best linear fit crosses 0
+
+at p = 85.1. Hence, increases in relative mobility are associated with better outcomes for children
+who grow up in families below the 85th percentile on average. For families at the 85th percentile,
+di↵erences in relative mobility across CZs are uncorrelated with a child’s mean rank. For families
+in the top 15%, living in a CZ with greater relative mobility is associated with worse outcomes on
+average for children. Observe that
+
+p reaches only 0.2 for the richest families but is nearly -0.8 for
+
+the poorest families. This shows that di↵erences in relative mobility across CZs are associated with
+much larger di↵erences in absolute mobility for children from low-income families than high-income
+families.40
+Figure VIIb presents a schematic that illustrates the intuition underlying the preceding results.
+This figure plots hypothetical rank-rank relationships in two representative CZs, one of which has
+more relative mobility than the other. Figure VIIa implies that in such a pairwise comparison, the
+rank-rank relationship “pivots” at the 85th percentile on average. This is why the spatial patterns
+of absolute mobility at p = 25 and relative mobility in Figure VI look similar.
+Because the pivot point is high in the income distribution, di↵erences in relative mobility have a
+smaller e↵ect on children’s percentile ranks in high-income families than low-income families.41 This
+may be because the rich are able to insulate themselves from di↵erences in the local environment.
+If the di↵erences in relative mobility across areas are caused by di↵erences in local policies, this
+result suggests that policies that improve relative mobility may be able to improve the outcomes
+of children from poor families without hurting children from high income families significantly.
+40
+
+If the rank-rank relationship were perfectly linear, the relationship plotted in Figure VIIa would be perfectly
+linear and 100
+0 = 1 mechanically. The slight deviation from linearity at the bottom of the distribution evident
+in Figure V generates the slight deviation of 100
+0 from 1.
+41
+It bears emphasis that this result applies to percentile ranks rather than mean income levels. Because the income
+distribution has a thick upper tail, a given di↵erence in percentile ranks translates to a much larger di↵erence in
+mean incomes in the upper tail of the income distribution. The probability that children of a✏uent parents become
+very high income “superstars” may therefore di↵er significantly across areas.
+
+28
+
+V.D
+
+Robustness of Spatial Patterns
+
+We assess the robustness of the spatial patterns in mobility along several dimensions. The results
+of this robustness analysis are reported in Online Appendix F and Appendix Table VII; we present
+a brief summary here.
+We begin by considering changes in sample definitions: limiting the sample to male vs. female
+children, married vs. single parents, and later birth cohorts (for which we measure children’s
+location at earlier ages). Measures of both absolute and relative mobility across areas in these
+subsamples generally have a correlation of more than 0.9 with the corresponding baseline measures
+reported above. Restricting the sample to hold the parents’ ages at the birth of child fixed, limiting
+the sample to children who stay in the CZ where they grew up as adults, and limiting the sample to
+children linked to only one parent in all years yield very similar estimates of mobility across areas.
+We also find that the spatial patterns are highly robust to using alternative measures of income
+used in Table I. For example, using individual income instead of family income or wage earnings
+instead of total income yields very spatial patterns.
+We evaluate whether adjusting for di↵erences in cost-of-living across areas a↵ects our estimates
+by dividing parents’ income by a local price index (based on the ACCRA survey) for the CZ where
+their child grew up and the child’s income by the price index for the CZ where he lives in 2012 to
+obtain real income measures. Measures of intergenerational mobility based on real incomes are very
+highly correlated with our baseline measures. The degree of upward mobility – i.e., the di↵erence
+between the child’s rank and the parent’s rank – is essentially una↵ected by adjusting for local
+prices because few children move to areas with very di↵erent levels of cost of living relative to their
+parents (see Appendix F for details).
+Because we measure parent income before 2000 and child income in 2011-12, part of the variation
+in upward mobility across areas could be driven by shocks to local economic growth. While growth
+shocks – e.g., from the discovery of a natural resource such as oil – are a real source of upward
+mobility, one may be interested in isolating variation in mobility attributable to more stable factors
+that can be manipulated by policy. We assess the extent to which economic growth is responsible
+for the spatial variation in upward mobility in two ways. First, we define parent income as mean
+family income in 2011-12, the same years in which we measure child income. Insofar as local
+economic growth raises the incomes of both parents and children, this measure nets out the e↵ects
+of growth on mobility. Second, we regress upward mobility on the CZ-level growth rate from 2000-
+
+29
+
+2010 and calculate residuals. Both of these growth-adjusted mobility measures have a correlation
+of more than 0.8 with our baseline measures, indicating that most of the spatial variation in upward
+mobility is not driven by di↵erences in growth rates.
+Finally, we consider a set of alternative statistics for relative and absolute mobility. Estimating
+relative mobility based on parent and child ranks in the local income distribution yields estimates
+that are very highly correlated with our baseline estimates based on national ranks. We also show
+that the two alternative measures of upward mobility analyzed in Table III – the probability of rising
+from the bottom fifth to the top fifth and the probability of having income above the poverty line
+conditional on having parents at the 25th percentile – also generate very similar spatial patterns,
+with correlations above 0.9 with our baseline mean rank measure of upward mobility (Online
+Appendix Figure VI).
+
+V.E
+
+Intermediate Outcomes: College Attendance and Teenage Birth
+
+To better understand the sources of the spatial variation in intergenerational income mobility, we
+characterize spatial variation in the three intermediate outcomes analyzed in Figure IV: college
+attendance rates, college quality rank, and teenage birth rates. We first regress each of these
+outcomes on parent national income rank in each CZ c using specifications analogous to (2). We
+then characterize spatial variation in two measures of mobility for each outcome using the regression
+estimates: the slope coefficient, which is analogous to our measure of relative mobility above, and
+the predicted outcome for children with parents at the 25th percentile, which is analogous to our
+measure of absolute mobility.42
+We present heat maps for the relative and absolute mobility measures for the three intermediate
+outcomes in Online Appendix Figures VII-IX; the CZ-level data underlying these maps are reported
+in Online Data Table V. There is substantial spatial variation in all three intermediate outcomes
+and the variation is highly correlated with the variation in the intergenerational income mobility.
+For example, college attendance rates for children with parents at the 25th percentile vary from less
+than 32.4% in bottom decile of CZs to more than 55.6% in the top decile of CZs. The unweighted
+correlation between college attendance rates at the 25th percentile and mean income ranks at the
+25th percentile (absolute upward mobility) across CZs is 0.71 (Online Appendix Table VII, row
+23). Similarly, teenage birth rates for female children whose parents are at the 25th percentile vary
+42
+
+Because the relationship between college quality rank and parent rank is not linear, we regress college quality
+ranks on a quadratic function of parent income rank and define the relative mobility measure for college quality as
+the di↵erence in the predicted college quality rank for children with parents at the 75th percentile and children with
+parents at the 25th percentile, as in Figure IVa.
+
+30
+
+from less than 15.4% in bottom-decile of CZs to more than 29.4% in the top decile. The correlation
+between teen birth rates and absolute upward mobility is -0.61.
+An important implication of these results is that much of the di↵erence in intergenerational
+mobility across areas emerges while children are teenagers, well before they enter the labor market
+as adults.43 This suggests that the spatial variation in income mobility is driven by factors that
+either directly a↵ect children at early ages (such as the quality of schools or social structure) or
+anticipatory behavioral responses to subsequent di↵erences (such as returns to education in the
+local labor market). We explore mechanisms that have such properties in the next section.
+
+VI
+
+Correlates of Intergenerational Mobility
+
+Why do some areas of the U.S. exhibit much higher rates of upward mobility than others? As a first
+step toward answering this question, we correlate our measures of intergenerational mobility with
+local area characteristics. Naturally, such correlations cannot be interpreted as causal mechanisms.
+Our goal is merely to document a set of stylized facts to guide the search for causal determinants
+and the development of new models of intergenerational mobility.
+We correlate our mobility statistics with various factors that have been discussed in the sociology
+and economics literature, such as segregation and inequality. Because most of these factors are slowmoving and we have estimates of intergenerational income mobility for essentially one birth cohort,
+we focus on cross-sectional correlations rather than changes over time. For most covariates, we use
+data from the 2000 Census and other publicly available datasets because many variables cannot be
+consistently measured in earlier years. See Online Appendix G for details on the construction of
+the covariates analyzed in this section and Online Data Table VIII for CZ-level data on each of the
+covariates.
+Figure VIII presents a summary of our correlational results. It plots the unweighted univariate
+correlation between absolute upward mobility and various CZ-level characteristics, using all CZs
+with available data for the relevant variable. We consider several proxies for each broad factor (segregation, inequality, etc.). The dots show the point estimate of the correlation and the horizontal
+lines show a 95% confidence interval, based on standard errors clustered at the state level. The sign
+of the correlation is shown in parentheses next to each variable. In Online Appendix Table VIII, we
+report these correlations as well as estimates from several alternative specifications: including state
+43
+Further supporting this claim, we find a strong positive correlation of 0.63 between teenage labor force participation rates (between the ages of 14 and 16) and upward mobility (see Figure VIII and Online Appendix H).
+
+31
+
+fixed e↵ects, weighting CZs by population, restricting to urban areas, and controlling for di↵erences
+in racial demographics and income growth (see Online Appendix H for details). These alternative
+specifications generally yield very similar results to the baseline estimates shown in Figure VIII.
+Most importantly, the correlations discussed below hold even in specifications with state fixed effects, showing that the results are not just driven by broad regional di↵erences across the South
+vs. other parts of the country. We also show in Online Appendix Table VIII that the factors that
+are positively associated with absolute upward mobility are generally positively associated with
+relative mobility (i.e., are negatively correlated with rank-rank slopes).
+In the remainder of this section, we discuss correlations of mobility with the categories in Figure
+VIII that have the strongest relationship with mobility: racial demographics, segregation, income
+inequality, school quality, social capital, and family structure. We discuss results for four other
+broad categories for which we find weaker correlations – local tax policies, higher education, labor
+market conditions, and migration – in Online Appendix H.
+
+VI.A
+
+Race
+
+Perhaps the most obvious pattern from the maps in Figure VI is that intergenerational mobility
+is lower in areas with larger African-American populations, such as the Southeast. Indeed, the
+unweighted correlation between upward mobility and the fraction of black residents in the CZ
+(based on the 2000 Census) is -0.580, as shown in the first row of Figure VIII.
+This correlation could be driven by two very di↵erent channels. One channel is an individuallevel race e↵ect: black children may have lower incomes than white children conditional on parent
+income, and hence areas with a larger black population may have lower upward mobility. An
+alternative possibility is a place-level race e↵ect: areas with large black populations might have
+lower rates of upward mobility for children of all races.
+To distinguish between these two channels, we would ideally control for race at the individual
+level, essentially asking whether whites have lower rates of upward mobility in areas with a larger
+black population. Unfortunately, we do not observe each individual’s race in our data. As an
+alternative, we predict race based on the parent’s 5-digit ZIP code (in the year they first claim
+their child as a dependent). We use data from the 2000 Census to measure racial shares by
+ZIP code. Figure IXa replicates the map of absolute upward mobility (r̄25,c ) by CZ, restricting
+the sample to ZIP codes within each CZ in which at least 80% of the residents are non-hispanic
+
+32
+
+whites.44 In this subsample, 91% of individuals are white. The spatial pattern in Figure IXa is
+very similar to that in the original map for the full sample in Figure VIa. Most notably, even in
+this predominantly white sample, rates of upward mobility remain low in the Southeast and are
+much higher in the West. Among the 604 CZs for which we are able to compute upward mobility
+measures for predominantly white individuals, the unweighted correlation between upward mobility
+for the predominantly white sample and the full sample is 0.91.
+In Figure IXb, we generalize this approach to assess how the spatial pattern of upward mobility
+changes as we restrict the sample to be increasingly white. To construct this figure, we first
+compute upward mobility in each CZ, restricting the sample to individuals living in ZIP codes that
+w . We then regress r̄ w
+are more than w% white, which we denote by r̄25,c
+25,c on r̄25,c , our baseline
+
+estimates of upward mobility based on the full sample, using an unweighted OLS regression with
+one observation per CZ with available data. We vary w from 0% to 95% in increments of 5%
+and plot the resulting regression coefficients in Figure IXb against the fraction of white individuals
+in each of the subsamples. When w = 0, the regression coefficient is 1 by construction because
+w=0 . Since 68% of the U.S. population is white, the first point on the figure is (0.68,
+r̄25,c = r̄25,c
+
+1). The point generated by the w = 80% threshold is (0.91, 0.84), consistent with the map in
+Figure IXa. The dotted lines show a 95% confidence interval for the regression coefficients based
+on standard errors clustered at the state level.
+If the variation in upward mobility across areas were entirely driven by heterogeneity in outcomes
+across race at the individual level, the coefficient in Figure IXb would fall to zero as the fraction
+white in the sample converged to 1, as illustrated by the dashed line. Intuitively, if all of the spatial
+variation in Figure VIa were driven by individual-level di↵erences in race, there would be no spatial
+variation left in a purely white sample. The data reject this hypothesis: even in the subsample
+with more than 95% white individuals, the regression coefficient remains at 0.89.
+The main lesson of this analysis is that both blacks and whites living in areas with large AfricanAmerican populations have lower rates of upward income mobility.45 There are many potential
+mechanisms for such a correlation, including di↵erences in the institutions and industries that
+developed in areas with large African-American populations. We are unable to distinguish between
+44
+
+We continue to estimate r̄25,c at the CZ level in this map, but we only include ZIP-5’s within each CZ in which
+80% or more of the residents are white. To facilitate comparison to Figure VI, we color the entire CZ based on this
+statistic, including ZIP-5’s whose own white share is below 80%. CZs that have fewer than 250 children who grew
+up in ZIP codes where more than 80% of the residents are white are omitted (and shown with cross-hatch shading).
+45
+To be clear, this result does not imply that race does not matter for children’s outcomes at the individual level,
+as shown e.g. by Mazumder (2011). Our finding is simply that there is spatial heterogeneity in upward mobility even
+conditional on race.
+
+33
+
+these mechanisms in our data; instead, we next turn to one such mechanism that has received the
+greatest attention in prior work: segregation. The U.S. has a historical legacy of greater segregation
+in areas with more blacks. Such segregation could potentially a↵ect both low-income whites and
+blacks, as racial segregation is often associated with income segregation.
+
+VI.B
+
+Segregation
+
+Prior work has argued that segregation has harmful e↵ects on disadvantaged individuals through
+various channels: reducing exposure to successful peers and role models, decreasing funding for local
+public goods such as schools, or hampering access to nearby jobs (Wilson 1987, Massey and Denton
+1993, Cutler and Glaeser 1997). In this subsection, we evaluate these hypotheses by exploring the
+correlation between intergenerational mobility and various measures of segregation (shown in the
+second panel of Figure VIII and Online Appendix Table VIII).
+We begin by measuring racial segregation using a Theil (1972) index, constructed using data
+from the 2000 Census as in Iceland (2004). Let
+
+r denote the fraction of individuals of race r in a
+
+given CZ, with four racial groups: whites, blacks, hispanics, and others. We measure the level of
+P
+1
+1
+racial diversity in the CZ by an entropy index: E =
+r log2 r , with r log2 r = 0 when r = 0.
+Letting j = 1, ..., N index census tracts in the CZ, we analogously measure racial diversity within
+P
+1
+each tract as Ej =
+rj log2 rj where rj denotes the fraction of individuals of race r in tract j.
+We define the degree of racial segregation in the CZ as
+H=
+
+X
+j
+
+[
+
+popj E Ej
+]
+poptotal E
+
+(4)
+
+where popj denotes the total population of tract j and poptotal denotes the total population of
+the CZ. Intuitively, H measures the extent to which the racial distribution in each Census tract
+deviates from the overall racial distribution in the CZ. The segregation index H is maximized at
+H = 1 when there is no racial heterogeneity within census tracts, in which case Ej = 0 in all tracts.
+It is minimized at H(p) = 0 when all tracts have racial composition identical to the CZ as a whole,
+so that Ej = E.
+Column 1 of Table IV reports the coefficient estimate from an unweighted OLS regression of
+absolute upward mobility r̄25,c on the racial segregation index, with one observation per CZ. In this
+and all subsequent regressions, we standardize the dependent variable and all independent variables
+to have mean 0 and standard deviation 1 within the estimation sample. Hence, the coefficients in the
+univariate regressions can be interpreted as correlation coefficients. Standard errors are clustered
+34
+
+

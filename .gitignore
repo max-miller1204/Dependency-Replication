@@ -16,6 +16,6 @@
 results/**/*.RData
 
 # Temporary files
-*.txt
+# *.txt
 !RA presentations 12_9_25.txt
 
