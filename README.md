@@ -53,7 +53,6 @@ See `experimental/hc3_findings.md` for full details.
 ```
 Dependency-Replication/
 ├── README.md
-├── CLAUDE.md                      # Claude Code instructions
 ├── .gitignore
 ├── .devcontainer/                 # Dev container configuration
 │   └── devcontainer.json          # Rocker R 4.4 + RStudio Server
