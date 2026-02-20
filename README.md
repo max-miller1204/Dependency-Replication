@@ -92,12 +92,6 @@ Dependency-Replication/
 │       ├── coefficient_plot_hc3_experimental.png
 │       └── mobility_analysis_hc3_experimental_workspace.RData
 │
-├── docs/                          # Documentation
-│   ├── analysis_guide.md          # Detailed methodology
-│   ├── DATA_FLOW_DOCUMENTATION.md # Data provenance
-│   ├── output_explanation.md      # Output file docs
-│   └── why_table_viii.md          # Why we replicate Table VIII
-│
 └── references/                    # Reference materials
     ├── papers/                    # Academic papers
     └── original_replication/      # Chetty et al. replication materials

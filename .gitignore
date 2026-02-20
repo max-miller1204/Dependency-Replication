@@ -19,3 +19,4 @@ results/**/*.RData
 # *.txt
 !RA presentations 12_9_25.txt
 
+/docs
