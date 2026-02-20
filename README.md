@@ -15,6 +15,22 @@ This project replicates key findings from **"Where is the Land of Opportunity? T
 - **100% agreement** between all six methods on significance conclusions
 - Results are **robust** to the choice of inference method
 
+### Subgroup Analysis: 5 RM Variants
+
+Extends the main analysis to subgroup-specific relative mobility measures (females, males, single parents, married parents), testing 35 covariates across 5 RM variants (175 total tests).
+
+- **166/175 (94.9%)** of covariate-subgroup pairs have full agreement across all 6 methods
+- **All 35/35** covariates agree across methods for RM of children of married parents
+- Fraction Single Mothers remains a strong predictor even for children of **married** parents (β = 0.56, p < 0.001), confirming community-level effects documented in Chetty et al. Figure XIIb
+
+| RM Subgroup | Agreement |
+|-------------|-----------|
+| Baseline (80-82 Cohort) | 34/35 |
+| Females | 32/35 |
+| Males | 32/35 |
+| Single Parents | 33/35 |
+| Married Parents | 35/35 |
+
 ### Experimental: HC3 Permutation Test
 
 We also ran an experimental HC3-based permutation test to investigate whether classical HC3's conservativeness persists in permutation inference.
@@ -39,11 +55,17 @@ Dependency-Replication/
 ├── README.md
 ├── CLAUDE.md                      # Claude Code instructions
 ├── .gitignore
+├── .devcontainer/                 # Dev container configuration
+│   └── devcontainer.json          # Rocker R 4.4 + RStudio Server
+├── renv.lock                      # Locked R package dependencies
+├── renv/                          # renv library cache
+├── .Rprofile                      # Activates renv on R startup
 │
 ├── analysis/                      # Main analysis code
 │   ├── mobility_analysis.Rmd      # Primary analysis (RMarkdown)
 │   ├── mobility_analysis.R        # Standalone R script
-│   └── mobility_analysis.pdf      # Compiled report
+│   ├── mobility_analysis.pdf      # Compiled report
+│   └── subgroup_mobility_analysis.Rmd  # Subgroup analysis
 │
 ├── experimental/                  # Experimental work
 │   ├── README.md                  # Explains experimental status
@@ -60,6 +82,11 @@ Dependency-Replication/
 │   │   ├── mobility_test_results.csv
 │   │   ├── coefficient_plot.png
 │   │   └── mobility_analysis_workspace.RData
+│   ├── subgroups/                 # Subgroup analysis results
+│   │   ├── subgroup_mobility_results.csv
+│   │   ├── subgroup_coefficient_plot.png
+│   │   ├── beta_comparison_plots.png
+│   │   └── subgroup_analysis_workspace.RData
 │   └── experimental/              # Experimental results
 │       ├── mobility_test_results_hc3_experimental.csv
 │       ├── coefficient_plot_hc3_experimental.png
@@ -100,31 +127,65 @@ Dependency-Replication/
 |--------|----------------|------------|
 | **perm_test_regression_hc3** | HC3 Wald Sₙ | Experimental, no theoretical backing |
 
-## Quick Start
+## Replication Instructions
 
-### Prerequisites
+### Option 1: Dev Container (Recommended)
 
-```r
-install.packages(c("tidyverse", "broom", "perk", "sandwich", "lmtest"))
+The easiest way to replicate this project is using the included dev container, which provides a fully configured R environment with RStudio Server.
+
+**Prerequisites**: [Docker](https://docs.docker.com/get-docker/) and [VS Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+#### Using VS Code
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/max-miller1204/Dependency-Replication.git
+   cd Dependency-Replication
+   ```
+2. Open the folder in VS Code.
+3. When prompted **"Reopen in Container"**, click yes (or run the command **Dev Containers: Reopen in Container** from the command palette).
+4. The container will build, install all R packages from `renv.lock`, and start RStudio Server automatically.
+
+#### Accessing RStudio Server
+
+Once the container is running, RStudio Server is available at:
+
+```
+http://localhost:8787
 ```
 
-### Run Main Analysis
+#### Running Analyses from the Terminal
 
-```r
-setwd("analysis")
-rmarkdown::render("mobility_analysis.Rmd")
+Inside the container, all dependencies are already installed via `renv`. Run analyses from the project root:
+
+```bash
+# Main analysis (~15 min)
+cd analysis && Rscript -e 'rmarkdown::render("mobility_analysis.Rmd")'
+
+# Subgroup analysis (~75 min)
+cd analysis && Rscript -e 'rmarkdown::render("subgroup_mobility_analysis.Rmd")'
+
+# Experimental HC3 analysis (~22-25 min)
+cd experimental && Rscript -e 'rmarkdown::render("hc3_permutation_test.Rmd")'
 ```
 
-**Expected runtime**: ~15 minutes
+### Option 2: Local R Installation
 
-### Run Experimental Analysis
+If you prefer to run outside the container:
 
-```r
-setwd("experimental")
-rmarkdown::render("hc3_permutation_test.Rmd")
-```
+**Prerequisites**: R >= 4.4.3
 
-**Expected runtime**: ~22-25 minutes
+1. Clone the repository:
+   ```bash
+   git clone <repo-url>
+   cd Dependency-Replication
+   ```
+2. Restore the `renv` lockfile to install exact package versions:
+   ```r
+   # renv should activate automatically via .Rprofile
+   renv::restore()
+   ```
+3. Run analyses as shown above, or open `.Rmd` files in RStudio and knit them.
 
 ## Data Sources
 
