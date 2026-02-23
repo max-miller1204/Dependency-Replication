@@ -15,9 +15,9 @@
 
 		"ghcr.io/rocker-org/devcontainer-features/rstudio-server:latest": {}
 	},
-	"postCreateCommand": "R -q -e 'renv::install()'"
+	"postCreateCommand": "R -q -e 'renv::install()'",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [8787]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "R -q -e 'renv::install()'",
