@@ -135,7 +135,13 @@ The easiest way to replicate this project is using the included dev container, w
    git clone https://github.com/max-miller1204/Dependency-Replication.git
    cd Dependency-Replication
    ```
-2. Open the folder in VS Code.
+2. **Windows users**: Reset line endings to LF before opening the container:
+   ```bash
+   git rm --cached -r .
+   git reset --hard
+   ```
+   This is needed because Git on Windows may convert line endings to CRLF, which causes failures inside the Linux container. The `.gitattributes` file in this repo enforces LF endings, but existing checkouts need this one-time reset.
+3. Open the folder in VS Code.
 3. When prompted **"Reopen in Container"**, click yes (or run the command **Dev Containers: Reopen in Container** from the command palette).
 4. The container will build, install all R packages from `renv.lock`, and start RStudio Server automatically.
 
