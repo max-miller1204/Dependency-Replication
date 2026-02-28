@@ -185,6 +185,7 @@ library(broom)
 library(perk)
 library(sandwich)  # For vcovHC (heteroskedasticity-consistent covariance)
 library(lmtest)    # For waldtest
+library(tseries)   # For jarque.bera.test
 ```
 
 ## Load the Chetty et al. Data
@@ -439,6 +440,71 @@ This phase replicates Chetty et al.'s classical OLS results. For each covariate,
 2. Regress relative mobility on the covariate
 3. The standardized coefficient equals the Pearson correlation
 
+```{r covariate-name-map}
+# Named vector mapping R-mangled column names to clean display names.
+# Defined once and reused for both diagnostics and results tables.
+covariate_name_map <- c(
+  "Frac..Black" = "Fraction Black Residents",
+  "Racial.Segregation" = "Racial Segregation",
+  "Income.Segregation" = "Income Segregation",
+  "Segregation.of.Poverty...p25." = "Segregation of Poverty (<p25)",
+  "Segregation.of.Affluence...p75." = "Segregation of Affluence (>p75)",
+  "Frac..with.Commute...15.Mins" = "Share with Commute < 15 Mins",
+  "Household.Income.per.capita" = "Household Income per Capita",
+  "Gini" = "Gini Coefficient",
+  "Top.1..Income.Share" = "Top 1% Income Share",
+  "Gini.Bottom.99." = "Gini Bottom 99%",
+  "Frac..Between.p25.and.p75" = "Fraction Middle Class",
+  "School.Expenditure.per.Student" = "School Expenditure per Student",
+  "Teacher.Student.Ratio" = "Teacher-Student Ratio",
+  "Test.Score.Percentile..Income.Adjusted" = "Test Score Percentile (Inc. Adj.)",
+  "High.School.Dropout.Rate..Income.Adjusted." = "HS Dropout Rate (Inc. Adj.)",
+  "Social.Capital.Index" = "Social Capital Index",
+  "Fraction.Religious" = "Fraction Religious",
+  "Violent.Crime.Rate" = "Violent Crime Rate",
+  "Fraction.of.Children.with.Single.Mothers" = "Fraction Single Mothers",
+  "Fraction.of.Adults.Divorced" = "Fraction Divorced",
+  "Fraction.of.Adults.Married" = "Fraction Married",
+  "Local.Tax.Rate" = "Local Tax Rate",
+  "Local.Government.Expenditures.Per.Capita" = "Local Gov Expenditures",
+  "State.EITC.Exposure" = "State EITC Exposure",
+  "State.Income.Tax.Progressivity" = "State Income Tax Progressivity",
+  "Number.of.Colleges.per.Capita" = "Colleges per Capita",
+  "College.Tuition" = "Mean College Tuition",
+  "College.Graduation.Rate..Income.Adjusted." = "College Grad Rate (Inc. Adj.)",
+  "Labor.Force.Participation.Rate" = "Labor Force Participation",
+  "Manufacturing.Employment.Share" = "Manufacturing Employment Share",
+  "Growth.in.Chinese.Imports.1990.2000" = "Growth in Chinese Imports",
+  "Teenage.Labor.Force.Participation.Rate" = "Teen Labor Force Participation",
+  "Migration.Inflow.Rate" = "Migration Inflow Rate",
+  "Migration.Outlflow.Rate" = "Migration Outflow Rate",
+  "Frac..Foreign.Born" = "Fraction Foreign Born"
+)
+
+clean_covariate_name <- function(x) {
+  ifelse(x %in% names(covariate_name_map),
+         covariate_name_map[x],
+         gsub("\\.", " ", x))
+}
+```
+
+```{r diagnostics-fun}
+diagnostics_fun <- function(model, X, Y) {
+  r_pearson <- cor(X, Y, method = "pearson")
+  r_spearman <- cor(X, Y, method = "spearman")
+  data.frame(
+    Pearson_r       = r_pearson,
+    Spearman_r      = r_spearman,
+    Abs_r_minus_rho = abs(r_pearson - r_spearman),
+    BP_p_value      = bptest(model)$p.value,
+    White_p_value   = bptest(model, ~ X + I(X^2))$p.value,
+    JB_p_value      = jarque.bera.test(residuals(model))$p.value,
+    Max_Cooks_D     = max(cooks.distance(model)),
+    Max_Leverage    = max(hatvalues(model))
+  )
+}
+```
+
 ```{r phase1}
 # Initialize results dataframe
 results <- data.frame(
@@ -452,6 +518,21 @@ results <- data.frame(
   p_cor_test = numeric(),     # p-value from cor.test
   p_waldtest_hc0 = numeric(), # p-value from waldtest with HC0
   p_waldtest_hc3 = numeric(), # p-value from waldtest with HC3
+  stringsAsFactors = FALSE
+)
+
+# Initialize diagnostics dataframe
+diagnostics_results <- data.frame(
+  category = character(),
+  covariate = character(),
+  Pearson_r = numeric(),
+  Spearman_r = numeric(),
+  Abs_r_minus_rho = numeric(),
+  BP_p_value = numeric(),
+  White_p_value = numeric(),
+  JB_p_value = numeric(),
+  Max_Cooks_D = numeric(),
+  Max_Leverage = numeric(),
   stringsAsFactors = FALSE
 )
 
@@ -488,6 +569,12 @@ for (category_name in names(covariates_to_test)) {
 
     # Fit OLS regression
     fit <- lm(y_std ~ x_std)
+
+    # Compute regression diagnostics (reuses fit)
+    diag_row <- diagnostics_fun(fit, x_std, y_std)
+    diag_row$category <- category_name
+    diag_row$covariate <- covariate_name
+    diagnostics_results <- rbind(diagnostics_results, diag_row)
     fit_summary <- summary(fit)
     coef_table <- coef(fit_summary)
 
@@ -541,6 +628,34 @@ cat(sprintf("Significant at alpha=0.05: %d (%.1f%%)\n",
   100 * mean(results$p_classical < 0.05)))
 ```
 
+## Regression Diagnostics
+
+This table reports diagnostic statistics for each covariate regression on standardized data. Large |r - rho| suggests non-linearity. Small Breusch-Pagan or White p-values indicate heteroskedasticity. Small Jarque-Bera p-values indicate non-normal residuals. High Cook's D or leverage flags influential observations.
+
+```{r regression-diagnostics}
+# Add clean covariate names
+diagnostics_results <- diagnostics_results %>%
+  mutate(covariate_clean = clean_covariate_name(covariate))
+
+# Display table
+knitr::kable(
+  diagnostics_results %>%
+    select(category, covariate_clean, Pearson_r, Spearman_r, Abs_r_minus_rho,
+           BP_p_value, White_p_value, JB_p_value, Max_Cooks_D, Max_Leverage),
+  col.names = c("Category", "Covariate", "Pearson r", "Spearman r",
+                "|r - rho|", "BP p", "White p", "JB p",
+                "Max Cook's D", "Max Leverage"),
+  digits = 4,
+  caption = "Regression Diagnostics for 35 Covariate Regressions on Relative Mobility"
+)
+
+# Save to CSV
+write.csv(diagnostics_results,
+  "../results/main/regression_diagnostics.csv",
+  row.names = FALSE)
+cat("Saved: ../results/main/regression_diagnostics.csv\n")
+```
+
 # Part 5: Permutation Test Comparison
 
 ## Comparing Classical and Permutation Inference
@@ -557,7 +672,7 @@ results$perm_reg_sig <- NA
 results$all_agree <- NA        # TRUE if classical, perk, perm_reg agree
 
 # Loop through covariates
-for (i in 1:nrow(results)) {
+for (i in seq_len(nrow(results))) {
   covariate_name <- results$covariate[i]
   category_name <- results$category[i]
 
@@ -683,7 +798,7 @@ disagreements <- results %>% filter(!all_six_agree)
 
 if (nrow(disagreements) > 0) {
   cat(sprintf("\nDISAGREEMENTS (%d):\n", nrow(disagreements)))
-  for (j in 1:nrow(disagreements)) {
+  for (j in seq_len(nrow(disagreements))) {
     row <- disagreements[j, ]
     cat(sprintf("   - %s:\n", row$covariate))
     cat(sprintf("       summary(lm) p=%.4f (%s)\n",
@@ -734,7 +849,7 @@ nonsig <- results %>%
 
 if (nrow(nonsig) > 0) {
   cat("\nCovariates NOT significant under ALL six methods:\n\n")
-  for (j in 1:nrow(nonsig)) {
+  for (j in seq_len(nrow(nonsig))) {
     cat(sprintf("  - %s (b=%.3f)\n", nonsig$covariate[j], nonsig$beta[j]))
     cat(sprintf("      Non-perm: lm=%.3f, cor.test=%.3f, HC0=%.3f, HC3=%.3f\n",
       nonsig$p_classical[j], nonsig$p_cor_test[j],
@@ -757,44 +872,7 @@ if (!dir.exists("../results/main")) {
 
 # Clean up covariate names for readability
 results_clean <- results %>%
-  mutate(covariate_clean = case_when(
-    covariate == "Frac..Black" ~ "Fraction Black Residents",
-    covariate == "Racial.Segregation" ~ "Racial Segregation",
-    covariate == "Income.Segregation" ~ "Income Segregation",
-    covariate == "Segregation.of.Poverty...p25." ~ "Segregation of Poverty (<p25)",
-    covariate == "Segregation.of.Affluence...p75." ~ "Segregation of Affluence (>p75)",
-    covariate == "Frac..with.Commute...15.Mins" ~ "Share with Commute < 15 Mins",
-    covariate == "Household.Income.per.capita" ~ "Household Income per Capita",
-    covariate == "Gini" ~ "Gini Coefficient",
-    covariate == "Top.1..Income.Share" ~ "Top 1% Income Share",
-    covariate == "Gini.Bottom.99." ~ "Gini Bottom 99%",
-    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Middle Class",
-    covariate == "School.Expenditure.per.Student" ~ "School Expenditure per Student",
-    covariate == "Teacher.Student.Ratio" ~ "Teacher-Student Ratio",
-    covariate == "Test.Score.Percentile..Income.Adjusted" ~ "Test Score Percentile (Inc. Adj.)",
-    covariate == "High.School.Dropout.Rate..Income.Adjusted." ~ "HS Dropout Rate (Inc. Adj.)",
-    covariate == "Social.Capital.Index" ~ "Social Capital Index",
-    covariate == "Fraction.Religious" ~ "Fraction Religious",
-    covariate == "Violent.Crime.Rate" ~ "Violent Crime Rate",
-    covariate == "Fraction.of.Children.with.Single.Mothers" ~ "Fraction Single Mothers",
-    covariate == "Fraction.of.Adults.Divorced" ~ "Fraction Divorced",
-    covariate == "Fraction.of.Adults.Married" ~ "Fraction Married",
-    covariate == "Local.Tax.Rate" ~ "Local Tax Rate",
-    covariate == "Local.Government.Expenditures.Per.Capita" ~ "Local Gov Expenditures",
-    covariate == "State.EITC.Exposure" ~ "State EITC Exposure",
-    covariate == "State.Income.Tax.Progressivity" ~ "State Income Tax Progressivity",
-    covariate == "Number.of.Colleges.per.Capita" ~ "Colleges per Capita",
-    covariate == "College.Tuition" ~ "Mean College Tuition",
-    covariate == "College.Graduation.Rate..Income.Adjusted." ~ "College Grad Rate (Inc. Adj.)",
-    covariate == "Labor.Force.Participation.Rate" ~ "Labor Force Participation",
-    covariate == "Manufacturing.Employment.Share" ~ "Manufacturing Employment Share",
-    covariate == "Growth.in.Chinese.Imports.1990.2000" ~ "Growth in Chinese Imports",
-    covariate == "Teenage.Labor.Force.Participation.Rate" ~ "Teen Labor Force Participation",
-    covariate == "Migration.Inflow.Rate" ~ "Migration Inflow Rate",
-    covariate == "Migration.Outlflow.Rate" ~ "Migration Outflow Rate",
-    covariate == "Frac..Foreign.Born" ~ "Fraction Foreign Born",
-    TRUE ~ gsub("\\.", " ", covariate)
-  ))
+  mutate(covariate_clean = clean_covariate_name(covariate))
 
 # Save results
 write.csv(results_clean,
@@ -803,7 +881,7 @@ write.csv(results_clean,
 cat("Saved: ../results/main/mobility_test_results.csv\n")
 
 # Save workspace
-save(results, results_clean, df, covariates_to_test,
+save(results, results_clean, diagnostics_results, df, covariates_to_test,
   file = "../results/main/mobility_analysis_workspace.RData")
 cat("Saved: ../results/main/mobility_analysis_workspace.RData\n")
 ```
@@ -906,19 +984,19 @@ cat(sprintf("  - Covariates tested: %d\n", nrow(results)))
 
 cat("\n  Non-permutation methods:\n")
 cat(sprintf("    - summary(lm) significant: %d (%.1f%%)\n",
-    sum(results$classical_sig), 100*mean(results$classical_sig)))
+    sum(results$classical_sig), 100 * mean(results$classical_sig)))
 cat(sprintf("    - cor.test significant: %d (%.1f%%)\n",
-    sum(cor_test_sig), 100*mean(cor_test_sig)))
+    sum(cor_test_sig), 100 * mean(cor_test_sig)))
 cat(sprintf("    - waldtest HC0 significant: %d (%.1f%%)\n",
-    sum(hc0_sig), 100*mean(hc0_sig)))
+    sum(hc0_sig), 100 * mean(hc0_sig)))
 cat(sprintf("    - waldtest HC3 significant: %d (%.1f%%)\n",
-    sum(hc3_sig), 100*mean(hc3_sig)))
+    sum(hc3_sig), 100 * mean(hc3_sig)))
 
 cat("\n  Permutation methods:\n")
 cat(sprintf("    - perk significant: %d (%.1f%%)\n",
-    sum(results$perk_sig), 100*mean(results$perk_sig)))
+    sum(results$perk_sig), 100 * mean(results$perk_sig)))
 cat(sprintf("    - perm_reg significant: %d (%.1f%%)\n",
-    sum(results$perm_reg_sig), 100*mean(results$perm_reg_sig)))
+    sum(results$perm_reg_sig), 100 * mean(results$perm_reg_sig)))
 
 cat("\n  Key p-value correlations:\n")
 cat(sprintf("    - cor.test vs perk: r = %.3f\n",
