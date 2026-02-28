@@ -101,6 +101,7 @@ library(broom)
 library(perk)
 library(sandwich)
 library(lmtest)
+library(tseries)
 ```
 
 ## Load the Chetty et al. Data
@@ -325,6 +326,75 @@ cat(sprintf("Testing %d covariates across %d categories\n",
   length(all_covariates), length(covariates_to_test)))
 ```
 
+## Covariate Name Mapping
+
+```{r covariate-name-map}
+# Named vector mapping R-mangled column names to clean display names.
+# Defined once and reused for both diagnostics and results tables.
+covariate_name_map <- c(
+  "Frac..Black" = "Fraction Black Residents",
+  "Racial.Segregation" = "Racial Segregation",
+  "Income.Segregation" = "Income Segregation",
+  "Segregation.of.Poverty...p25." = "Segregation of Poverty (<p25)",
+  "Segregation.of.Affluence...p75." = "Segregation of Affluence (>p75)",
+  "Frac..with.Commute...15.Mins" = "Share with Commute < 15 Mins",
+  "Household.Income.per.capita" = "Household Income per Capita",
+  "Gini" = "Gini Coefficient",
+  "Top.1..Income.Share" = "Top 1% Income Share",
+  "Gini.Bottom.99." = "Gini Bottom 99%",
+  "Frac..Between.p25.and.p75" = "Fraction Middle Class",
+  "School.Expenditure.per.Student" = "School Expenditure per Student",
+  "Teacher.Student.Ratio" = "Teacher-Student Ratio",
+  "Test.Score.Percentile..Income.Adjusted" = "Test Score Percentile (Inc. Adj.)",
+  "High.School.Dropout.Rate..Income.Adjusted." = "HS Dropout Rate (Inc. Adj.)",
+  "Social.Capital.Index" = "Social Capital Index",
+  "Fraction.Religious" = "Fraction Religious",
+  "Violent.Crime.Rate" = "Violent Crime Rate",
+  "Fraction.of.Children.with.Single.Mothers" = "Fraction Single Mothers",
+  "Fraction.of.Adults.Divorced" = "Fraction Divorced",
+  "Fraction.of.Adults.Married" = "Fraction Married",
+  "Local.Tax.Rate" = "Local Tax Rate",
+  "Local.Government.Expenditures.Per.Capita" = "Local Gov Expenditures",
+  "State.EITC.Exposure" = "State EITC Exposure",
+  "State.Income.Tax.Progressivity" = "State Income Tax Progressivity",
+  "Number.of.Colleges.per.Capita" = "Colleges per Capita",
+  "College.Tuition" = "Mean College Tuition",
+  "College.Graduation.Rate..Income.Adjusted." = "College Grad Rate (Inc. Adj.)",
+  "Labor.Force.Participation.Rate" = "Labor Force Participation",
+  "Manufacturing.Employment.Share" = "Manufacturing Employment Share",
+  "Growth.in.Chinese.Imports.1990.2000" = "Growth in Chinese Imports",
+  "Teenage.Labor.Force.Participation.Rate" = "Teen Labor Force Participation",
+  "Migration.Inflow.Rate" = "Migration Inflow Rate",
+  "Migration.Outlflow.Rate" = "Migration Outflow Rate",
+  "Frac..Foreign.Born" = "Fraction Foreign Born"
+)
+
+clean_covariate_name <- function(x) {
+  ifelse(x %in% names(covariate_name_map),
+         covariate_name_map[x],
+         gsub("\\.", " ", x))
+}
+```
+
+## Regression Diagnostics Function
+
+```{r diagnostics-fun}
+diagnostics_fun <- function(model, X, Y) {
+  r_pearson <- cor(X, Y, method = "pearson")
+  r_spearman <- cor(X, Y, method = "spearman")
+  data.frame(
+    Pearson_r       = r_pearson,
+    Spearman_r      = r_spearman,
+    Abs_r_minus_rho = abs(r_pearson - r_spearman),
+    BP_p_value      = bptest(model)$p.value,
+    White_p_value   = bptest(model, ~ X + I(X^2))$p.value,
+    JB_p_value      = jarque.bera.test(residuals(model))$p.value,
+    Max_Cooks_D     = max(cooks.distance(model)),
+    Max_Leverage    = max(hatvalues(model))
+  )
+}
+```
+
 # Part 4: Define RM Subgroups
 
 ```{r subgroups}
@@ -350,7 +420,8 @@ for (name in names(rm_subgroups)) {
 ```{r analysis-function}
 #' Run 6-method analysis for a given RM subgroup
 run_subgroup_analysis <- function(df, rm_col, rm_label, covariates_to_test,
-                                   all_covariates, verbose = TRUE) {
+                                   all_covariates, verbose = TRUE,
+                                   run_diagnostics = FALSE) {
 
   if (verbose) {
     cat(sprintf("\n%s\n", paste(rep("=", 70), collapse = "")))
@@ -375,6 +446,24 @@ run_subgroup_analysis <- function(df, rm_col, rm_label, covariates_to_test,
     p_perm_reg = numeric(),
     stringsAsFactors = FALSE
   )
+
+  # Initialize diagnostics dataframe if requested
+  diagnostics <- if (run_diagnostics) {
+    data.frame(
+      rm_subgroup = character(),
+      category = character(),
+      covariate = character(),
+      Pearson_r = numeric(),
+      Spearman_r = numeric(),
+      Abs_r_minus_rho = numeric(),
+      BP_p_value = numeric(),
+      White_p_value = numeric(),
+      JB_p_value = numeric(),
+      Max_Cooks_D = numeric(),
+      Max_Leverage = numeric(),
+      stringsAsFactors = FALSE
+    )
+  }
 
   # Loop through covariates
   cov_idx <- 0
@@ -419,6 +508,16 @@ run_subgroup_analysis <- function(df, rm_col, rm_label, covariates_to_test,
 
       # 1. Classical OLS
       fit <- lm(y_std ~ x_std)
+
+      # Compute diagnostics if requested (reuses fit)
+      if (run_diagnostics) {
+        diag_row <- diagnostics_fun(fit, x_std, y_std)
+        diag_row$rm_subgroup <- rm_label
+        diag_row$category <- category_name
+        diag_row$covariate <- covariate_name
+        diagnostics <- rbind(diagnostics, diag_row)
+      }
+
       fit_summary <- summary(fit)
       coef_table <- coef(fit_summary)
 
@@ -487,6 +586,10 @@ run_subgroup_analysis <- function(df, rm_col, rm_label, covariates_to_test,
     }
   }
 
+  if (run_diagnostics) {
+    attr(results, "diagnostics") <- diagnostics
+  }
+
   return(results)
 }
 ```
@@ -496,9 +599,14 @@ run_subgroup_analysis <- function(df, rm_col, rm_label, covariates_to_test,
 ```{r run-analysis}
 # Store all results
 all_results <- data.frame()
+all_diagnostics <- data.frame()
+
+# Run diagnostics only for Females, Males, and Single Parents
+diagnostics_subgroups <- c("RM_Females", "RM_Males", "RM_SingleParents")
 
 for (subgroup_name in names(rm_subgroups)) {
   subgroup <- rm_subgroups[[subgroup_name]]
+  do_diag <- subgroup_name %in% diagnostics_subgroups
 
   results <- run_subgroup_analysis(
     df = df,
@@ -506,10 +614,15 @@ for (subgroup_name in names(rm_subgroups)) {
     rm_label = subgroup$label,
     covariates_to_test = covariates_to_test,
     all_covariates = all_covariates,
-    verbose = TRUE
+    verbose = TRUE,
+    run_diagnostics = do_diag
   )
 
   all_results <- rbind(all_results, results)
+
+  if (do_diag) {
+    all_diagnostics <- rbind(all_diagnostics, attr(results, "diagnostics"))
+  }
 }
 
 # Add significance flags
@@ -570,7 +683,7 @@ cat("If yes, this confirms community-level effects (not just individual-level).\
 single_mothers_results <- all_results %>%
   filter(covariate == "Fraction.of.Children.with.Single.Mothers")
 
-for (i in 1:nrow(single_mothers_results)) {
+for (i in seq_len(nrow(single_mothers_results))) {
   row <- single_mothers_results[i, ]
   sig_status <- ifelse(row$perm_reg_sig, "SIGNIFICANT", "NOT significant")
   cat(sprintf("%s:\n", row$rm_subgroup))
@@ -625,7 +738,7 @@ cat(sprintf("Significant for NEITHER: %d\n", sum(gender_compare$neither)))
 if (any(gender_compare$female_only | gender_compare$male_only)) {
   cat("\nCovariates with GENDER DIFFERENCES in significance:\n")
   diff_covs <- gender_compare %>% filter(female_only | male_only)
-  for (j in 1:nrow(diff_covs)) {
+  for (j in seq_len(nrow(diff_covs))) {
     row <- diff_covs[j, ]
     if (row$female_only) {
       cat(sprintf("  - %s: FEMALES ONLY (b_f=%.3f, p_f=%.3f | b_m=%.3f, p_m=%.3f)\n",
@@ -656,7 +769,7 @@ header <- sprintf("%-35s | %s | %s | %s | %s | %s",
 cat(header, "\n")
 cat(paste(rep("-", nchar(header)), collapse = ""), "\n")
 
-for (i in 1:nrow(sig_table)) {
+for (i in seq_len(nrow(sig_table))) {
   row <- sig_table[i, ]
   cat(sprintf("%-35s | %s   | %s   | %s   | %s   | %s\n",
     substr(row$covariate, 1, 35),
@@ -701,7 +814,7 @@ agreement_by_subgroup <- all_results %>%
     disagree = sum(!all_agree)
   )
 
-for (i in 1:nrow(agreement_by_subgroup)) {
+for (i in seq_len(nrow(agreement_by_subgroup))) {
   row <- agreement_by_subgroup[i, ]
   cat(sprintf("  %s: %.1f%% (%d disagreements)\n",
     row$rm_subgroup, row$agree_pct, row$disagree))
@@ -711,13 +824,53 @@ for (i in 1:nrow(agreement_by_subgroup)) {
 disagreements <- all_results %>% filter(!all_agree)
 if (nrow(disagreements) > 0) {
   cat(sprintf("\nDISAGREEMENTS (%d):\n", nrow(disagreements)))
-  for (j in 1:nrow(disagreements)) {
+  for (j in seq_len(nrow(disagreements))) {
     row <- disagreements[j, ]
     cat(sprintf("  [%s] %s:\n", row$rm_subgroup, row$covariate))
     cat(sprintf("    p_lm=%.4f, p_cor=%.4f, p_hc0=%.4f, p_hc3=%.4f, p_perk=%.4f, p_perm=%.4f\n",
       row$p_classical, row$p_cor_test, row$p_waldtest_hc0,
       row$p_waldtest_hc3, row$p_perk, row$p_perm_reg))
   }
+}
+```
+
+## Regression Diagnostics
+
+This section reports diagnostic statistics for regressions run on 3 subgroups: Females, Males, and Single Parents (35 covariates each = 105 regressions). These diagnostics assess whether OLS assumption violations found in the main (baseline) analysis also appear in subgroup-specific regressions.
+
+```{r regression-diagnostics}
+# Add clean covariate names
+all_diagnostics <- all_diagnostics %>%
+  mutate(covariate_clean = clean_covariate_name(covariate))
+
+for (subgroup_label in unique(all_diagnostics$rm_subgroup)) {
+  cat(sprintf("\n%s\n", paste(rep("=", 70), collapse = "")))
+  cat(sprintf("DIAGNOSTICS: %s\n", subgroup_label))
+  cat(sprintf("%s\n", paste(rep("=", 70), collapse = "")))
+
+  sub_diag <- all_diagnostics %>%
+    filter(rm_subgroup == subgroup_label)
+
+  print(knitr::kable(
+    sub_diag %>%
+      select(category, covariate_clean, Pearson_r, Spearman_r, Abs_r_minus_rho,
+             BP_p_value, White_p_value, JB_p_value, Max_Cooks_D, Max_Leverage),
+    col.names = c("Category", "Covariate", "Pearson r", "Spearman r",
+                  "|r - rho|", "BP p", "White p", "JB p",
+                  "Max Cook's D", "Max Leverage"),
+    digits = 4,
+    caption = paste("Regression Diagnostics:", subgroup_label)
+  ))
+
+  # Summary stats
+  n_hetero <- sum(sub_diag$BP_p_value < 0.05 | sub_diag$White_p_value < 0.05)
+  n_nonnorm <- sum(sub_diag$JB_p_value < 0.05)
+  n_highcook <- sum(sub_diag$Max_Cooks_D > 1)
+  n_nonlinear <- sum(sub_diag$Abs_r_minus_rho > 0.1)
+  cat(sprintf("\n  Heteroskedastic (BP or White p < 0.05): %d/35\n", n_hetero))
+  cat(sprintf("  Non-normal residuals (JB p < 0.05): %d/35\n", n_nonnorm))
+  cat(sprintf("  High-influence outliers (Cook's D > 1): %d/35\n", n_highcook))
+  cat(sprintf("  Non-linear (|r - rho| > 0.1): %d/35\n\n", n_nonlinear))
 }
 ```
 
@@ -729,46 +882,9 @@ if (!dir.exists("../results/subgroups")) {
   dir.create("../results/subgroups", recursive = TRUE)
 }
 
-# Clean covariate names
+# Clean covariate names using the shared mapping
 all_results_clean <- all_results %>%
-  mutate(covariate_clean = case_when(
-    covariate == "Frac..Black" ~ "Fraction Black Residents",
-    covariate == "Racial.Segregation" ~ "Racial Segregation",
-    covariate == "Income.Segregation" ~ "Income Segregation",
-    covariate == "Segregation.of.Poverty...p25." ~ "Segregation of Poverty (<p25)",
-    covariate == "Segregation.of.Affluence...p75." ~ "Segregation of Affluence (>p75)",
-    covariate == "Frac..with.Commute...15.Mins" ~ "Share with Commute < 15 Mins",
-    covariate == "Household.Income.per.capita" ~ "Household Income per Capita",
-    covariate == "Gini" ~ "Gini Coefficient",
-    covariate == "Top.1..Income.Share" ~ "Top 1% Income Share",
-    covariate == "Gini.Bottom.99." ~ "Gini Bottom 99%",
-    covariate == "Frac..Between.p25.and.p75" ~ "Fraction Middle Class",
-    covariate == "School.Expenditure.per.Student" ~ "School Expenditure per Student",
-    covariate == "Teacher.Student.Ratio" ~ "Teacher-Student Ratio",
-    covariate == "Test.Score.Percentile..Income.Adjusted" ~ "Test Score Percentile",
-    covariate == "High.School.Dropout.Rate..Income.Adjusted." ~ "HS Dropout Rate",
-    covariate == "Social.Capital.Index" ~ "Social Capital Index",
-    covariate == "Fraction.Religious" ~ "Fraction Religious",
-    covariate == "Violent.Crime.Rate" ~ "Violent Crime Rate",
-    covariate == "Fraction.of.Children.with.Single.Mothers" ~ "Fraction Single Mothers",
-    covariate == "Fraction.of.Adults.Divorced" ~ "Fraction Divorced",
-    covariate == "Fraction.of.Adults.Married" ~ "Fraction Married",
-    covariate == "Local.Tax.Rate" ~ "Local Tax Rate",
-    covariate == "Local.Government.Expenditures.Per.Capita" ~ "Local Gov Expenditures",
-    covariate == "State.EITC.Exposure" ~ "State EITC Exposure",
-    covariate == "State.Income.Tax.Progressivity" ~ "State Income Tax Progressivity",
-    covariate == "Number.of.Colleges.per.Capita" ~ "Colleges per Capita",
-    covariate == "College.Tuition" ~ "Mean College Tuition",
-    covariate == "College.Graduation.Rate..Income.Adjusted." ~ "College Grad Rate",
-    covariate == "Labor.Force.Participation.Rate" ~ "Labor Force Participation",
-    covariate == "Manufacturing.Employment.Share" ~ "Manufacturing Employment Share",
-    covariate == "Growth.in.Chinese.Imports.1990.2000" ~ "Growth in Chinese Imports",
-    covariate == "Teenage.Labor.Force.Participation.Rate" ~ "Teen Labor Force Participation",
-    covariate == "Migration.Inflow.Rate" ~ "Migration Inflow Rate",
-    covariate == "Migration.Outlflow.Rate" ~ "Migration Outflow Rate",
-    covariate == "Frac..Foreign.Born" ~ "Fraction Foreign Born",
-    TRUE ~ gsub("\\.", " ", covariate)
-  ))
+  mutate(covariate_clean = clean_covariate_name(covariate))
 
 # Save full results
 write.csv(all_results_clean,
@@ -776,8 +892,14 @@ write.csv(all_results_clean,
   row.names = FALSE)
 cat("Saved: ../results/subgroups/subgroup_mobility_results.csv\n")
 
+# Save diagnostics
+write.csv(all_diagnostics,
+  "../results/subgroups/subgroup_regression_diagnostics.csv",
+  row.names = FALSE)
+cat("Saved: ../results/subgroups/subgroup_regression_diagnostics.csv\n")
+
 # Save workspace
-save(all_results, all_results_clean, df, rm_subgroups,
+save(all_results, all_results_clean, all_diagnostics, df, rm_subgroups,
   file = "../results/subgroups/subgroup_analysis_workspace.RData")
 cat("Saved: ../results/subgroups/subgroup_analysis_workspace.RData\n")
 ```
