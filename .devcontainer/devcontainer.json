@@ -15,7 +15,7 @@
 
 		"ghcr.io/rocker-org/devcontainer-features/rstudio-server:latest": {}
 	},
-	"postCreateCommand": "R -q -e 'renv::install()'",
+	"postCreateCommand": "R -q -e 'renv::install()' && R -q -e 'tinytex::install_tinytex()'",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [8787]
 
