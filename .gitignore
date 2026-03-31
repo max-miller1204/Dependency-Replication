@@ -14,6 +14,7 @@
 
 # Large output files (keep CSVs and PNGs, ignore RData)
 results/**/*.RData
+references/original_replication/
 
 # Temporary files
 # *.txt

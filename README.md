@@ -54,8 +54,7 @@ See `experimental/hc3_findings.md` for full details.
 Dependency-Replication/
 ├── README.md
 ├── .gitignore
-├── .devcontainer/                 # Dev container configuration
-│   └── devcontainer.json          # Rocker R 4.4 + RStudio Server
+├── flake.nix                      # Nix development environment
 ├── renv.lock                      # Locked R package dependencies
 ├── renv/                          # renv library cache
 ├── .Rprofile                      # Activates renv on R startup
@@ -122,40 +121,37 @@ Dependency-Replication/
 
 ## Replication Instructions
 
-### Option 1: Dev Container (Recommended)
+### Option 1: Nix Development Shell (Recommended)
 
-The easiest way to replicate this project is using the included dev container, which provides a fully configured R environment with RStudio Server.
+The easiest way to replicate this project is with the included Nix flake. It provides a reproducible shell with R, `pandoc`, and XeLaTeX available for rendering the R Markdown reports.
 
-**Prerequisites**: [Docker](https://docs.docker.com/get-docker/) and [VS Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+**Prerequisites**: [Nix](https://nixos.org/download/) with flakes enabled
 
-#### Using VS Code
+#### Setup
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/max-miller1204/Dependency-Replication.git
    cd Dependency-Replication
    ```
-2. **Windows users**: Reset line endings to LF before opening the container:
+2. Enter the Nix shell:
+   ```bash
+   nix develop
+   ```
+3. Restore the R package library from `renv.lock`:
+   ```bash
+   R -q -e 'renv::restore()'
+   ```
+4. **Windows users**: Reset line endings to LF if your checkout predates `.gitattributes` enforcement:
    ```bash
    git rm --cached -r .
    git reset --hard
    ```
-   This is needed because Git on Windows may convert line endings to CRLF, which causes failures inside the Linux container. The `.gitattributes` file in this repo enforces LF endings, but existing checkouts need this one-time reset.
-3. Open the folder in VS Code.
-3. When prompted **"Reopen in Container"**, click yes (or run the command **Dev Containers: Reopen in Container** from the command palette).
-4. The container will build, install all R packages from `renv.lock`, and start RStudio Server automatically.
-
-#### Accessing RStudio Server
-
-Once the container is running, RStudio Server is available at:
-
-```
-http://localhost:8787
-```
+   This repo expects LF endings for shell-compatible tooling and reproducible renders.
 
 #### Running Analyses from the Terminal
 
-Inside the container, all dependencies are already installed via `renv`. Run analyses from the project root:
+Inside `nix develop`, run analyses from the project root:
 
 ```bash
 # Main analysis (~15 min)
@@ -170,19 +166,18 @@ cd experimental && Rscript -e 'rmarkdown::render("hc3_permutation_test.Rmd")'
 
 ### Option 2: Local R Installation
 
-If you prefer to run outside the container:
+If you prefer to run outside Nix:
 
-**Prerequisites**: R >= 4.4.3
+**Prerequisites**: R >= 4.4.3, `pandoc`, and a TeX installation that provides `xelatex`
 
 1. Clone the repository:
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/max-miller1204/Dependency-Replication.git
    cd Dependency-Replication
    ```
 2. Restore the `renv` lockfile to install exact package versions:
-   ```r
-   # renv should activate automatically via .Rprofile
-   renv::restore()
+   ```bash
+   R -q -e 'renv::restore()'
    ```
 3. Run analyses as shown above, or open `.Rmd` files in RStudio and knit them.
 

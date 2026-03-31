@@ -8,7 +8,7 @@ Replicates findings from Chetty et al. (2014) "Where is the Land of Opportunity?
 
 ## Environment
 
-R runs inside a dev container (rocker tidyverse 4.4), not on the host. Use `docker exec <container_name> R -q -e '...'` to run R commands. Find the container name with `docker ps`. RStudio Server is on port 8787.
+Preferred workflow uses the repo's Nix flake. Enter the environment with `nix develop`, then run R commands directly from that shell.
 
 Package management uses `renv`. After modifying dependencies: `renv::snapshot()`. To restore: `renv::restore()`. The `perk` package is from GitHub (`hyu-ub/perk`, subdir `perk`), not CRAN — if it disappears after restart, use `renv::restore()`.
 
@@ -23,7 +23,7 @@ cd experimental && Rscript -e 'rmarkdown::render("hc3_permutation_test.Rmd")'  #
 
 ### Lint
 ```bash
-docker exec <container> R -q -e 'lintr::lint("analysis/mobility_analysis.Rmd")'
+R -q -e 'lintr::lint("analysis/mobility_analysis.Rmd")'
 ```
 
 `.lintr` config: line length 120, disabled object_name_linter (math variable convention), object_usage_linter (cross-chunk Rmd), indentation_linter.

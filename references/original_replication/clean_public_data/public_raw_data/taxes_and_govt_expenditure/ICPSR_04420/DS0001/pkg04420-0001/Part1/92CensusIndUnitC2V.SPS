@@ -1,1 +1,0 @@
-GET  FILE='92CensusIndUnit2.sav'. SORT CASES BY  govcode (A) item (A) .CACHE.EXECUTE.CASESTOVARS /ID = govcode /INDEX = item /GROUPBY = VARIABLE .SAVE OUTFILE= 'indunittemp.sav'.
