@@ -11,6 +11,11 @@
 *.swp
 *.swo
 *~
+.vscode/*
+!.vscode/settings.json
+
+# direnv (nix-direnv cache and GC roots; .envrc itself is tracked)
+.direnv/
 
 # Large output files (keep CSVs and PNGs, ignore RData)
 results/**/*.RData

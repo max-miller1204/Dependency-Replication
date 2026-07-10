@@ -36,16 +36,18 @@ See `hc3_findings.md` for full details.
 
 ## Running the Analysis
 
-```r
-setwd("experimental")
-rmarkdown::render("hc3_permutation_test.Rmd")
+Run this from the repo root, never after a `cd` into this directory.
+renv activates from the root `.Rprofile`, and R only sources `.Rprofile` from its working directory, so running from a subdirectory hides the project library and the render dies with `there is no package called 'rmarkdown'`.
+
+```bash
+Rscript -e 'rmarkdown::render("experimental/hc3_permutation_test.Rmd")'
 ```
 
 **Expected runtime:** ~22-25 minutes
 
 ## Output
 
-Results are saved to `../results/experimental/`:
+Results are saved to `results/experimental/` (relative to the repo root):
 - `mobility_test_results_hc3_experimental.csv`
 - `coefficient_plot_hc3_experimental.png`
 - `mobility_analysis_hc3_experimental_workspace.RData`
