@@ -8,17 +8,23 @@ Replicates findings from Chetty et al. (2014) "Where is the Land of Opportunity?
 
 ## Environment
 
-Preferred workflow uses the repo's Nix flake. Enter the environment with `nix develop`, then run R commands directly from that shell.
+Preferred workflow uses the repo's Nix flake.
+Run `direnv allow` once and the devShell loads automatically on `cd` into the repo (see `.envrc`); otherwise enter it manually with `nix develop`.
 
 Package management uses `renv`. After modifying dependencies: `renv::snapshot()`. To restore: `renv::restore()`. The `perk` package is from GitHub (`hyu-ub/perk`, subdir `perk`), not CRAN — if it disappears after restart, use `renv::restore()`.
 
 ## Key Commands
 
 ### Run Analyses (from repo root)
+
+Run these from the repo root, never after a `cd` into `analysis/` or `experimental/`.
+renv activates from the root `.Rprofile`, and R only sources `.Rprofile` from its working directory, so running from a subdirectory hides the project library and the render dies with `there is no package called 'rmarkdown'`.
+The `../data/` and `../results/` paths inside each Rmd still resolve, because `rmarkdown::render()` sets the knit working directory to the document's own directory.
+
 ```bash
-cd analysis && Rscript -e 'rmarkdown::render("mobility_analysis.Rmd")'        # ~15 min
-cd analysis && Rscript -e 'rmarkdown::render("subgroup_mobility_analysis.Rmd")' # ~75 min
-cd experimental && Rscript -e 'rmarkdown::render("hc3_permutation_test.Rmd")'  # ~22-25 min
+Rscript -e 'rmarkdown::render("analysis/mobility_analysis.Rmd")'           # ~15 min
+Rscript -e 'rmarkdown::render("analysis/subgroup_mobility_analysis.Rmd")' # ~75 min
+Rscript -e 'rmarkdown::render("experimental/hc3_permutation_test.Rmd")'   # ~22-25 min
 ```
 
 ### Lint

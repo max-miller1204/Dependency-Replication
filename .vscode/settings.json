@@ -1,0 +1,8 @@
+{
+  // Send multi-line chunks to the R console without mangling indentation.
+  "r.bracketedPaste": true
+
+  // Deliberately no "r.rpath.mac"/"r.rterm.mac": when unset, the R extension
+  // resolves R from PATH, which the direnv extension populates from the flake.
+  // Pinning a /nix/store path here would break on any flake.lock bump.
+}

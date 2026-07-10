@@ -61,7 +61,6 @@ Dependency-Replication/
 │
 ├── analysis/                      # Main analysis code
 │   ├── mobility_analysis.Rmd      # Primary analysis (RMarkdown)
-│   ├── mobility_analysis.R        # Standalone R script
 │   ├── mobility_analysis.pdf      # Compiled report
 │   └── subgroup_mobility_analysis.Rmd  # Subgroup analysis
 │
@@ -138,6 +137,8 @@ The easiest way to replicate this project is with the included Nix flake. It pro
    ```bash
    nix develop
    ```
+   With [direnv](https://direnv.net/) installed, `direnv allow` instead loads the same
+   shell automatically whenever you `cd` into the repo.
 3. Restore the R package library from `renv.lock`:
    ```bash
    R -q -e 'renv::restore()'
@@ -151,17 +152,20 @@ The easiest way to replicate this project is with the included Nix flake. It pro
 
 #### Running Analyses from the Terminal
 
-Inside `nix develop`, run analyses from the project root:
+Inside the Nix shell, run analyses from the project root.
+Do not `cd` into `analysis/` first: renv activates from the root `.Rprofile`, which R only
+reads from its working directory, so running elsewhere hides the project library and the
+render fails with `there is no package called 'rmarkdown'`.
 
 ```bash
 # Main analysis (~15 min)
-cd analysis && Rscript -e 'rmarkdown::render("mobility_analysis.Rmd")'
+Rscript -e 'rmarkdown::render("analysis/mobility_analysis.Rmd")'
 
 # Subgroup analysis (~75 min)
-cd analysis && Rscript -e 'rmarkdown::render("subgroup_mobility_analysis.Rmd")'
+Rscript -e 'rmarkdown::render("analysis/subgroup_mobility_analysis.Rmd")'
 
 # Experimental HC3 analysis (~22-25 min)
-cd experimental && Rscript -e 'rmarkdown::render("hc3_permutation_test.Rmd")'
+Rscript -e 'rmarkdown::render("experimental/hc3_permutation_test.Rmd")'
 ```
 
 ### Option 2: Local R Installation
