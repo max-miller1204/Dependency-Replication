@@ -1,0 +1,375 @@
+---
+title: "Coefficient Plot Reproduction"
+subtitle: "Chetty et al. (2014) Table VIII: Classical vs Permutation Inference"
+author: "Max Miller"
+date: "`r Sys.Date()`"
+fontsize: 10pt
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: false
+geometry: margin=0.75in
+header-includes:
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}
+  - \DefineVerbatimEnvironment{verbatim}{Verbatim}{breaklines,breakanywhere}
+editor_options:
+  chunk_output_type: inline
+---
+
+This file contains only the data preparation, statistical tests, and plotting code needed to reproduce the coefficient plot from the two supplied CSV files.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = NA,
+  fig.align = "center"
+)
+options(width = 78)
+
+input_document <- knitr::current_input(dir = TRUE)
+document_dir <- if (is.null(input_document)) {
+  getwd()
+} else {
+  dirname(input_document)
+}
+```
+
+```{r packages}
+# If needed, install the CRAN packages with:
+# install.packages(c("ggplot2", "lmtest", "remotes", "sandwich"))
+# remotes::install_github(
+#   "hyu-ub/perk",
+#   subdir = "perk",
+#   ref = "067e48e01b8e761f2106aab7d98d470d831805ec"
+# )
+required_packages <- c("ggplot2", "lmtest", "perk", "sandwich")
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+
+if (length(missing_packages) > 0L) {
+  stop(
+    "Install the missing R packages before rendering: ",
+    paste(missing_packages, collapse = ", ")
+  )
+}
+```
+
+```{r load-and-prepare-data, results='hide'}
+find_data_file <- function(filename) {
+  candidates <- unique(c(
+    file.path(document_dir, filename),
+    file.path(document_dir, "..", "data", filename),
+    file.path(getwd(), filename),
+    file.path(getwd(), "data", filename)
+  ))
+  matches <- candidates[file.exists(candidates)]
+
+  if (length(matches) == 0L) {
+    stop("Could not find ", filename, ".")
+  }
+
+  normalizePath(matches[[1]])
+}
+
+table5 <- read.csv(
+  find_data_file("Online_Data_Table_5.csv"),
+  skip = 49,
+  stringsAsFactors = FALSE
+)
+table5 <- table5[
+  !grepl("^\\(\\d+\\)$", table5[[1]]) & table5[[1]] != "",
+  ,
+  drop = FALSE
+]
+
+table8 <- read.csv(
+  find_data_file("Online_Data_Table_8.csv"),
+  skip = 6,
+  stringsAsFactors = FALSE
+)
+table8_cz <- suppressWarnings(as.numeric(table8[[1]]))
+table8 <- table8[!is.na(table8_cz) & table8_cz > 0, , drop = FALSE]
+
+names(table5) <- gsub("^X\\.", "", names(table5))
+names(table8) <- gsub("^X\\.", "", names(table8))
+names(table5)[c(1, 4, 6)] <- c("CZ", "n_children", "RM")
+names(table8)[1] <- "CZ"
+
+table5$CZ <- suppressWarnings(as.numeric(table5$CZ))
+table8$CZ <- suppressWarnings(as.numeric(table8$CZ))
+
+table8_match <- match(table5$CZ, table8$CZ)
+matched_rows <- !is.na(table8_match)
+mobility_columns <- c("CZ", "RM", "n_children")
+characteristic_columns <- setdiff(names(table8), "CZ")
+
+mobility_data <- table5[matched_rows, mobility_columns, drop = FALSE]
+characteristic_data <- table8[
+  table8_match[matched_rows],
+  characteristic_columns,
+  drop = FALSE
+]
+analysis_data <- cbind(mobility_data, characteristic_data)
+
+numeric_columns <- c(
+  "RM",
+  "n_children",
+  names(table8)[4:ncol(table8)]
+)
+analysis_data[numeric_columns] <- lapply(
+  analysis_data[numeric_columns],
+  function(value) suppressWarnings(as.numeric(value))
+)
+analysis_data <- analysis_data[
+  analysis_data$n_children >= 250 & !is.na(analysis_data$RM),
+  ,
+  drop = FALSE
+]
+rownames(analysis_data) <- NULL
+```
+
+```{r permutation-regression-function}
+permutation_regression_test <- function(
+    x,
+    y,
+    permutations = 10000L,
+    seed = NULL,
+    batch_size = 250L) {
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+
+  design <- cbind(1, as.numeric(x))
+  y <- as.numeric(y)
+  n <- nrow(design)
+
+  if (n != length(y)) {
+    stop("x and y must have the same number of observations.")
+  }
+
+  # The design matrix is fixed across permutations, so these inverses are
+  # computed once rather than inside every permutation.
+  xtx_inverse <- solve(crossprod(design))
+  sigma_inverse <- n * xtx_inverse
+
+  compute_statistics <- function(response) {
+    response <- as.matrix(response)
+    beta <- xtx_inverse %*% crossprod(design, response)
+    residual <- response - design %*% beta
+    transformed_beta <- sigma_inverse %*% beta
+    score <- design %*% transformed_beta
+    colSums(score^2 * residual^2)
+  }
+
+  observed_statistic <- compute_statistics(y)[[1]]
+  exceedances <- 0L
+  remaining <- as.integer(permutations)
+
+  while (remaining > 0L) {
+    current_batch <- min(batch_size, remaining)
+    permuted_y <- replicate(
+      current_batch,
+      sample(y, replace = FALSE)
+    )
+    exceedances <- exceedances + sum(
+      compute_statistics(permuted_y) >= observed_statistic
+    )
+    remaining <- remaining - current_batch
+  }
+
+  (exceedances + 1) / (permutations + 1)
+}
+```
+
+```{r covariates}
+covariate_labels <- c(
+  "Frac..Black" = "Fraction Black Residents",
+  "Racial.Segregation" = "Racial Segregation",
+  "Income.Segregation" = "Income Segregation",
+  "Segregation.of.Poverty...p25." = "Segregation of Poverty (<p25)",
+  "Segregation.of.Affluence...p75." = "Segregation of Affluence (>p75)",
+  "Frac..with.Commute...15.Mins" = "Share with Commute < 15 Mins",
+  "Household.Income.per.capita" = "Household Income per Capita",
+  "Gini" = "Gini Coefficient",
+  "Top.1..Income.Share" = "Top 1% Income Share",
+  "Gini.Bottom.99." = "Gini Bottom 99%",
+  "Frac..Between.p25.and.p75" = "Fraction Middle Class",
+  "School.Expenditure.per.Student" = "School Expenditure per Student",
+  "Teacher.Student.Ratio" = "Teacher-Student Ratio",
+  "Test.Score.Percentile..Income.Adjusted" =
+    "Test Score Percentile (Inc. Adj.)",
+  "High.School.Dropout.Rate..Income.Adjusted." =
+    "HS Dropout Rate (Inc. Adj.)",
+  "Social.Capital.Index" = "Social Capital Index",
+  "Fraction.Religious" = "Fraction Religious",
+  "Violent.Crime.Rate" = "Violent Crime Rate",
+  "Fraction.of.Children.with.Single.Mothers" = "Fraction Single Mothers",
+  "Fraction.of.Adults.Divorced" = "Fraction Divorced",
+  "Fraction.of.Adults.Married" = "Fraction Married",
+  "Local.Tax.Rate" = "Local Tax Rate",
+  "Local.Government.Expenditures.Per.Capita" =
+    "Local Gov Expenditures",
+  "State.EITC.Exposure" = "State EITC Exposure",
+  "State.Income.Tax.Progressivity" = "State Income Tax Progressivity",
+  "Number.of.Colleges.per.Capita" = "Colleges per Capita",
+  "College.Tuition" = "Mean College Tuition",
+  "College.Graduation.Rate..Income.Adjusted." =
+    "College Grad Rate (Inc. Adj.)",
+  "Labor.Force.Participation.Rate" = "Labor Force Participation",
+  "Manufacturing.Employment.Share" = "Manufacturing Employment Share",
+  "Growth.in.Chinese.Imports.1990.2000" = "Growth in Chinese Imports",
+  "Teenage.Labor.Force.Participation.Rate" =
+    "Teen Labor Force Participation",
+  "Migration.Inflow.Rate" = "Migration Inflow Rate",
+  "Migration.Outlflow.Rate" = "Migration Outflow Rate",
+  "Frac..Foreign.Born" = "Fraction Foreign Born"
+)
+
+missing_covariates <- setdiff(names(covariate_labels), names(analysis_data))
+if (length(missing_covariates) > 0L) {
+  stop("Missing covariates: ", paste(missing_covariates, collapse = ", "))
+}
+```
+
+```{r estimate-models, results='hide'}
+estimate_covariate <- function(index) {
+  covariate <- names(covariate_labels)[[index]]
+  model_data <- analysis_data[c("RM", covariate)]
+  model_data <- model_data[complete.cases(model_data), , drop = FALSE]
+
+  y <- as.numeric(scale(model_data$RM))
+  x <- as.numeric(scale(model_data[[covariate]]))
+  model <- lm(y ~ x)
+  coefficient_table <- coef(summary(model))
+
+  set.seed(42 + index)
+  perk_result <- perk::perk_test(
+    x,
+    y,
+    B = 1000,
+    method = "pearson",
+    alternative = "two.sided"
+  )
+
+  p_permutation_regression <- permutation_regression_test(
+    x = x - mean(x),
+    y = y - mean(y),
+    permutations = 10000,
+    seed = 42 + index
+  )
+
+  data.frame(
+    covariate = covariate,
+    covariate_label = unname(covariate_labels[[covariate]]),
+    n = nrow(model_data),
+    beta = coefficient_table[2, "Estimate"],
+    se = coefficient_table[2, "Std. Error"],
+    p_classical = coefficient_table[2, "Pr(>|t|)"],
+    p_correlation = cor.test(x, y, method = "pearson")$p.value,
+    p_hc0 = lmtest::waldtest(
+      model,
+      vcov = sandwich::vcovHC(model, type = "HC0")
+    )$`Pr(>F)`[2],
+    p_hc3 = lmtest::waldtest(
+      model,
+      vcov = sandwich::vcovHC(model, type = "HC3")
+    )$`Pr(>F)`[2],
+    p_perk = perk_result$p.value,
+    p_permutation_regression = p_permutation_regression
+  )
+}
+
+results <- do.call(
+  rbind,
+  lapply(seq_along(covariate_labels), estimate_covariate)
+)
+
+p_value_columns <- c(
+  "p_classical",
+  "p_correlation",
+  "p_hc0",
+  "p_hc3",
+  "p_perk",
+  "p_permutation_regression"
+)
+significant_method_count <- rowSums(results[p_value_columns] < 0.05)
+results$significance_agreement <- ifelse(
+  significant_method_count == length(p_value_columns),
+  "All significant",
+  ifelse(
+    significant_method_count == 0L,
+    "None significant",
+    "Disagreement"
+  )
+)
+```
+
+```{r coefficient-plot, fig.width=10, fig.height=9, out.width='\\linewidth'}
+plot_data <- results[order(results$beta), , drop = FALSE]
+plot_data$covariate_label <- factor(
+  plot_data$covariate_label,
+  levels = plot_data$covariate_label
+)
+
+coefficient_plot <- ggplot2::ggplot(
+  plot_data,
+  ggplot2::aes(x = beta, y = covariate_label)
+) +
+  ggplot2::geom_vline(
+    xintercept = 0,
+    linetype = "dashed",
+    color = "gray50"
+  ) +
+  ggplot2::geom_errorbar(
+    ggplot2::aes(
+      xmin = beta - 1.96 * se,
+      xmax = beta + 1.96 * se,
+      color = significance_agreement
+    ),
+    orientation = "y",
+    width = 0.3,
+    alpha = 0.7
+  ) +
+  ggplot2::geom_point(
+    ggplot2::aes(color = significance_agreement),
+    size = 3
+  ) +
+  ggplot2::scale_color_manual(values = c(
+    "All significant" = "#2E8B57",
+    "None significant" = "gray60",
+    "Disagreement" = "#DC143C"
+  )) +
+  ggplot2::labs(
+    title =
+      "Predictors of Relative Mobility: Classical vs Permutation Inference",
+    subtitle = paste(
+      "Replication of Chetty et al. (2014) Table VIII with",
+      "robustness check (6 methods)"
+    ),
+    x = "Standardized Coefficient (95% CI)",
+    y = "",
+    color = "Significance Agreement"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(
+    legend.position = "bottom",
+    axis.text.y = ggplot2::element_text(size = 9),
+    plot.title = ggplot2::element_text(face = "bold"),
+    plot.subtitle = ggplot2::element_text(color = "gray40")
+  )
+
+plot_file <- file.path(document_dir, "coefficient_plot.png")
+ggplot2::ggsave(
+  plot_file,
+  coefficient_plot,
+  width = 10,
+  height = 9,
+  dpi = 300
+)
+
+coefficient_plot
+```
