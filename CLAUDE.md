@@ -27,6 +27,19 @@ Rscript -e 'rmarkdown::render("analysis/subgroup_mobility_analysis.Rmd")' # ~75 
 Rscript -e 'rmarkdown::render("experimental/hc3_permutation_test.Rmd")'   # ~22-25 min
 ```
 
+### Standalone Coefficient Plot Reproduction
+
+`analysis/coefficient_plot_reproduction.Rmd` is a portable, shareable version of the main coefficient plot.
+It deliberately does not use renv or the Nix devShell, so it renders for someone who has only the two published CSVs.
+It depends only on `ggplot2`, `lmtest`, `perk`, and `sandwich`; `perk` is not on CRAN, so install it from GitHub (`hyu-ub/perk`, subdir `perk`) with `remotes::install_github()`.
+Render it from the repo root like the others:
+
+```bash
+Rscript -e 'rmarkdown::render("analysis/coefficient_plot_reproduction.Rmd")'
+```
+
+The PDF lands next to the source at `analysis/coefficient_plot_reproduction.pdf`, and the figure at `results/coefficient_plot_reproduction/coefficient_plot.png`.
+
 ### Lint
 ```bash
 R -q -e 'lintr::lint("analysis/mobility_analysis.Rmd")'
@@ -50,6 +63,11 @@ data/Online_Data_Table_8.csv  →  Independent variables: 35 Covariates
 2. **Subgroup analysis** (`analysis/subgroup_mobility_analysis.Rmd`): Runs the same 6-method comparison for 5 RM variants (baseline, females, males, single parents, married parents). Replicates Table VI methodology. Key test: does "Fraction Single Mothers" predict RM even for children of married parents (community-level effects)? Outputs to `results/subgroups/`.
 
 3. **Experimental HC3** (`experimental/hc3_permutation_test.Rmd`): Adds a 7th method — HC3-based permutation regression. **Not formally proven** (DiCiccio & Romano only proved HC0). Investigates whether classical HC3's conservativeness on Violent Crime Rate persists in permutation framework. Outputs to `results/experimental/`.
+
+Separate from these three, `analysis/coefficient_plot_reproduction.Rmd` is a standalone, shareable reproduction of the main coefficient plot, not a fourth pipeline.
+It deliberately does not use renv or the Nix devShell: it depends only on ggplot2, lmtest, perk, and sandwich (checked with `requireNamespace()` at render time), so someone outside this repo can render it given only the two published CSVs.
+It resolves the CSVs from several candidate locations, re-derives the same DiCiccio and Romano (2017) HC0 permutation statistic inline, and writes its figure to `results/coefficient_plot_reproduction/`.
+See Key Commands for how to render it.
 
 ### Statistical Methods
 | Method | Type | Key Property |
@@ -107,8 +125,10 @@ results/
 │   ├── subgroup_mobility_results.csv   # 6 methods × 35 covariates × 5 RM variants
 │   ├── subgroup_coefficient_plot.png
 │   └── subgroup_analysis_workspace.RData
-└── experimental/
-    ├── mobility_test_results_hc3_experimental.csv
-    ├── coefficient_plot_hc3_experimental.png
-    └── mobility_analysis_hc3_experimental_workspace.RData
+├── experimental/
+│   ├── mobility_test_results_hc3_experimental.csv
+│   ├── coefficient_plot_hc3_experimental.png
+│   └── mobility_analysis_hc3_experimental_workspace.RData
+└── coefficient_plot_reproduction/     # Standalone reproduction (analysis/coefficient_plot_reproduction.Rmd)
+    └── coefficient_plot.png
 ```

@@ -65,7 +65,9 @@ Dependency-Replication/
 ├── analysis/                      # Main analysis code
 │   ├── mobility_analysis.Rmd      # Primary analysis (RMarkdown)
 │   ├── mobility_analysis.pdf      # Compiled report
-│   └── subgroup_mobility_analysis.Rmd  # Subgroup analysis
+│   ├── subgroup_mobility_analysis.Rmd  # Subgroup analysis
+│   ├── coefficient_plot_reproduction.Rmd  # Standalone shareable reproduction (no renv)
+│   └── coefficient_plot_reproduction.pdf  # Compiled reproduction report
 │
 ├── experimental/                  # Experimental work
 │   ├── README.md                  # Explains experimental status
@@ -87,10 +89,12 @@ Dependency-Replication/
 │   │   ├── subgroup_coefficient_plot.png
 │   │   ├── beta_comparison_plots.png
 │   │   └── subgroup_analysis_workspace.RData
-│   └── experimental/              # Experimental results
-│       ├── mobility_test_results_hc3_experimental.csv
-│       ├── coefficient_plot_hc3_experimental.png
-│       └── mobility_analysis_hc3_experimental_workspace.RData
+│   ├── experimental/              # Experimental results
+│   │   ├── mobility_test_results_hc3_experimental.csv
+│   │   ├── coefficient_plot_hc3_experimental.png
+│   │   └── mobility_analysis_hc3_experimental_workspace.RData
+│   └── coefficient_plot_reproduction/  # Standalone reproduction figure
+│       └── coefficient_plot.png
 │
 └── references/                    # Reference materials
     ├── papers/                    # Academic papers
@@ -187,6 +191,27 @@ If you prefer to run outside Nix:
    R -q -e 'renv::restore()'
    ```
 3. Run analyses as shown above, or open `.Rmd` files in RStudio and knit them.
+
+### Option 3: Standalone Coefficient Plot (No renv or Nix)
+
+`analysis/coefficient_plot_reproduction.Rmd` reproduces the main coefficient plot on its own, given only the two published CSVs.
+It deliberately does not use renv or the Nix devShell, so it renders outside this repo.
+
+**Prerequisites**: R, `pandoc`, a TeX installation that provides `xelatex`, and the `ggplot2`, `lmtest`, `perk`, and `sandwich` packages.
+`perk` is not on CRAN, so install it from GitHub:
+
+```bash
+R -q -e 'install.packages(c("ggplot2", "lmtest", "remotes", "sandwich"))'
+R -q -e 'remotes::install_github("hyu-ub/perk", subdir = "perk")'
+```
+
+Then render it from the repo root:
+
+```bash
+Rscript -e 'rmarkdown::render("analysis/coefficient_plot_reproduction.Rmd")'
+```
+
+The PDF lands at `analysis/coefficient_plot_reproduction.pdf` and the figure at `results/coefficient_plot_reproduction/coefficient_plot.png`.
 
 ## Data Sources
 
