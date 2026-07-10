@@ -55,9 +55,11 @@ Dependency-Replication/
 ├── README.md
 ├── .gitignore
 ├── flake.nix                      # Nix development environment
+├── .envrc                         # direnv: auto-loads the Nix devShell
 ├── renv.lock                      # Locked R package dependencies
 ├── renv/                          # renv library cache
 ├── .Rprofile                      # Activates renv on R startup
+├── .vscode/settings.json          # VS Code R extension settings
 │
 ├── analysis/                      # Main analysis code
 │   ├── mobility_analysis.Rmd      # Primary analysis (RMarkdown)
