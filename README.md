@@ -65,7 +65,9 @@ Dependency-Replication/
 ├── analysis/                      # Main analysis code
 │   ├── mobility_analysis.Rmd      # Primary analysis (RMarkdown)
 │   ├── mobility_analysis.pdf      # Compiled report
-│   └── subgroup_mobility_analysis.Rmd  # Subgroup analysis
+│   ├── subgroup_mobility_analysis.Rmd  # Subgroup analysis
+│   ├── coefficient_plot_reproduction.Rmd  # Standalone shareable reproduction (no renv)
+│   └── coefficient_plot_reproduction.pdf  # Compiled reproduction report
 │
 ├── experimental/                  # Experimental work
 │   ├── README.md                  # Explains experimental status
@@ -87,10 +89,12 @@ Dependency-Replication/
 │   │   ├── subgroup_coefficient_plot.png
 │   │   ├── beta_comparison_plots.png
 │   │   └── subgroup_analysis_workspace.RData
-│   └── experimental/              # Experimental results
-│       ├── mobility_test_results_hc3_experimental.csv
-│       ├── coefficient_plot_hc3_experimental.png
-│       └── mobility_analysis_hc3_experimental_workspace.RData
+│   ├── experimental/              # Experimental results
+│   │   ├── mobility_test_results_hc3_experimental.csv
+│   │   ├── coefficient_plot_hc3_experimental.png
+│   │   └── mobility_analysis_hc3_experimental_workspace.RData
+│   └── coefficient_plot_reproduction/  # Standalone reproduction figure
+│       └── coefficient_plot.png
 │
 └── references/                    # Reference materials
     ├── papers/                    # Academic papers

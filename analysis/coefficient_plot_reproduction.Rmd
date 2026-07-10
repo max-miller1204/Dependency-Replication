@@ -29,11 +29,24 @@ knitr::opts_chunk$set(
 )
 options(width = 78)
 
+document_basename <- "coefficient_plot_reproduction.Rmd"
 input_document <- knitr::current_input(dir = TRUE)
-document_dir <- if (is.null(input_document)) {
-  getwd()
-} else {
+document_dir <- if (!is.null(input_document)) {
   dirname(input_document)
+} else {
+  # knitr::current_input() is NULL when chunks are run interactively (RStudio
+  # inline execution). Locate the document by name from likely roots so output
+  # paths are anchored deterministically instead of following getwd().
+  candidates <- unique(c(getwd(), file.path(getwd(), "analysis")))
+  matches <- candidates[file.exists(file.path(candidates, document_basename))]
+  if (length(matches) == 0L) {
+    stop(
+      "Could not locate ", document_basename, " to anchor output paths. ",
+      "Render with rmarkdown::render() from the repo root, or set the working ",
+      "directory to the folder that contains the document."
+    )
+  }
+  normalizePath(matches[[1]])
 }
 ```
 
@@ -96,6 +109,38 @@ table8 <- table8[!is.na(table8_cz) & table8_cz > 0, , drop = FALSE]
 
 names(table5) <- gsub("^X\\.", "", names(table5))
 names(table8) <- gsub("^X\\.", "", names(table8))
+
+# The renames below address columns by position, so fail loudly if a
+# differently-versioned CSV moves them rather than regressing on the wrong data.
+if (nrow(table5) == 0L) {
+  stop(
+    "Online_Data_Table_5.csv has no data rows after filtering metadata; ",
+    "check the file and the skip = 49 offset."
+  )
+}
+if (nrow(table8) == 0L) {
+  stop(
+    "Online_Data_Table_8.csv has no data rows after filtering metadata; ",
+    "check the file and the skip = 6 offset."
+  )
+}
+if (!(identical(names(table5)[1], "CZ") &&
+      grepl("^Children", names(table5)[4]) &&
+      grepl("^RM", names(table5)[6]))) {
+  stop(
+    "Unexpected column layout in Online_Data_Table_5.csv: expected the ",
+    "commuting-zone id, children count, and relative-mobility columns at ",
+    "positions 1, 4, and 6. Found: ",
+    paste(names(table5)[c(1, 4, 6)], collapse = ", "), "."
+  )
+}
+if (!identical(names(table8)[1], "CZ")) {
+  stop(
+    "Unexpected column layout in Online_Data_Table_8.csv: expected the ",
+    "commuting-zone id at position 1. Found: ", names(table8)[1], "."
+  )
+}
+
 names(table5)[c(1, 4, 6)] <- c("CZ", "n_children", "RM")
 names(table8)[1] <- "CZ"
 
@@ -133,6 +178,10 @@ rownames(analysis_data) <- NULL
 ```
 
 ```{r permutation-regression-function}
+# Algebraically equivalent re-derivation of perm_test_regression() from
+# analysis/mobility_analysis.Rmd: the same DiCiccio and Romano (2017) Theorem 3.2
+# HC0 robust Wald statistic, evaluated in batched matrix form rather than a
+# per-permutation loop. A future change to one should be mirrored in the other.
 permutation_regression_test <- function(
     x,
     y,
@@ -362,7 +411,11 @@ coefficient_plot <- ggplot2::ggplot(
     plot.subtitle = ggplot2::element_text(color = "gray40")
   )
 
-plot_file <- file.path(document_dir, "coefficient_plot.png")
+output_dir <- file.path(
+  document_dir, "..", "results", "coefficient_plot_reproduction"
+)
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+plot_file <- file.path(output_dir, "coefficient_plot.png")
 ggplot2::ggsave(
   plot_file,
   coefficient_plot,
