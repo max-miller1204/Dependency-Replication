@@ -192,6 +192,27 @@ If you prefer to run outside Nix:
    ```
 3. Run analyses as shown above, or open `.Rmd` files in RStudio and knit them.
 
+### Option 3: Standalone Coefficient Plot (No renv or Nix)
+
+`analysis/coefficient_plot_reproduction.Rmd` reproduces the main coefficient plot on its own, given only the two published CSVs.
+It deliberately does not use renv or the Nix devShell, so it renders outside this repo.
+
+**Prerequisites**: R, `pandoc`, a TeX installation that provides `xelatex`, and the `ggplot2`, `lmtest`, `perk`, and `sandwich` packages.
+`perk` is not on CRAN, so install it from GitHub:
+
+```bash
+R -q -e 'install.packages(c("ggplot2", "lmtest", "remotes", "sandwich"))'
+R -q -e 'remotes::install_github("hyu-ub/perk", subdir = "perk")'
+```
+
+Then render it from the repo root:
+
+```bash
+Rscript -e 'rmarkdown::render("analysis/coefficient_plot_reproduction.Rmd")'
+```
+
+The PDF lands at `analysis/coefficient_plot_reproduction.pdf` and the figure at `results/coefficient_plot_reproduction/coefficient_plot.png`.
+
 ## Data Sources
 
 | Table | Contents | Source |

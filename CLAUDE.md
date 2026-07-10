@@ -125,8 +125,10 @@ results/
 │   ├── subgroup_mobility_results.csv   # 6 methods × 35 covariates × 5 RM variants
 │   ├── subgroup_coefficient_plot.png
 │   └── subgroup_analysis_workspace.RData
-└── experimental/
-    ├── mobility_test_results_hc3_experimental.csv
-    ├── coefficient_plot_hc3_experimental.png
-    └── mobility_analysis_hc3_experimental_workspace.RData
+├── experimental/
+│   ├── mobility_test_results_hc3_experimental.csv
+│   ├── coefficient_plot_hc3_experimental.png
+│   └── mobility_analysis_hc3_experimental_workspace.RData
+└── coefficient_plot_reproduction/     # Standalone reproduction (analysis/coefficient_plot_reproduction.Rmd)
+    └── coefficient_plot.png
 ```
