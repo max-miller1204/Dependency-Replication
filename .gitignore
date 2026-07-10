@@ -11,6 +11,8 @@
 *.swp
 *.swo
 *~
+.vscode/*
+!.vscode/settings.json
 
 # direnv (nix-direnv cache and GC roots; .envrc itself is tracked)
 .direnv/
