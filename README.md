@@ -55,6 +55,7 @@ Dependency-Replication/
 ├── README.md
 ├── .gitignore
 ├── flake.nix                      # Nix development environment
+├── flake.lock                     # Pinned nixpkgs revision (R 4.4.3)
 ├── .envrc                         # direnv: auto-loads the Nix devShell
 ├── renv.lock                      # Locked R package dependencies
 ├── renv/                          # renv library cache
