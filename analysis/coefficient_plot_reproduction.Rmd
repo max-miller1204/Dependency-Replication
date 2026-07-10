@@ -421,7 +421,13 @@ ggplot2::ggsave(
   coefficient_plot,
   width = 10,
   height = 9,
-  dpi = 300
+  dpi = 300,
+  # theme_minimal() leaves the plot background blank, so without an explicit
+  # fill ggsave writes a transparent PNG on any device that carries an alpha
+  # channel (the base png device, i.e. this file's minimal dependency set,
+  # which does not require ragg). Pin it white so the portable output matches
+  # a ragg-backed render.
+  bg = "white"
 )
 
 coefficient_plot
